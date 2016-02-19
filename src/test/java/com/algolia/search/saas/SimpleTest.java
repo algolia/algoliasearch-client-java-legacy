@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
-@RunWith(JUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SimpleTest {
     private static final String indexName = safe_name("àlgol?à-java");

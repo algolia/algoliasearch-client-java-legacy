@@ -8,7 +8,6 @@ import org.junit.runners.MethodSorters;
 
 import static org.junit.Assert.assertTrue;
 
-@RunWith(JUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class QueryTest {
 
