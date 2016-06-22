@@ -1073,18 +1073,15 @@ public class Index {
      * @param forwardToSlaves           Forward the operation to the slave indices
      * @param replaceExistingSynonyms   Replace the existing synonyms with this save
      */
-    public JSONObject saveSynonym(String objectID, JSONObject content, boolean forwardToSlaves, boolean replaceExistingSynonyms) throws AlgoliaException {
+    public JSONObject saveSynonym(String objectID, JSONObject content, boolean forwardToSlaves) throws AlgoliaException {
         try {
-            return client.putRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToSlaves=" + forwardToSlaves + "&replaceExistingSynonyms=" + replaceExistingSynonyms, content.toString(), true);
+            return client.putRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToSlaves=" + forwardToSlaves, content.toString(), true);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
-    public JSONObject saveSynonym(String objectID, JSONObject content, boolean forwardToSlaves) throws AlgoliaException {
-        return saveSynonym(objectID, content, forwardToSlaves, false);
-    }
     public JSONObject saveSynonym(String objectID, JSONObject content) throws AlgoliaException {
-        return saveSynonym(objectID, content, false, false);
+        return saveSynonym(objectID, content, false);
     }
 
 }
