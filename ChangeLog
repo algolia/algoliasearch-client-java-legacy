@@ -1,10 +1,17 @@
 Changelog
 =========
 
+1.8.1 (2016-06-22)
+------------------
+- Add exactOnSingleWordQuery & alternativesAsExact
+- Add removeStopWords=list of languages
+- Add aroundRadius=all
+- Add forwardToSlaves in changeSettings
+- Fix saveSynonyms method signature
+
 1.8.0 (2016-06-01)
 ------------------
 - Add support for synonyms
-
 
 1.7.0 (2016-05-24)
 ------------------
