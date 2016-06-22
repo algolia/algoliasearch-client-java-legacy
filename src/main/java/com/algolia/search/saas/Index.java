@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -677,7 +678,11 @@ public class Index {
      *                 - optionalWords: (array of strings) Specify a list of words that should be considered as optional when found in the query.
      */
     public JSONObject setSettings(JSONObject settings) throws AlgoliaException {
-        return client.putRequest("/1/indexes/" + encodedIndexName + "/settings", settings.toString(), true);
+        return setSettings(settings, false);
+    }
+
+    public JSONObject setSettings(JSONObject settings, Boolean forwardToSlaves) throws AlgoliaException {
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/settings?forwardToSlaves=" + forwardToSlaves.toString(), settings.toString(), true);
     }
 
     /**

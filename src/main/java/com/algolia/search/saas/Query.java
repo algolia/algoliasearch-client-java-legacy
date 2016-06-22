@@ -117,13 +117,15 @@ public class Query {
     protected TypoTolerance typoTolerance;
     protected String analyticsTags;
     protected int aroundPrecision;
-    protected int aroundRadius;
+    protected Object aroundRadius;
     protected int minimumAroundRadius;
-    protected Boolean removeStopWords;
+    protected Object removeStopWords;
     protected String userToken;
     protected String referers;
     protected Integer validUntil;
     protected String restrictIndices;
+    protected String exactOnSingleWordQuery;
+    protected String alternativesAsExact;
 
     public Query(String query) {
         minWordSizeForApprox1 = null;
@@ -144,10 +146,13 @@ public class Query {
         analyticsTags = null;
         typoTolerance = TypoTolerance.TYPO_NOTSET;
         removeWordsIfNoResult = RemoveWordsType.REMOVE_NOTSET;
-        aroundPrecision = aroundRadius = minimumAroundRadius = 0;
+        aroundPrecision = minimumAroundRadius = 0;
+        aroundRadius = null;
         userToken = referers = null;
         validUntil = null;
         restrictIndices = null;
+        exactOnSingleWordQuery = null;
+        alternativesAsExact = null;
     }
 
     public Query() {
@@ -209,6 +214,8 @@ public class Query {
         userToken = other.userToken;
         validUntil = other.validUntil;
         restrictIndices = other.restrictIndices;
+        exactOnSingleWordQuery = other.exactOnSingleWordQuery;
+        alternativesAsExact = other.alternativesAsExact;
     }
 
     /**
@@ -529,6 +536,14 @@ public class Query {
     }
 
     /**
+     * Change the radius of around latitude/longitude to `all`
+     */
+    public Query setAroundRadiusAll() {
+        aroundRadius = "all";
+        return this;
+    }
+
+    /**
      * Change the minimum radius of around latitude/longitude query
      */
     public Query setMinimumAroundRadius(int radius) {
@@ -778,6 +793,14 @@ public class Query {
     }
 
     /**
+     * Enable to pass a list of ISO codes
+     */
+    public Query enableRemoveStopWords(String removeStopWords) {
+        this.removeStopWords = removeStopWords;
+        return this;
+    }
+
+    /**
      * Enable the advanced query syntax. Defaults to false. - Phrase query: a
      * phrase query defines a particular sequence of terms. A phrase query is
      * build by Algolia's query parser for words surrounded by ". For example,
@@ -799,6 +822,16 @@ public class Query {
 
     public Query setRestrictIndicies(String indices) {
         this.restrictIndices = indices;
+        return this;
+    }
+
+    public Query setExactOnSingleWordQuery(String exactOnSingleWordQuery) {
+        this.exactOnSingleWordQuery = exactOnSingleWordQuery;
+        return this;
+    }
+
+    public Query setAlternativesAsExact(String alternativesAsExact) {
+        this.alternativesAsExact = alternativesAsExact;
         return this;
     }
 
@@ -850,6 +883,13 @@ public class Query {
     private StringBuilder append(StringBuilder stringBuilder, String key, Boolean value) {
         if (value != null) {
             return append(stringBuilder, key, value ? "1" : "0");
+        }
+        return stringBuilder;
+    }
+
+    private StringBuilder append(StringBuilder stringBuilder, String key, Object value) throws UnsupportedEncodingException {
+        if (value != null) {
+            return appendWithEncoding(stringBuilder, key, value.toString());
         }
         return stringBuilder;
     }
@@ -1006,6 +1046,8 @@ public class Query {
             stringBuilder = appendWithEncoding(stringBuilder, "userToken", userToken);
             stringBuilder = append(stringBuilder, "validUntil", validUntil);
             stringBuilder = appendWithEncoding(stringBuilder, "restrictIndices", restrictIndices);
+            stringBuilder = appendWithEncoding(stringBuilder, "exactOnSingleWordQuery", exactOnSingleWordQuery);
+            stringBuilder = appendWithEncoding(stringBuilder, "alternativesAsExact", alternativesAsExact);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
