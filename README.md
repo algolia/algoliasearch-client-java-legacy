@@ -804,7 +804,6 @@ You can use the following optional arguments:
       </td>
     </tr>
     
-
   
 
   
@@ -1262,6 +1261,13 @@ System.out.println(index.getSettings());
 index.setSettings(new JSONObject().append("customRanking", "desc(followers)"));
 ```
 
+## Slave settings
+
+You can forward all settings updates to the slaves of an index by using the `forwardToSlaves` option:
+
+```java
+index.setSettings(new JSONObject().append("customRanking", "desc(followers)"), true);
+```
 
 ## Indexing parameters
 
