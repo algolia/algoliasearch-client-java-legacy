@@ -1,6 +1,7 @@
 package com.algolia.search.saas;
 
-import java.util.List;
+import org.apache.http.HttpEntity;
+import org.apache.http.util.EntityUtils;
 
 /*
  * Copyright (c) 2015 Algolia
@@ -24,49 +25,21 @@ import java.util.List;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-public class AlgoliaException extends Exception {
+public class AlgoliaInnerException extends Exception {
 
-    public AlgoliaException(Throwable cause) {
+    private final String host;
+
+    public AlgoliaInnerException(String host, Throwable cause) {
         super(cause);
-        this.code = 0;
+        this.host = host;
     }
 
-    public AlgoliaException(String message) {
-        this(0, message);
-    }
-
-    public AlgoliaException(int code, String message) {
+    public AlgoliaInnerException(String host, String message) {
         super(message);
-        this.code = code;
+        this.host = host;
     }
 
-    public AlgoliaException(String message, Throwable cause) {
-        super(message, cause);
-        this.code = 0;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    private final int code;
-
-    private static final long serialVersionUID = 1L;
-
-    public static AlgoliaException from(String message, List<AlgoliaInnerException> errorsByHost) {
-        AlgoliaInnerException lastException = null;
-        if(!errorsByHost.isEmpty()) {
-            lastException = errorsByHost.get(errorsByHost.size() - 1);
-        }
-        StringBuilder m = new StringBuilder(message);
-        for (AlgoliaInnerException e : errorsByHost) {
-            m
-              .append("\n")
-              .append(e.getHost())
-              .append(": ")
-              .append(e.getMessage());
-        }
-
-        return new AlgoliaException(m.toString(), lastException);
+    public String getHost() {
+        return host;
     }
 }

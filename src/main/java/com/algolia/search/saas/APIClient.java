@@ -649,7 +649,7 @@ public class APIClient {
         return _request(Method.PUT, url, obj, build, false);
     }
 
-    private JSONObject _requestByHost(HttpRequestBase req, String host, String url, String json, HashMap<String, String> errors, boolean searchTimeout) throws AlgoliaException {
+    private JSONObject _requestByHost(HttpRequestBase req, String host, String url, String json, List<AlgoliaInnerException> errors, boolean searchTimeout) throws AlgoliaException {
         req.reset();
 
         // set URL
@@ -707,7 +707,7 @@ public class APIClient {
             if (verbose) {
                 System.out.println(String.format("%s: %s=%s", host, e.getClass().getName(), e.getMessage()));
             }
-            errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
+            errors.add(new AlgoliaInnerException(host, e));
             return null;
         }
         try {
@@ -736,12 +736,12 @@ public class APIClient {
                     if (verbose) {
                         System.out.println(String.format("%s: %s", host, EntityUtils.toString(response.getEntity())));
                     }
-                    errors.put(host, EntityUtils.toString(response.getEntity()));
+                    errors.add(new AlgoliaInnerException(host, EntityUtils.toString(response.getEntity())));
                 } catch (IOException e) {
                     if (verbose) {
                         System.out.println(String.format("%s: %s", host, String.valueOf(code)));
                     }
-                    errors.put(host, String.valueOf(code));
+                    errors.add(new AlgoliaInnerException(host, e));
                 }
                 // KO, continue
                 return null;
@@ -765,7 +765,7 @@ public class APIClient {
                 if (verbose) {
                     System.out.println(String.format("%s: %s=%s", host, e.getClass().getName(), e.getMessage()));
                 }
-                errors.put(host, String.format("%s=%s", e.getClass().getName(), e.getMessage()));
+                errors.add(new AlgoliaInnerException(host, e));
                 return null;
             } catch (JSONException e) {
                 throw new AlgoliaException("JSON decode error:" + e.getMessage());
@@ -793,7 +793,7 @@ public class APIClient {
             default:
                 throw new IllegalArgumentException("Method " + m + " is not supported");
         }
-        HashMap<String, String> errors = new HashMap<String, String>();
+        List<AlgoliaInnerException> errors = new ArrayList<AlgoliaInnerException>();
         List<String> hosts = build ? this.buildHostsArray : this.queryHostsArray;
 
         // for each host
@@ -803,16 +803,7 @@ public class APIClient {
                 return res;
             }
         }
-        StringBuilder builder = new StringBuilder("Hosts unreachable: ");
-        Boolean first = true;
-        for (Map.Entry<String, String> entry : errors.entrySet()) {
-            if (!first) {
-                builder.append(", ");
-            }
-            builder.append(entry.toString());
-            first = false;
-        }
-        throw new AlgoliaException(builder.toString());
+        throw AlgoliaException.from("Hosts unreachable", errors);
     }
 
     public static class IndexQuery {
