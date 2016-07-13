@@ -1058,7 +1058,7 @@ public class Index {
             array.put(obj);
         }
 
-        return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/batch?forwardToSlaves=" + forwardToSlaves + "&replaceExistingSynonyms=" + replaceExistingSynonyms, array.toString(), false, true);
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/batch?forwardToSlaves=" + forwardToSlaves + "&replaceExistingSynonyms=" + replaceExistingSynonyms, array.toString(), true, false);
     }
 
     public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToSlaves) throws AlgoliaException {
