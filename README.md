@@ -48,18 +48,18 @@ java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
 Getting started
 
-1. [Init Index](#install-and-init---initindex)
+1. [Install and init](#install-and-init---initindex)
 
 Search
 
-1. [Search](#search)
-1. [Find by id](#find-by-ids---getobjects)
+1. [Search in an index](#search-in-an-index---search)
+1. [Find by IDs](#find-by-ids---getobjects)
 
 Indexing
 
 1. [Add objects](#add-objects---addobjects)
 1. [Update objects](#update-objects---saveobjects)
-1. [Partial Update objects](#partial-update---partialupdateobjects)
+1. [Partial update](#partial-update---partialupdateobjects)
 1. [Delete objects](#delete-objects---deleteobjects)
 
 Settings
@@ -70,34 +70,34 @@ Settings
 Manage Indices
 
 1. [List indices](#list-indices---listindexes)
-1. [Delete an index](#delete-index---deleteindex)
-1. [Clear an index](#clear-index---clearindex)
-1. [Copy an index](#copy-index---copyindex)
-1. [Move an index](#move-index---moveindex)
+1. [Delete index](#delete-index---deleteindex)
+1. [Clear index](#clear-index---clearindex)
+1. [Copy index](#copy-index---copyto)
+1. [Move index](#move-index---moveindex)
 
 Api Keys
 
-1. [Generate API keys](#generate-key---generatesecuredapikey)
+1. [Generate key](#generate-key---generatesecuredapikey)
 
 
 Synonyms
 
-1. [Save synonym](#save-synonym)
-1. [Batch synonyms](#batch-synonyms)
+1. [Save synonym](#save-synonym---savesynonym)
+1. [Batch synonyms](#batch-synonyms---batchsynonyms)
 1. [Editing Synonyms](#editing-synonyms)
-1. [Delete Synonyms](#delete-synonyms)
-1. [Clear all synonyms](#clear-all-synonyms)
-1. [Get synonym](#get-synonym)
-1. [Search synonyms](#search-synonym)
+1. [Delete Synonyms](#delete-synonyms---delete_synonyms)
+1. [Clear all synonyms](#clear-all-synonyms---clearsynonyms)
+1. [Get synonym](#get-synonym---getsynonym)
+1. [Search synonyms](#search-synonyms---searchsynonyms)
 
 
 Advanced
 
 1. [Custom batch](#custom-batch---batch)
-1. [Wait for an indexing operation](#wait-for-an-indexing-operation---waittask)
+1. [Wait for operations](#wait-for-operations---waittask)
 1. [Multiple queries](#multiple-queries---multiplequeries)
 1. [Delete by query](#delete-by-query---deletebyquery)
-1. [Backup / Export an index](#backup--export-an-index---browse)
+1. [Backup / Export an index](#backup-/-export-an-index---browse)
 1. [List api keys](#list-api-keys---listapikeys)
 1. [Add user key](#add-user-key---adduserkey)
 1. [Update user key](#update-user-key---updateuserkey)
@@ -1709,8 +1709,10 @@ This method saves a single synonym record into the index.
 In this example, we specify true to forward the creation to slave indices.
 By default the behavior is to save only on the specified index.
 
+```java
 index.saveSynonym("a-unique-identifier", new Synonym()
            .setSynonyms(Arrays.asList("car", "vehicle", "auto")), true);
+```
 
 ### Batch synonyms - `batchSynonyms`
 
@@ -1723,6 +1725,7 @@ You should always use replaceExistingSynonyms to atomically replace all synonyms
 on a production index. This is the only way to ensure the index always
 has a full list of synonyms to use during the indexing of the new list.
 
+```java
 // Batch synonyms, with slave forwarding and atomic replacement of existing synonyms
 index.batchSynonyms(Arrays.asList(
       new Synonym()
@@ -1732,6 +1735,7 @@ index.batchSynonyms(Arrays.asList(
            .setObjectID("another-unique-identifier")
            .setSynonyms(Arrays.asList("street", "st"))
 ), true);
+```
 
 ### Editing Synonyms
 
@@ -1750,8 +1754,10 @@ Use the normal index delete method to delete synonyms,
 specifying the objectID of the synonym record you want to delete.
 Forward the deletion to slave indices by setting the forwardToSlaves parameter to true.
 
+```java
 // Delete and forward to slaves
 index.deleteSynonym("a-unique-identifier", true);
+```
 
 ### Clear all synonyms - `clearSynonyms`
 
@@ -1763,15 +1769,19 @@ at all.
 To atomically replace all synonyms of an index,
 use the batch method with the replaceExistingSynonyms parameter set to true.
 
+```java
 // Clear synonyms and forward to slaves
 index.clearSynonyms(true);
+```
 
 ### Get synonym - `getSynonym`
 
 Search for synonym records by their objectID or by the text they contain.
 Both methods are covered here.
 
+```java
 Optional<AbstractSynonym> synonym = index.getSynonym("a-unique-identifier");
+```
 
 ### Search synonyms - `searchSynonyms`
 
@@ -1783,8 +1793,10 @@ Accepted search parameters:
 - page: the page to fetch when browsing through several pages of results. This value is zero-based.
 hitsPerPage: the number of synonyms to return for each call. The default value is 100.
 
+```java
 // Searching for "street" in synonyms and one-way synonyms; fetch the second page with 10 hits per page
 SearchSynonymResult results = index.searchSynonyms(new SynonymQuery("street").setTypes(Arrays.asList("synonym", "one_way")).setPage(1).setHitsPerPage(10));
+```
 
 
 
