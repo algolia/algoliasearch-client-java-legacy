@@ -36,6 +36,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
@@ -148,7 +149,7 @@ public class APIClient {
      * @param queryHostsArray the list of hosts that you have received for the service
      */
     public APIClient(String applicationID, String apiKey, List<String> buildHostsArray, List<String> queryHostsArray) {
-        userAgent = "Algolia for Java " + version;
+        userAgent = "Algolia for Java (" + version + "); JVM (" + System.getProperty("java.version") + ")";
         verbose = System.getenv("VERBOSE") != null;
         forwardRateLimitAPIKey = forwardAdminAPIKey = forwardEndUserIP = null;
         if (applicationID == null || applicationID.length() == 0) {
@@ -173,7 +174,7 @@ public class APIClient {
      * Allow to modify the user-agent in order to add the user agent of the integration
      */
     public void setUserAgent(String agent, String agentVersion) {
-        userAgent = String.format("Algolia for Java %s %s (%s)", version, agent, agentVersion);
+        userAgent = String.format("Algolia for Java (%s); JVM (%s); %s (%s)", version, System.getProperty("java.version"), agent, agentVersion);
     }
 
     /**
