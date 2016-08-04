@@ -671,6 +671,10 @@ System.out.println(index.getSettings());
 index.setSettings(new JSONObject().append("customRanking", "desc(followers)"));
 ```
 
+**Warning**
+
+Performance wise, it's better to do a `setSettings` before pushing the data
+
 #### Slave settings
 
 You can forward all settings updates to the slaves of an index by using the `forwardToSlaves` option:
@@ -1772,7 +1776,7 @@ The moveIndex method will overwrite the destination index, and delete the tempor
 
 **Warning**
 
-The moveIndex` operation will override all settings of the destination,
+The moveIndex operation will override all settings of the destination,
 There is one exception for the [slaves](#slaves) parameter which is not impacted.
 
 For example, if you want to fully update your index `MyIndex` every night, we recommend the following process:
