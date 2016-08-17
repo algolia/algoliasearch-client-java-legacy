@@ -166,8 +166,14 @@ public class APIClient {
 
         this.buildHostsArray = new ArrayList<String>(buildHostsArray);
         this.queryHostsArray = new ArrayList<String>(queryHostsArray);
-        httpClient = HttpClientBuilder.create().disableAutomaticRetries().useSystemProperties().build();
-        headers = new HashMap<String, String>();
+
+        HttpClientBuilder builder = HttpClientBuilder.create().disableAutomaticRetries();
+        //If we are on AppEngine don't use system properties
+        if(System.getProperty("com.google.appengine.runtime.version") == null) {
+            builder = builder.useSystemProperties();
+        }
+        this.httpClient = builder.build();
+        this.headers = new HashMap<String, String>();
     }
 
     /**
