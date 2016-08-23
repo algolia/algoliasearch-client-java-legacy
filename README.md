@@ -110,6 +110,7 @@ Advanced
 ## Guides & Tutorials
 
 Check our [online guides](https://www.algolia.com/doc):
+
  * [Data Formatting](https://www.algolia.com/doc/indexing/formatting-your-data)
  * [Import and Synchronize data](https://www.algolia.com/doc/indexing/import-synchronize-data/java)
  * [Autocomplete](https://www.algolia.com/doc/search/auto-complete)
@@ -157,7 +158,7 @@ If you're using Maven, add the following dependency to your `pom.xml` file:
 
 ### Init index - `InitIndex`
 
-To initialize the client you need your ApplicationID and API-Key. You can find all of them on [your Algolia account](http://www.algolia.com/users/edit)
+To initialize the client, you need your **Application ID** and **API Key**. You can find both of them on [your Algolia account](https://www.algolia.com/api-keys).
 
 ```java
   APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
@@ -187,6 +188,7 @@ index.addObject(new JSONObject()
 ```
 
 You can now search for contacts using firstname, lastname, company, etc. (even with typos):
+
 ```java
 // search by firstname
 System.out.println(index.search(new Query("jimmie")));
@@ -199,11 +201,13 @@ System.out.println(index.search(new Query("jimmie paint")));
 ```
 
 Settings can be customized to tune the search behavior. For example, you can add a custom sort by number of followers to the already great built-in relevance:
+
 ```java
 index.setSettings(new JSONObject().append("customRanking", "desc(followers)"));
 ```
 
 You can also configure the list of attributes you want to index by order of importance (first = most important):
+
 ```java
 index.setSettings(new JSONObject()
       .append("attributesToIndex", "lastname")
@@ -213,6 +217,7 @@ index.setSettings(new JSONObject()
 ```
 
 Since the engine is designed to suggest results as you type, you'll generally search by prefix. In this case the order of attributes is very important to decide which hit is the best:
+
 ```java
 System.out.println(index.search(new Query("or")));
 System.out.println(index.search(new Query("jim")));
@@ -433,17 +438,21 @@ Here is the list of parameters you can use with the search method (`search` [sco
 Parameters that can also be used in a setSettings also have the `indexing` [scope](#scope)
 
 **Search**
+
 - [setQueryString](#setquerystring) `search`
 
 **Attributes**
+
 - [attributesToRetrieve](#attributestoretrieve) `settings`, `search`
 
 **Filtering / Faceting**
+
 - [filters](#filters) `search`
 - [facets](#facets) `search`
 - [maxValuesPerFacet](#maxvaluesperfacet) `settings`, `search`
 
 **Highlighting / Snippeting**
+
 - [attributesToHighlight](#attributestohighlight) `settings`, `search`
 - [attributesToSnippet](#attributestosnippet) `settings`, `search`
 - [highlightPreTag](#highlightpretag) `settings`, `search`
@@ -451,10 +460,12 @@ Parameters that can also be used in a setSettings also have the `indexing` [scop
 - [snippetEllipsisText](#snippetellipsistext) `settings`, `search`
 
 **Pagination**
+
 - [page](#page) `search`
 - [hitsPerPage](#hitsperpage) `settings`, `search`
 
 **Typos**
+
 - [minWordSizefor1Typo](#minwordsizefor1typo) `settings`, `search`
 - [minWordSizefor2Typos](#minwordsizefor2typos) `settings`, `search`
 - [typoTolerance](#typotolerance) `settings`, `search`
@@ -463,13 +474,19 @@ Parameters that can also be used in a setSettings also have the `indexing` [scop
 - [disableTypoToleranceOnAttributes](#disabletypotoleranceonattributes) `settings`, `search`
 
 **Geo-Search**
+
 - [aroundLatitudeLongitude(float, float)](#aroundlatitudelongitudefloat-float) `search`
 - [aroundLatitudeLongitude(float, float, int, int)](#aroundlatitudelongitudefloat-float-int-int) `search`
 - [AroundLatitudeLongitudeViaIP()](#aroundlatitudelongitudeviaip) `search`
 - [AroundLatitudeLongitudeViaIP(int, int)](#aroundlatitudelongitudeviaipint-int) `search`
-
+- [aroundRadius](#aroundradius) `search`
+- [aroundPrecision](#aroundprecision) `search`
+- [minimumAroundRadius](#minimumaroundradius) `search`
+- [insideBoundingBox](#insideboundingbox) `search`
+- [insidePolygon](#insidepolygon) `search`
 
 **Query Strategy**
+
 - [queryType](#querytype) `settings`, `search`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
 - [enableAdvancedSyntax](#enableadvancedsyntax) `settings`, `search`
@@ -479,6 +496,7 @@ Parameters that can also be used in a setSettings also have the `indexing` [scop
 - [alternativesAsExact](#alternativesasexact) `settings`, `search`
 
 **Advanced**
+
 - [distinct](#distinct) `settings`, `search`
 - [getRankingInfo](#getrankinginfo) `search`
 - [numericFilters (deprecated)](#numericfilters-deprecated) `search`
@@ -645,6 +663,7 @@ The actual insert and indexing will be done after replying to your code.
 You can wait for a task to complete using the `waitTask` method on the `taskID` returned by a write operation.
 
 For example, to wait for indexing of a new object:
+
 ```java
 JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
 index.waitTask(String.valueOf(res.getLong("taskID")));
@@ -652,6 +671,7 @@ index.waitTask(String.valueOf(res.getLong("taskID")));
 
 If you want to ensure multiple objects have been indexed, you only need to check
 the biggest `taskID`.
+
 
 ## Settings
 
@@ -695,20 +715,24 @@ Here is the list of parameters you can use with the set settings method (`indexi
 Parameters that can be overridden at search time also have the `search` [scope](#scope)
 
 **Attributes**
+
 - [attributesToIndex](#attributestoindex) `settings`
 - [attributesForFaceting](#attributesforfaceting) `settings`
 - [attributesToRetrieve](#attributestoretrieve) `settings`, `search`
 - [unretrievableAttributes](#unretrievableattributes) `settings`
 
 **Ranking**
+
 - [ranking](#ranking) `settings`
 - [customRanking](#customranking) `settings`
 - [slaves](#slaves) `settings`
 
 **Filtering / Faceting**
+
 - [maxValuesPerFacet](#maxvaluesperfacet) `settings`, `search`
 
 **Highlighting / Snippeting**
+
 - [attributesToHighlight](#attributestohighlight) `settings`, `search`
 - [attributesToSnippet](#attributestosnippet) `settings`, `search`
 - [highlightPreTag](#highlightpretag) `settings`, `search`
@@ -716,9 +740,11 @@ Parameters that can be overridden at search time also have the `search` [scope](
 - [snippetEllipsisText](#snippetellipsistext) `settings`, `search`
 
 **Pagination**
+
 - [hitsPerPage](#hitsperpage) `settings`, `search`
 
 **Typos**
+
 - [minWordSizefor1Typo](#minwordsizefor1typo) `settings`, `search`
 - [minWordSizefor2Typos](#minwordsizefor2typos) `settings`, `search`
 - [typoTolerance](#typotolerance) `settings`, `search`
@@ -728,6 +754,7 @@ Parameters that can be overridden at search time also have the `search` [scope](
 - [separatorsToIndex](#separatorstoindex) `settings`
 
 **Query Strategy**
+
 - [queryType](#querytype) `settings`, `search`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
 - [enableAdvancedSyntax](#enableadvancedsyntax) `settings`, `search`
@@ -739,6 +766,7 @@ Parameters that can be overridden at search time also have the `search` [scope](
 - [alternativesAsExact](#alternativesasexact) `settings`, `search`
 
 **Advanced**
+
 - [attributeForDistinct](#attributefordistinct) `settings`
 - [distinct](#distinct) `settings`, `search`
 - [numericAttributesToIndex](#numericattributestoindex) `settings`
@@ -759,6 +787,7 @@ Each parameter in this page has a scope. Depending on the scope, you can use the
 and/or the `search` method
 
 They are three scopes:
+
 - `settings`: The setting can only be used in the `setSettings` method
 - `search`: The setting can only be used in the `search` method
 - `settings` `search`: The setting can be used in the `setSettings` method and be override in the`search` method
@@ -767,9 +796,11 @@ They are three scopes:
 #### Parameters List
 
 **Search**
+
 - [setQueryString](#setquerystring) `search`
 
 **Attributes**
+
 - [attributesForFaceting](#attributesforfaceting) `settings`
 - [attributesToIndex](#attributestoindex) `settings`
 - [attributesToRetrieve](#attributestoretrieve) `settings`, `search`
@@ -777,16 +808,19 @@ They are three scopes:
 
 
 **Ranking**
+
 - [ranking](#ranking) `settings`
 - [customRanking](#customranking) `settings`
 - [slaves](#slaves) `settings`
 
 **Filtering / Faceting**
+
 - [filters](#filters) `search`
 - [facets](#facets) `search`
 - [maxValuesPerFacet](#maxvaluesperfacet) `settings`, `search`
 
 **Highlighting / Snippeting**
+
 - [attributesToHighlight](#attributestohighlight) `settings`, `search`
 - [attributesToSnippet](#attributestosnippet) `settings`, `search`
 - [highlightPreTag](#highlightpretag) `settings`, `search`
@@ -795,10 +829,12 @@ They are three scopes:
 - [restrictHighlightAndSnippetArrays](#restricthighlightandsnippetarrays) `settings`, `search`
 
 **Pagination**
+
 - [page](#page) `search`
 - [hitsPerPage](#hitsperpage) `settings`, `search`
 
 **Typos**
+
 - [minWordSizefor1Typo](#minwordsizefor1typo) `settings`, `search`
 - [minWordSizefor2Typos](#minwordsizefor2typos) `settings`, `search`
 - [typoTolerance](#typotolerance) `settings`, `search`
@@ -813,9 +849,14 @@ They are three scopes:
 - [aroundLatitudeLongitude(float, float, int, int)](#aroundlatitudelongitudefloat-float-int-int) `search`
 - [AroundLatitudeLongitudeViaIP()](#aroundlatitudelongitudeviaip) `search`
 - [AroundLatitudeLongitudeViaIP(int, int)](#aroundlatitudelongitudeviaipint-int) `search`
-
+- [aroundRadius](#aroundradius) `search`
+- [aroundPrecision](#aroundprecision) `search`
+- [minimumAroundRadius](#minimumaroundradius) `search`
+- [insideBoundingBox](#insideboundingbox) `search`
+- [insidePolygon](#insidepolygon) `search`
 
 **Query Strategy**
+
 - [queryType](#querytype) `settings`, `search`
 - [removeWordsIfNoResults](#removewordsifnoresults) `settings`, `search`
 - [enableAdvancedSyntax](#enableadvancedsyntax) `settings`, `search`
@@ -827,6 +868,7 @@ They are three scopes:
 - [alternativesAsExact](#alternativesasexact) `settings`, `search`
 
 **Advanced**
+
 - [attributeForDistinct](#attributefordistinct) `settings`
 - [distinct](#distinct) `settings`, `search`
 - [getRankingInfo](#getrankinginfo) `search`
@@ -865,21 +907,16 @@ If set to null, all textual and numerical attributes of your objects are indexed
 Make sure you updated this setting to get optimal results.
 
 This parameter has two important uses:
-* **Limit the attributes to index**.
-<br/>For example, if you store the URL of a picture, you want to store it and be able to retrieve it,
-but you probably don't want to search in the URL.
-* **Control part of the ranking**.
-<br/> Matches in attributes at the beginning of the list will be considered more important than matches in attributes
-further down the list.
-In one attribute, matching text at the beginning of the attribute will be considered more important than text after.
-You can disable this behavior if you add your attribute inside `unordered(AttributeName)`.
-For example, `attributesToIndex: ["title", "unordered(text)"]`.
-You can decide to have the same priority for two attributes
-by passing them in the same string using a comma as a separator.
-For example `title` and `alternative_title` have the same priority in this example,
-which is different than text priority: `attributesToIndex:["title,alternative_title", "text"]`.
-To get a full description of how the Ranking works, you can have a look at our
-[Ranking guide](https://www.algolia.com/doc/relevance/ranking).
+
+1. **Limit the attributes to index.** For example, if you store the URL of a picture, you want to store it and be able to retrieve it, but you probably don't want to search in the URL.
+
+2. **Control part of the ranking.** The contents of the `attributesToIndex` parameter impacts ranking in two complementary ways:
+
+    First, the order in which attributes are listed defines their ranking priority: matches in attributes at the beginning of the list will be considered more important than matches in attributes further down the list. To assign the same priority to several attributes, pass them within the same string, separated by commas. For example, by specifying `["title,"alternative_title", "text"]`, `title` and `alternative_title` will have the same priority, but a higher priority than `text`.
+
+    Then, within the same attribute, matches near the beginning of the text will be considered more important than matches near the end. You can disable this behavior by wrapping your attribute name inside an `unordered()` modifier. For example, `["title", "unordered(text)"]` will consider all positions inside the `text` attribute as equal, but positions inside the `title` attribute will still matter.
+
+**Note:** To get a full description of how the ranking works, you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
 
 #### attributesForFaceting
@@ -889,9 +926,9 @@ To get a full description of how the Ranking works, you can have a look at our
 - default: `null`
 
 
-The list of fields you want to use for faceting.
-All strings in the attribute selected for faceting are extracted and added as a facet.
-If set to null, no attribute is used for faceting.
+The list of attributes you want to use for faceting.
+All strings within these attributes will be extracted and added as facets.
+If set to `null`, no attribute is used for faceting.
 
 
 #### unretrievableAttributes
@@ -903,9 +940,9 @@ If set to null, no attribute is used for faceting.
 
 The list of attributes that cannot be retrieved at query time.
 This feature allows you to have attributes that are used for indexing
-and/or ranking but cannot be retrieved
+and/or ranking but cannot be retrieved.
 
-**Warning**: for testing purposes, this setting is ignored when you're using the ADMIN API Key.
+**Warning**: For testing purposes, this setting is ignored when you're using the **admin** API key.
 
 #### attributesToRetrieve
 
@@ -921,7 +958,7 @@ You can also use a string array encoding (for example `["name","address"]` ).
 By default, all attributes are retrieved.
 You can also use `*` to retrieve all values when an **attributesToRetrieve** setting is specified for your index.
 
-`objectID` is always retrieved even when not specified.
+**Note:** `objectID` is always retrieved, even when not specified.
 
 
 #### restrictSearchableAttributes
@@ -962,8 +999,8 @@ We have nine available criterion:
 * `asc(attributeName)`: Sort according to a numeric attribute using ascending order. `attributeName` can be the name of any numeric attribute in your records (integer, double or boolean).
 * `desc(attributeName)`: Sort according to a numeric attribute using descending order. `attributeName` can be the name of any numeric attribute in your records (integer, double or boolean).
 
-<br/>To get a full description of how the Ranking works,
-you can have a look at our [Ranking guide](https://www.algolia.com/doc/relevance/ranking).
+To get a full description of how the Ranking works,
+you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
 #### customRanking
 
@@ -980,7 +1017,7 @@ prefixed by the asc (ascending order) or desc (descending order) operator.
 For example, `"customRanking" => ["desc(population)", "asc(name)"]`.
 
 To get a full description of how the Custom Ranking works,
-you can have a look at our [Ranking guide](https://www.algolia.com/doc/relevance/ranking).
+you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
 #### slaves
 
@@ -1022,18 +1059,19 @@ the filter applies to `_tags`.
 For example: `public OR user_42` will translate to `_tags:public OR _tags:user_42`.
 
 The list of keywords is:
+
 * `OR`: create a disjunctive filter between two filters.
 * `AND`: create a conjunctive filter between two filters.
 * `TO`: used to specify a range for a numeric filter.
 * `NOT`: used to negate a filter. The syntax with the `-` isn’t allowed.
 
-*Note*: To specify a value with spaces or with a value equal to a keyword, it's possible to add quotes.
+**Note:** To specify a value with spaces or with a value equal to a keyword, it's possible to add quotes.
 
-**Warning:**
+**Warnings:**
 
-* Like for the other filters (for performance reasons), it's not possible to have FILTER1 OR (FILTER2 AND FILTER3).
-* It's not possible to mix different categories of filters inside an OR like: num=3 OR tag1 OR facet:value
-* It's not possible to negate a group, it's only possible to negate a filter:  NOT(FILTER1 OR (FILTER2) is not allowed.
+* Like for the other filters (for performance reasons), it's not possible to have `FILTER1 OR (FILTER2 AND FILTER3)`.
+* It is not possible to mix different categories of filters inside an OR like: `num=3 OR tag1 OR facet:value`.
+* It is not possible to negate a group; only individual filters can be negated:  `NOT(FILTER1 OR (FILTER2))` is not allowed.
 
 
 #### facets
@@ -1054,17 +1092,15 @@ and their associated count for the current query.
 
 If you have defined in your **[attributesForFaceting](#attributesforfaceting)**:
 
-['category', 'author', 'nb_views', 'nb_downloads']
+```
+["category", "author", "nb_views", "nb_downloads"]
+```
 
-But for the current search want to retrieve only facet values for `category` and `author`.
+... but, for the current search, you want to retrieve facet values only for `category` and `author`, then you can specify:
 
-You can specify your attributes coma separated.
-
-For this example:  `"category,author"`.
-
-You can also use JSON string array encoding.
-
-For this example: `["category","author"]`.
+```
+["category", "author"]
+```
 
 **Warnings**
 
@@ -1104,6 +1140,7 @@ By default, all indexed attributes are highlighted (as long as they are strings)
 You can use `*` if you want to highlight all attributes.
 
 A matchLevel is returned for each highlighted attribute and can contain:
+
 * `full`: If all the query terms were found in the attribute.
 * `partial`: If only some of the query terms were found.
 * `none`: If none of the query terms were found.
@@ -1141,7 +1178,8 @@ and the string that is inserted after the highlighted parts in the query result 
 
 
 String used as an ellipsis indicator when a snippet is truncated.
-Defaults to an empty string for all accounts created before 10/2/2016, and to … (UTF-8 U+2026) for accounts created after that date.
+
+**Note:** Defaults to an empty string for all accounts created before 10/2/2016, and to `…` (U+2026) for accounts created after that date.
 
 #### restrictHighlightAndSnippetArrays
 
@@ -1162,8 +1200,8 @@ If set to true, restrict arrays in highlights and snippets to items that matched
 
 
 Pagination parameter used to select the page to retrieve.
-<br>
-Page is zero based and defaults to 0. Thus, to retrieve the 10th page you need to set `page=9`.
+
+**Warning:** Page is zero based. Thus, to retrieve the 10th page, you need to set `page=9`.
 
 #### hitsPerPage
 
@@ -1172,7 +1210,7 @@ Page is zero based and defaults to 0. Thus, to retrieve the 10th page you need t
 - default: `20`
 
 
-Pagination parameter used to select the number of hits per page. Defaults to 20.
+Pagination parameter used to select the number of hits per page.
 
 ### Typos
 
@@ -1251,11 +1289,40 @@ Specify the separators (punctuation characters) to index.
 
 By default, separators are not indexed.
 
-Use `+#` to be able to search Google+ or C#.
+**Example:** Use `+#` to be able to search for "Google+" or "C#".
 
 
 
 ### Geo-Search
+
+Geo search requires that you provide at least one geo location in each record at indexing time, under the `_geoloc` attribute. Each location must be an object with two numeric `lat` and `lng` attributes. You may specify either one location:
+
+```
+{
+  "_geoloc": {
+    "lat": 48.853409,
+    "lng": 2.348800
+  }
+}
+```
+
+... or an array of locations:
+
+```
+{
+  "_geoloc": [
+    {
+      "lat": 48.853409,
+      "lng": 2.348800
+    },
+    {
+      "lat": 48.547456,
+      "lng": 2.972075
+    }
+  ]
+}
+```
+
 
 
 
@@ -1271,9 +1338,6 @@ Search for entries around a given latitude/longitude.
 The maximum distance is automatically guessed depending of the density of the area
 but you also manually specify the maximum distance in meters
 with the `radius` parameter.
-
-At indexing, you should specify the geo location of an object with the `_geoloc` attribute
-in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `.
 
 #### aroundLatitudeLongitude(float, float, int, int)
 
@@ -1306,9 +1370,6 @@ The radius is automatically guessed based on density
 but you can also specify it manually with
 the `radius` parameter (optional)
 
-At indexing, you should specify the geo location of an object with the `_geoloc` attribute
-in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `.
-
 #### AroundLatitudeLongitudeViaIP(int, int)
 
 - scope: `search`
@@ -1319,30 +1380,51 @@ in the form ` {"_geoloc":{"lat":48.853409, "lng":2.348800}} `.
 Search for entries around a latitude/longitude automatically computed from user IP address
 with a given precision for ranking.
 
-For example:
-- if you set precision=100, two objects that are a distance of less than 100 meters
+**Example:** if you set precision=100, two objects that are a distance of less than 100 meters
 will be considered as identical for the "geo" ranking parameter.
 
 
 
+#### aroundRadius
+
+- scope: `search`
+- type: `integer`, `"all"`
+- default: `null`
+
+
+Control the radius associated with a geo search. Defined in meters.
+
+If not set, the radius is computed automatically using the density of the area. You can retrieve the computed radius in the `automaticRadius` attribute of the response. You can also specify a minimum value for the automatic radius by using the `minimumAroundRadius` query parameter. You can specify `aroundRadius=all` if you want to compute the geo distance without filtering in a geo area; this option will be faster than specifying a big integer value.
+
+#### aroundPrecision
+
+- scope: `search`
+- type: `integer`
+- default: `null`
+
+
+Control the precision of a geo search. Defined in meters. For example, if you set `aroundPrecision=100`, two objects that are in the range 0-99m will be considered as identical in the ranking for the `geo` ranking parameter (same for 100-199, 200-299, … ranges).
+
+#### minimumAroundRadius
+
+- scope: `search`
+- type: `integer`
+- default: `null`
+
+
+Define the minimum radius used for a geo search when `aroundRadius` is not set. The radius is computed automatically using the density of the area. You can retrieve the computed radius in the `automaticRadius` attribute of the answer.
+
 #### insideBoundingBox
 
 - scope: `search`
-- type: `boolean`
-- default: `false`
+- type: `string`
+- default: `null`
 
 
 Search entries inside a given area defined by the two extreme points of a rectangle
 (defined by 4 floats: p1Lat,p1Lng,p2Lat,p2Lng).
 For example:
 - `insideBoundingBox=47.3165,4.9665,47.3424,5.0201`
-
-
-At indexing, you should specify geoloc of an object with the _geoloc attribute
-(in the form `"_geoloc":{"lat":48.853409, "lng":2.348800}`
-or `"_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}]`
-if you have several geo-locations in your record).
-
 
 You can use several bounding boxes (OR) by passing more than 4 values.
 For example: instead of having 4 values you can pass 8 to search inside the UNION of two bounding boxes.
@@ -1359,12 +1441,6 @@ Search entries inside a given area defined by a set of points
 
 For example:
 `InsidePolygon=47.3165,4.9665,47.3424,5.0201,47.32,4.98`).
-
-
-At indexing, you should specify geoloc of an object with the _geoloc attribute
-(in the form `"_geoloc":{"lat":48.853409, "lng":2.348800}`
-or `"_geoloc":[{"lat":48.853409, "lng":2.348800},{"lat":48.547456, "lng":2.972075}]`
-if you have several geo-locations in your record).
 
 
 ### Query Strategy
@@ -1393,6 +1469,7 @@ No query word is interpreted as a prefix. This option is not recommended.
 
 This option is used to select a strategy in order to avoid having an empty result page.
 There are four different options:
+
 - `REMOVE_LAST_WORDS`:
 When a query does not return any results, the last word will be added as optional.
 The process is repeated with n-1 word, n-2 word, ... until there are results.
@@ -1416,6 +1493,7 @@ No specific processing is done when a query does not return any results (default
 Enables the advanced query syntax.
 
 This syntax allow to do two things:
+
 * **Phrase query**: A phrase query defines a particular sequence of terms. A phrase query is built by Algolia's query parser for words surrounded by `"`. For example, `"search engine"` will retrieve records having `search` next to `engine` only. Typo tolerance is _disabled_ on phrase queries.
 * **Prohibit operator**: The prohibit operator excludes records that contain the term after the `-` symbol. For example, `search -engine` will retrieve records containing `search` but not `engine`.
 
@@ -1490,7 +1568,8 @@ List of attributes on which you want to disable the computation of `exact` crite
 - default: `attribute`
 
 
-This parameter control how the `exact` ranking criterion is computed when the query contains one word. There is three different values:
+This parameter control how the `exact` ranking criterion is computed when the query contains one word. There are three different values:
+
 * `none`: no exact on single word query
 * `word`: exact set to 1 if the query word is found in the record. The query word needs to have at least 3 chars and not be part of our stop words dictionary
 * `attribute` (default): exact set to 1 if there is an attribute containing a string equals to the query
@@ -1571,7 +1650,8 @@ All numerical attributes are automatically indexed as numerical filters
 (allowing filtering operations like `<` and `<=`).
 If you don't need filtering on some of your numerical attributes,
 you can specify this list to speed up the indexing.
-<br/> If you only need to filter on a numeric value with the operator '=',
+
+If you only need to filter on a numeric value with the `=` operator,
 you can speed up the indexing by specifying the attribute with `equalOnly(AttributeName)`.
 The other operators will be disabled.
 
@@ -1686,6 +1766,7 @@ would allow it to be able to match all street numbers. We use the `< >` tag synt
 to define placeholders in an attribute.
 
 For example:
+
 * Push a record with the placeholder:
 `{ "name" : "Apple Store", "address" : "&lt;streetnumber&gt; Opera street, Paris" }`.
 * Configure the placeholder in your index settings:
@@ -1701,13 +1782,19 @@ For example:
 Specify alternative corrections that you want to consider.
 
 Each alternative correction is described by an object containing three attributes:
-* **word**: The word to correct.
-* **correction**: The corrected word.
-* **nbTypos** The number of typos (1 or 2) that will be considered for the ranking algorithm (1 typo is better than 2 typos).
+
+* `word` (string): The word to correct.
+* `correction` (string): The corrected word.
+* `nbTypos` (integer): The number of typos (1 or 2) that will be considered for the ranking algorithm (1 typo is better than 2 typos).
 
 For example:
 
-`"altCorrections": [ { "word" : "foot", "correction": "feet", "nbTypos": 1 }, { "word": "feet", "correction": "foot", "nbTypos": 1 } ]`.
+```
+"altCorrections": [
+  { "word" : "foot", "correction": "feet", "nbTypos": 1 },
+  { "word": "feet", "correction": "foot", "nbTypos": 1 }
+]
+```
 
 
 ## Manage Indices
@@ -1741,7 +1828,8 @@ client.deleteIndex("contacts");
 
 
 ### Clear index - `clearIndex`
-You can delete the index contents without removing settings and index specific API keys by using the clearIndex command:
+
+You can delete the index contents without removing settings and index specific API keys by using the `clearIndex` command:
 
 ```java
 index.clearIndex();
@@ -1751,7 +1839,8 @@ index.clearIndex();
 ### Copy index - `copyTo`
 
 You can copy an existing index using the `copy` command.
-**Note**: The copy command will overwrite the destination index.
+
+**Warning**: The copy command will overwrite the destination index.
 
 ```java
 // Copy MyIndex in MyIndexCopy
@@ -1780,6 +1869,7 @@ The moveIndex operation will override all settings of the destination,
 There is one exception for the [slaves](#slaves) parameter which is not impacted.
 
 For example, if you want to fully update your index `MyIndex` every night, we recommend the following process:
+
  1. Get settings and synonyms from the old index using [Get settings](#get-settings---getsettings)
   and [Get synonym](#get-synonym---getsynonym).
  1. Apply settings and synonyms to the temporary index `MyTmpIndex`, (this will create the `MyTmpIndex` index)
@@ -1966,12 +2056,14 @@ SearchSynonymResult results = index.searchSynonyms(new SynonymQuery("street").se
 
 You may want to perform multiple operations with one API call to reduce latency.
 We expose four methods to perform batch operations:
- * Add objects - `addObjects`: Add an array of objects using automatic `objectID` assignment.
- * Update objects - `saveObjects`: Add or update an array of objects that contains an `objectID` attribute.
- * Delete objects - `deleteObjects`: Delete an array of objectIDs.
- * Partial update - `partialUpdateObjects`: Partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated).
+
+* Add objects - `addObjects`: Add an array of objects using automatic `objectID` assignment.
+* Update objects - `saveObjects`: Add or update an array of objects that contains an `objectID` attribute.
+* Delete objects - `deleteObjects`: Delete an array of objectIDs.
+* Partial update - `partialUpdateObjects`: Partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated).
 
 Example using automatic `objectID` assignment:
+
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
@@ -1980,6 +2072,7 @@ index.addObjects(array);
 ```
 
 Example with user defined `objectID` (add or update):
+
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
@@ -1988,6 +2081,7 @@ index.saveObjects(array);
 ```
 
 Example that deletes a set of records:
+
 ```java
 List<String> ids = new ArrayList<String>();
 ids.add("myID1");
@@ -1996,6 +2090,7 @@ index.deleteObjects(ids);
 ```
 
 Example that updates only the `firstname` attribute:
+
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
@@ -2007,6 +2102,7 @@ index.partialUpdateObjects(array);
 
 If you have one index per user, you may want to perform a batch operations across severals indexes.
 We expose a method to perform this type of batch:
+
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
 array.add(new JSONObject().put("action". "addObject").put("indexName", "index1")
@@ -2017,6 +2113,7 @@ client.batch(array);
 ```
 
 The attribute **action** can have these values:
+
 - addObject
 - updateObject
 - partialUpdateObject
@@ -2109,15 +2206,16 @@ index.listUserKeys();
 ```
 
 Each key is defined by a set of permissions that specify the authorized actions. The different permissions are:
- * **search**: Allowed to search.
- * **browse**: Allowed to retrieve all index contents via the browse API.
- * **addObject**: Allowed to add/update an object in the index.
- * **deleteObject**: Allowed to delete an existing object.
- * **deleteIndex**: Allowed to delete index content.
- * **settings**: allows to get index settings.
- * **editSettings**: Allowed to change index settings.
- * **analytics**: Allowed to retrieve analytics through the analytics API.
- * **listIndexes**: Allowed to list all accessible indexes.
+
+* **search**: Allowed to search.
+* **browse**: Allowed to retrieve all index contents via the browse API.
+* **addObject**: Allowed to add/update an object in the index.
+* **deleteObject**: Allowed to delete an existing object.
+* **deleteIndex**: Allowed to delete index content.
+* **settings**: allows to get index settings.
+* **editSettings**: Allowed to change index settings.
+* **analytics**: Allowed to retrieve analytics through the analytics API.
+* **listIndexes**: Allowed to list all accessible indexes.
 
 ### Add user key - `addUserKey`
 
@@ -2274,6 +2372,7 @@ System.out.println("Key: " + res.getString("key"));
 ### Update user key - `updateUserKey`
 
 To update the permissions of an existing key:
+
 ```java
 // Creates a new global API key that is valid for 300 seconds
 JSONObject res = client.updateUserKey("myAPIKey", Arrays.asList("search"), 300, 0, 0);
@@ -2282,7 +2381,9 @@ Log.d("debug", "Key: " + res.getString("key"));
 JSONObject res = index.updateUserKey("myAPIKey", Arrays.asList("search"), 300, 100, 20);
 Log.d("debug", "Key: " + res.getString("key"));
 ```
+
 To get the permissions of a given key:
+
 ```java
 // Gets the rights of a global key
 client.getUserKeyACL("f420238212c54dcfad07ea0aa6d5c45f");
@@ -2291,7 +2392,9 @@ index.getUserKeyACL("71671c38001bf3ac857bc82052485107");
 ```
 
 ### Delete user key - `deleteUserKey`
+
 To delete an existing key:
+
 ```java
 // Deletes a global key
 client.deleteUserKey("f420238212c54dcfad07ea0aa6d5c45f");
@@ -2304,6 +2407,7 @@ index.deleteUserKey("71671c38001bf3ac857bc82052485107");
 
 
 To get the permissions of a given key:
+
 ```java
 // Gets the rights of a global key
 client.getUserKeyACL("f420238212c54dcfad07ea0aa6d5c45f");
@@ -2332,6 +2436,7 @@ System.out.println(res.getJSONArray("results").toString())
 ```
 
 You can specify a `strategy` parameter to optimize your multiple queries:
+
 - `none`: Execute the sequence of queries until the end.
 - `stopIfEnoughMatches`: Execute the sequence of queries until the number of hits is reached by the sum of hits.
 
@@ -2353,15 +2458,16 @@ The resulting JSON contains the following fields:
 ### Get Logs - `getLogs`
 
 You can retrieve the latest logs via this API. Each log entry contains:
- * Timestamp in ISO-8601 format
- * Client IP
- * Request Headers (API Key is obfuscated)
- * Request URL
- * Request method
- * Request body
- * Answer HTTP code
- * Answer body
- * SHA1 ID of entry
+
+* Timestamp in ISO-8601 format
+* Client IP
+* Request Headers (API Key is obfuscated)
+* Request URL
+* Request method
+* Request body
+* Answer HTTP code
+* Answer body
+* SHA1 ID of entry
 
 You can retrieve the logs of your last 1,000 API calls and browse them using the offset/length parameters:
 
@@ -2457,6 +2563,7 @@ Everything that can be done using the REST API can be done using those clients.
 
 The REST API lets your interact directly with Algolia platforms from anything that can send an HTTP request
 [Go to the REST API doc](https://algolia.com/doc/rest)
+
 
 
 
