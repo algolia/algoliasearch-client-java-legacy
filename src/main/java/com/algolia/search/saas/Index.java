@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -190,13 +189,7 @@ public class Index {
      */
     public JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
-            StringBuilder params = new StringBuilder();
-            params.append("?attributes=");
-            for (int i = 0; i < attributesToRetrieve.size(); ++i) {
-                if (i > 0)
-                    params.append(",");
-                params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
-            }
+            String params = encodeAttributes(attributesToRetrieve, true);
             return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString(), false);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -210,12 +203,24 @@ public class Index {
      * @throws AlgoliaException
      */
     public JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
+        return getObjects(objectIDs, null);
+    }
+
+    /**
+     * Get several objects from this index
+     *
+     * @param objectIDs            the array of unique identifier of objects to retrieve
+     * @param attributesToRetrieve contains the list of attributes to retrieve.
+     * @throws AlgoliaException
+     */
+    public JSONObject getObjects(List<String> objectIDs, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
             JSONArray requests = new JSONArray();
             for (String id : objectIDs) {
                 JSONObject request = new JSONObject();
                 request.put("indexName", this.indexName);
                 request.put("objectID", id);
+                request.put("attributesToRetrieve", encodeAttributes(attributesToRetrieve, false));
                 requests.put(request);
             }
             JSONObject body = new JSONObject();
@@ -223,8 +228,29 @@ public class Index {
             return client.postRequest("/1/indexes/*/objects", body.toString(), false, false);
         } catch (JSONException e) {
             throw new AlgoliaException(e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
     }
+
+    private String encodeAttributes(List<String> attributesToRetrieve, boolean forURL) throws UnsupportedEncodingException {
+        if (attributesToRetrieve == null) {
+            return null;
+        }
+
+        StringBuilder params = new StringBuilder();
+        if (forURL) {
+            params.append("?attributes=");
+        }
+        for (int i = 0; i < attributesToRetrieve.size(); ++i) {
+            if (i > 0) {
+                params.append(",");
+            }
+            params.append(URLEncoder.encode(attributesToRetrieve.get(i), "UTF-8"));
+        }
+        return params.toString();
+    }
+
 
     /**
      * Update partially an object (only update attributes passed in argument), create the object if it does not exist
