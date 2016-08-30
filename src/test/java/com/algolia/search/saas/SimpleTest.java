@@ -28,7 +28,7 @@ import org.junit.runners.MethodSorters;
 public class SimpleTest extends AlgoliaTest {
 
     @Test
-    public void test01_deleteIndexIfExists() {
+    public void testDeleteIndexIfExists() {
         try {
             client.deleteIndex(indexName);
         } catch (AlgoliaException e) {
@@ -37,13 +37,13 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test02_pushObject() throws AlgoliaException, JSONException {
+    public void testPushObject() throws AlgoliaException, JSONException {
         JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
         index.waitTask(obj.getString("taskID"));
     }
 
     @Test
-    public void test03_search() throws AlgoliaException, JSONException {
+    public void testSearch() throws AlgoliaException, JSONException {
         JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
         index.waitTask(obj.getString("taskID"));
         JSONObject res = index.search(new Query("foo").setTypoTolerance(Query.TypoTolerance.TYPO_FALSE));
@@ -54,17 +54,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test04_saveObject() throws AlgoliaException, JSONException {
-        JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
-        index.waitTask(obj.getString("taskID"));
-        JSONObject res = index.search(new Query("foo"));
-        assertEquals(1, res.getJSONArray("hits").length());
-        res = index.saveObject(new JSONObject().put("s", "bar"), res.getJSONArray("hits").getJSONObject(0).getString("objectID"));
-        index.waitTask(res.getString("taskID"));
-    }
-
-    @Test
-    public void test05_searchUpdated() throws AlgoliaException, JSONException {
+    public void testSearchUpdated() throws AlgoliaException, JSONException {
         JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
         index.waitTask(obj.getString("taskID"));
         JSONObject res = index.search(new Query("foo"));
@@ -80,7 +70,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test06_searchAll() throws AlgoliaException, JSONException {
+    public void testSearchAll() throws AlgoliaException, JSONException {
         JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
         index.waitTask(obj.getString("taskID"));
         JSONObject res = index.search(new Query("foo"));
@@ -94,7 +84,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test07_addObject() throws AlgoliaException, JSONException {
+    public void testAddObject() throws AlgoliaException, JSONException {
         assertEquals(indexName, index.getIndexName());
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
@@ -107,7 +97,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test08_saveObject() throws AlgoliaException, JSONException {
+    public void testSaveObject() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -119,7 +109,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test09_partialUpdateObject() throws AlgoliaException, JSONException {
+    public void testPartialUpdateObject() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -134,7 +124,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test09_partialUpdateObjectNoCreate_whenObjectExists() throws AlgoliaException, JSONException {
+    public void testPartialUpdateObjectNoCreate_whenObjectExists() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -149,7 +139,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test09_partialUpdateObjectNoCreate_whenObjectDoesNotExist() throws AlgoliaException, JSONException {
+    public void testPartialUpdateObjectNoCreate_whenObjectDoesNotExist() throws AlgoliaException, JSONException {
         JSONObject task = index.partialUpdateObjectNoCreate(new JSONObject().put("firtname", "Jimmie"), "a/go/?à");
         index.waitTask(task.getString("taskID"));
         JSONObject res = index.search(new Query("jimie"));
@@ -157,7 +147,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test10_getObject() throws AlgoliaException, JSONException {
+    public void testGetObject() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -169,7 +159,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test11_getObjectWithAttr() throws AlgoliaException, JSONException {
+    public void testGetObjectWithAttr() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -181,7 +171,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test12_deleteObject() throws AlgoliaException, JSONException {
+    public void testDeleteObject() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -194,7 +184,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test13_settings() throws AlgoliaException, JSONException {
+    public void testSettings() throws AlgoliaException, JSONException {
         JSONObject task = index.setSettings(new JSONObject()
                 .put("attributesToRetrieve", Collections.singletonList("firstname")));
         index.waitTask(Long.toString(task.getLong("taskID")));
@@ -203,7 +193,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test14_index() throws AlgoliaException, JSONException {
+    public void testIndex() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -219,7 +209,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test15_addObjects() throws JSONException, AlgoliaException {
+    public void testAddObjects() throws JSONException, AlgoliaException {
         List<JSONObject> array = new ArrayList<JSONObject>();
         array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
         array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
@@ -230,7 +220,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test15_deleteObjects() throws JSONException, AlgoliaException {
+    public void testDeleteObjects() throws JSONException, AlgoliaException {
         List<JSONObject> array = new ArrayList<JSONObject>();
         array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "à/go/?à"));
         array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "à/go/?à2"));
@@ -246,7 +236,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test15_addObjectsList() throws JSONException, AlgoliaException {
+    public void testAddObjectsList() throws JSONException, AlgoliaException {
         JSONArray array = new JSONArray();
         array.put(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
         array.put(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
@@ -257,7 +247,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test16_saveObjects() throws JSONException, AlgoliaException {
+    public void testSaveObjects() throws JSONException, AlgoliaException {
         List<JSONObject> array = new ArrayList<JSONObject>();
         array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "a/go/?à"));
         array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "a/go/ià"));
@@ -268,7 +258,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test17_partialUpdateObjects() throws JSONException, AlgoliaException {
+    public void testPartialUpdateObjects() throws JSONException, AlgoliaException {
         List<JSONObject> array = new ArrayList<JSONObject>();
         array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "a/go/?à"));
         array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "a/go/ià"));
@@ -284,7 +274,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test17_partialUpdateObjectsList() throws JSONException, AlgoliaException {
+    public void testPartialUpdateObjectsList() throws JSONException, AlgoliaException {
         JSONArray array = new JSONArray();
         array.put(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "a/go/?à"));
         array.put(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "a/go/ià"));
@@ -302,7 +292,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test18_user_key_index() throws AlgoliaException, JSONException {
+    public void testUserKeyIndex() throws AlgoliaException, JSONException {
         JSONObject newKey = index.addUserKey(Collections.singletonList("search"));
         waitKey(index, newKey.getString("key"), null);
         assertTrue(!newKey.getString("key").equals(""));
@@ -321,7 +311,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test19_user_key() throws AlgoliaException, JSONException {
+    public void testUserKey() throws AlgoliaException, JSONException {
         JSONObject newKey = client.addUserKey(Collections.singletonList("search"));
         waitKey(client, newKey.getString("key"), null);
         assertTrue(!newKey.getString("key").equals(""));
@@ -340,7 +330,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test20_moveIndex() throws AlgoliaException, JSONException {
+    public void testMoveIndex() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -375,7 +365,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test21_copyIndex() throws AlgoliaException, JSONException {
+    public void testCopyIndex() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -393,7 +383,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test22_browse() throws AlgoliaException, JSONException {
+    public void testBrowse() throws AlgoliaException, JSONException {
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
                 .put("lastname", "Barninger")
@@ -407,7 +397,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test23_logs() throws AlgoliaException, JSONException {
+    public void testLogs() throws AlgoliaException, JSONException {
         JSONObject res = client.getLogs();
         assertTrue(res.getJSONArray("logs").length() > 0);
         res = client.getLogs(0, 1);
@@ -419,7 +409,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test24_EmptyAPPID() {
+    public void testEmptyAPPID() {
         try {
             new APIClient(null, "algolia");
             assertTrue(false);
@@ -429,7 +419,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test25_EmptyAPPKEY() {
+    public void testEmptyAPPKEY() {
         try {
             new APIClient("algolia", null);
             assertTrue(false);
@@ -439,7 +429,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test26_EmptyHost() {
+    public void testEmptyHost() {
         try {
             new APIClient("algolia", "algolia", new ArrayList<String>());
             assertTrue(false);
@@ -449,7 +439,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test27_headerDisableRateLimit() throws AlgoliaException, JSONException {
+    public void testHeaderDisableRateLimit() throws AlgoliaException, JSONException {
         client.disableRateLimitForward();
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
@@ -536,7 +526,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test29_user_keyLimit() throws AlgoliaException, JSONException {
+    public void testUserKeyLimit() throws AlgoliaException, JSONException {
         JSONObject newKey = client.addUserKey(Collections.singletonList("search"), 0, 2, 2);
         waitKey(client, newKey.getString("key"), null);
         assertTrue(!newKey.getString("key").equals(""));
@@ -546,7 +536,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test30_user_key_indexLimit() throws AlgoliaException, JSONException {
+    public void testUserKeyIndexLimit() throws AlgoliaException, JSONException {
         JSONObject newKey = index.addUserKey(Collections.singletonList("search"), 0, 2, 2);
         waitKey(client, newKey.getString("key"), null);
         assertTrue(!newKey.getString("key").equals(""));
@@ -556,7 +546,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test31_InvalidKey() {
+    public void testInvalidKey() {
         try {
             APIClient client = new APIClient("unreach", "test");
             client.listIndexes();
@@ -567,7 +557,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test32_InvalidObjectID() {
+    public void testInvalidObjectID() {
         try {
             index.deleteObject("");
             assertTrue(false);
@@ -577,7 +567,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test33_customBatch() throws AlgoliaException, JSONException {
+    public void testCustomBatch() throws AlgoliaException, JSONException {
         assertEquals(indexName, index.getIndexName());
         JSONObject task = index.addObject(new JSONObject()
                 .put("firstname", "Jimmie")
@@ -597,14 +587,14 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test34_newSecuredApiKeys() throws InvalidKeyException, NoSuchAlgorithmException {
+    public void testNewSecuredApiKeys() throws InvalidKeyException, NoSuchAlgorithmException {
         assertEquals("MDZkNWNjNDY4M2MzMDA0NmUyNmNkZjY5OTMzYjVlNmVlMTk1NTEwMGNmNTVjZmJhMmIwOTIzYjdjMTk2NTFiMnRhZ0ZpbHRlcnM9JTI4cHVibGljJTJDdXNlcjElMjk=", client.generateSecuredApiKey("182634d8894831d5dbce3b3185c50881", "(public,user1)"));
         assertEquals("MDZkNWNjNDY4M2MzMDA0NmUyNmNkZjY5OTMzYjVlNmVlMTk1NTEwMGNmNTVjZmJhMmIwOTIzYjdjMTk2NTFiMnRhZ0ZpbHRlcnM9JTI4cHVibGljJTJDdXNlcjElMjk=", client.generateSecuredApiKey("182634d8894831d5dbce3b3185c50881", new Query().setTagFilters("(public,user1)")));
         assertEquals("OGYwN2NlNTdlOGM2ZmM4MjA5NGM0ZmYwNTk3MDBkNzMzZjQ0MDI3MWZjNTNjM2Y3YTAzMWM4NTBkMzRiNTM5YnRhZ0ZpbHRlcnM9JTI4cHVibGljJTJDdXNlcjElMjkmdXNlclRva2VuPTQy", client.generateSecuredApiKey("182634d8894831d5dbce3b3185c50881", new Query().setTagFilters("(public,user1)").setUserToken("42")));
     }
 
     @Test
-    public void test34_multipleQueries() throws AlgoliaException, JSONException {
+    public void testMultipleQueries() throws AlgoliaException, JSONException {
         JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
         index.waitTask(obj.getString("taskID"));
         List<APIClient.IndexQuery> queries = new ArrayList<APIClient.IndexQuery>();
@@ -618,7 +608,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test35_getObjects() throws AlgoliaException, JSONException {
+    public void testGetObjects() throws AlgoliaException, JSONException {
         JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
                 .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
                 .put("name", "San Francisco").put("objectID", "2")));
@@ -632,7 +622,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test35bis_getObjectsWithAttr() throws AlgoliaException, JSONException {
+    public void testGetObjectsWithAttr() throws AlgoliaException, JSONException {
         JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
                 .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
                 .put("name", "San Francisco").put("objectID", "2")));
@@ -646,7 +636,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test36_deleteByQuery() throws JSONException, AlgoliaException {
+    public void testDeleteByQuery() throws JSONException, AlgoliaException {
         JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
                 .put("name", "Washington"))
                 .put(new JSONObject().put("name", "San Francisco"))
@@ -658,7 +648,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test37_disjunctiveFaceting() throws AlgoliaException, JSONException {
+    public void testDisjunctiveFaceting() throws AlgoliaException, JSONException {
         index.setSettings(new JSONObject("{\"attributesForFaceting\":[\"city\", \"stars\", \"facilities\"]}"));
         JSONObject task = index.addObjects(new JSONArray()
                 .put(new JSONObject("{\"name\":\"Hotel A\", \"stars\":\"*\", \"facilities\":[\"wifi\", \"bath\", \"spa\"], \"city\":\"Paris\"}"))
@@ -712,7 +702,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test38_keepAlive() throws AlgoliaException, JSONException {
+    public void testKeepAlive() throws AlgoliaException, JSONException {
         JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
                 .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
                 .put("name", "San Francisco").put("objectID", "2")));
@@ -740,7 +730,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test39_customBatchIndexes() throws AlgoliaException, JSONException {
+    public void testCustomBatchIndexes() throws AlgoliaException, JSONException {
         List<JSONObject> array = new ArrayList<JSONObject>();
         array.add(new JSONObject().put("action", "addObject").put("indexName", index.getIndexName()).put("body", new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger")));
         array.add(new JSONObject().put("action", "addObject").put("indexName", index.getIndexName()).put("body", new JSONObject().put("firstname", "Warren").put("lastname", "Speach")));
@@ -751,7 +741,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test40_checkFallBack() throws AlgoliaException, JSONException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+    public void testCheckFallBack() throws AlgoliaException, JSONException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
         String applicationID = System.getenv("ALGOLIA_APPLICATION_ID");
         String apiKey = System.getenv("ALGOLIA_API_KEY");
         APIClient client = new APIClient(applicationID, apiKey);
@@ -767,7 +757,7 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
-    public void test41_browseWithCursor() throws AlgoliaException, JSONException {
+    public void testBrowseWithCursor() throws AlgoliaException, JSONException {
         List<JSONObject> objects = new ArrayList<JSONObject>();
         for (int i = 0; i < 1500; ++i) {
             objects.add(new JSONObject().put("objectID", i).put("i", i));
