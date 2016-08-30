@@ -226,10 +226,8 @@ public class Index {
             JSONObject body = new JSONObject();
             body.put("requests", requests);
             return client.postRequest("/1/indexes/*/objects", body.toString(), false, false);
-        } catch (JSONException e) {
+        } catch (JSONException | UnsupportedEncodingException e) {
             throw new AlgoliaException(e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
         }
     }
 
