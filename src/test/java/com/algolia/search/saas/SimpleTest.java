@@ -632,6 +632,20 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
+    public void test35bis_getObjectsWithAttr() throws AlgoliaException, JSONException {
+        JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
+                .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
+                .put("name", "San Francisco").put("objectID", "2")));
+        index.waitTask(task.getString("taskID"));
+        List<String> objectIDs = new ArrayList<String>();
+        objectIDs.add("1");
+        objectIDs.add("2");
+        JSONObject object = index.getObjects(objectIDs, Collections.singletonList("objectID"));
+        assertEquals("The retrieved object should have only one attribute.", 1, object.getJSONArray("results").getJSONObject(0).names().length());
+        assertEquals("The retrieved object should have only one attribute.", 1, object.getJSONArray("results").getJSONObject(1).names().length());
+    }
+
+    @Test
     public void test36_deleteByQuery() throws JSONException, AlgoliaException {
         JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
                 .put("name", "Washington"))
