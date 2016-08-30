@@ -637,7 +637,7 @@ public class SimpleTest extends AlgoliaTest {
                 .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
                 .put("name", "San Francisco").put("objectID", "2")));
         index.waitTask(task.getString("taskID"));
-        List<String> objectIDs = new ArrayList<>();
+        List<String> objectIDs = new ArrayList<String>();
         objectIDs.add("1");
         objectIDs.add("2");
         JSONObject object = index.getObjects(objectIDs, Collections.singletonList("objectID"));
