@@ -761,12 +761,7 @@ public class APIClient {
                 throw new AlgoliaException("JSON decode error:" + e.getMessage());
             }
         } finally {
-            if (response.getEntity() != null) {
-                try {
-                    response.getEntity().consumeContent();
-                } catch (IOException ignored) {
-                }
-            }
+            EntityUtils.consumeQuietly(response.getEntity());
         }
     }
 
