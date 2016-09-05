@@ -2,6 +2,7 @@ package com.algolia.search.saas;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
 import org.apache.http.client.HttpClient;
@@ -756,7 +757,16 @@ public class APIClient {
                 throw new AlgoliaException("JSON decode error:" + e.getMessage());
             }
         } finally {
-            EntityUtils.consumeQuietly(response.getEntity());
+            HttpEntity entity = response.getEntity();
+            if (entity != null && entity.isStreaming()) {
+                try {
+                    final InputStream instream = entity.getContent();
+                    if (instream != null) {
+                        instream.close();
+                    }
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 
