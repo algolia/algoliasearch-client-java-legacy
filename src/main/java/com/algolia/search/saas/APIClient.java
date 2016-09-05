@@ -645,8 +645,6 @@ public class APIClient {
     }
 
     private JSONObject _requestByHost(HttpRequestBase req, String host, String url, String json, List<AlgoliaInnerException> errors, boolean searchTimeout) throws AlgoliaException {
-        req.abort();
-
         // set URL
         try {
             req.setURI(new URI("https://" + host + url));
