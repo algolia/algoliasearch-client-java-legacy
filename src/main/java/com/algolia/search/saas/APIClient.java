@@ -35,7 +35,6 @@ import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
-import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
@@ -775,7 +774,12 @@ public class APIClient {
                 throw new AlgoliaException("JSON decode error:" + e.getMessage());
             }
         } finally {
-            req.releaseConnection();
+            if (response.getEntity() != null) {
+                try {
+                    response.getEntity().consumeContent();
+                } catch (IOException ignored) {
+                }
+            }
         }
     }
 
