@@ -29,7 +29,7 @@ public class NetworkTest {
   public void shouldHandleTimeoutsInDns() throws AlgoliaException {
     List<String> hosts = new ArrayList<String>();
     hosts.add("java-dsn.algolia.biz");
-    hosts.add(applicationID + "-1.algolianet.com");
+    hosts.add(applicationID + "-1." + getFallbackDomain());
 
     APIClient client = new APIClient(applicationID, apiKey, hosts, hosts);
 
@@ -41,8 +41,9 @@ public class NetworkTest {
   @Test
   public void shouldHandleConnectTimeout() throws AlgoliaException {
     List<String> hosts = new ArrayList<String>();
-    hosts.add("notcp-xx-1.algolianet.com");
-    hosts.add(applicationID + "-1.algolianet.com");
+    String fallbackDomain = getFallbackDomain();
+    hosts.add("notcp-xx-1." + fallbackDomain);
+    hosts.add(applicationID + "-1." + fallbackDomain);
 
     APIClient client = new APIClient(applicationID, apiKey, hosts, hosts);
     client.setTimeout(1000, 1000);
@@ -56,7 +57,7 @@ public class NetworkTest {
   public void shouldHandleMultipleConnectTimeout() {
     List<String> hosts = new ArrayList<String>();
     hosts.add("notcp-xx-1.algolia.net");
-    hosts.add("notcp-xx-1.algolianet.com");
+    hosts.add("notcp-xx-1." + getFallbackDomain());
 
     APIClient client = new APIClient(applicationID, apiKey, hosts, hosts);
     client.setTimeout(1000, 1000);
@@ -91,7 +92,7 @@ public class NetworkTest {
 
     List<String> hosts = new ArrayList<String>();
     hosts.add("localhost:8080");
-    hosts.add(applicationID + "-1.algolianet.com");
+    hosts.add(applicationID + "-1." + getFallbackDomain());
 
     APIClient client = new APIClient(applicationID, apiKey, hosts, hosts);
     client.setTimeout(1000, 1000);
@@ -101,6 +102,19 @@ public class NetworkTest {
     long end = System.currentTimeMillis() - start;
     assertTrue(end < 2 * 1000);
   }
+
+    /**
+     * Get the appropriate fallback domain depending on the current Java version.
+     * TODO: Merge with APIClient static fallbackDomain definition.
+     * @return algolianet.com if the client supports SNI, else algolia.net.
+     */
+    private String getFallbackDomain() {
+        String version = System.getProperty("java.version");
+        int pos = version.indexOf('.');
+        pos = version.indexOf('.', pos + 1);
+        double v = Double.parseDouble(version.substring(0, pos));
+        return v <= 1.6 ? "algolia.net" : "algolianet.com";
+    }
 
 
 }
