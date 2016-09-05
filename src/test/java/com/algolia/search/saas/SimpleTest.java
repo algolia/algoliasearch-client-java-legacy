@@ -726,7 +726,8 @@ public class SimpleTest extends AlgoliaTest {
             avgDSNQuery += System.currentTimeMillis() - current;
         }
         avgDSNQuery /= upperBound;
-        assertTrue(2.0 < firstDSNQuery / avgDSNQuery);
+        double timeFactor = firstDSNQuery / avgDSNQuery;
+        assertTrue("KeepAlive seems disabled: firstDSNQuery / avghDSNQuery = " + timeFactor + "> 2.0", 2.0 < timeFactor);
     }
 
     @Test
