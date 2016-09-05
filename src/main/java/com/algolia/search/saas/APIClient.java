@@ -689,8 +689,7 @@ public class APIClient {
 
         req.setParams(new BasicHttpParams()
                 .setParameter(CoreConnectionPNames.SO_TIMEOUT, searchTimeout ? httpSearchTimeoutMS : httpSocketTimeoutMS)
-                .setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, httpConnectTimeoutMS)
-                .setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 1000L));
+                .setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, httpConnectTimeoutMS));
 
         HttpResponse response;
         try {
