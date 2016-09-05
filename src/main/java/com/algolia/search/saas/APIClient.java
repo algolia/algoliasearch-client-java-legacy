@@ -1,10 +1,25 @@
 package com.algolia.search.saas;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.http.HttpResponse;
+import org.apache.http.ParseException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.*;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.util.VersionInfo;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -15,34 +30,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.binary.Hex;
-import org.apache.http.HttpResponse;
-import org.apache.http.ParseException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
-import org.apache.http.message.BasicHeader;
-import org.apache.http.protocol.HTTP;
-import org.apache.http.util.EntityUtils;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /*
  * Copyright (c) 2015 Algolia
@@ -94,13 +83,7 @@ public class APIClient {
         }
         version = tmp;
 
-        // fallback domain should be algolia.net if Java <= 1.6 because no SNI support
-        {
-            String version = System.getProperty("java.version");
-            int pos = version.indexOf('.');
-            pos = version.indexOf('.', pos + 1);
-            fallbackDomain = Double.parseDouble(version.substring(0, pos)) <= 1.6 ? "algolia.net" : "algolianet.com";
-        }
+        fallbackDomain = getFallbackDomain();
     }
 
     private final String applicationID;
@@ -169,7 +152,7 @@ public class APIClient {
 
         HttpClientBuilder builder = HttpClientBuilder.create().disableAutomaticRetries();
         //If we are on AppEngine don't use system properties
-        if(System.getProperty("com.google.appengine.runtime.version") == null) {
+        if (System.getProperty("com.google.appengine.runtime.version") == null) {
             builder = builder.useSystemProperties();
         }
         this.httpClient = builder.build();
@@ -891,4 +874,33 @@ public class APIClient {
         }
     }
 
+    /**
+     * Get the appropriate fallback domain depending on the current SNI support.
+     * Checks Java version and Apache HTTP Client's version.
+     *
+     * @return algolianet.com if the current setup supports SNI, else algolia.net.
+     */
+    static String getFallbackDomain() {
+        String version = System.getProperty("java.version");
+        int pos = version.indexOf('.');
+        pos = version.indexOf('.', pos + 1);
+        boolean javaHasSNI = Double.parseDouble(version.substring(0, pos)) >= 1.7;
+
+        final VersionInfo vi = VersionInfo.loadVersionInfo
+                ("org.apache.http.client", APIClient.class.getClassLoader());
+        version = vi.getRelease();
+        String[] split = version.split("\\.");
+        int major = Integer.parseInt(split[0]);
+        int minor = Integer.parseInt(split[1]);
+        int patch = Integer.parseInt(split[2]);
+        boolean apacheClientHasSNI = major > 4 ||
+                major == 4 && minor > 3 ||
+                major == 4 && minor == 3 && patch >= 2; // if version >= 4.3.2
+
+        if (apacheClientHasSNI && javaHasSNI) {
+            return "algolianet.com";
+        } else {
+            return "algolia.net";
+        }
+    }
 }
