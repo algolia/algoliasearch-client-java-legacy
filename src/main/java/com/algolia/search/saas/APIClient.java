@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
@@ -34,12 +33,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.SystemDefaultCredentialsProvider;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
-import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
@@ -75,6 +74,8 @@ import org.json.JSONObject;
  * to start using Algolia Search API
  */
 public class APIClient {
+    public static final String PARAM_RETRY = "http.method.retry-handler";
+
     private int httpSocketTimeoutMS = 20000;
     private int httpConnectTimeoutMS = 2000;
     private int httpSearchTimeoutMS = 2000;
@@ -169,12 +170,8 @@ public class APIClient {
         this.buildHostsArray = new ArrayList<String>(buildHostsArray);
         this.queryHostsArray = new ArrayList<String>(queryHostsArray);
 
-        HttpClientBuilder builder = HttpClientBuilder.create().disableAutomaticRetries();
-        //If we are on AppEngine don't use system properties
-        if(System.getProperty("com.google.appengine.runtime.version") == null) {
-            builder = builder.useSystemProperties();
-        }
-        this.httpClient = builder.build();
+        this.httpClient = new DefaultHttpClient();
+        this.httpClient.getParams().setParameter(PARAM_RETRY, new DefaultHttpRequestRetryHandler(0, false));
         this.headers = new HashMap<String, String>();
     }
 
