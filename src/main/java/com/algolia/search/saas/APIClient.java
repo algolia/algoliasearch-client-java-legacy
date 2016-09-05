@@ -14,6 +14,7 @@ import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
+import org.apache.http.util.VersionInfo;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -86,13 +87,7 @@ public class APIClient {
         }
         version = tmp;
 
-        // fallback domain should be algolia.net if Java <= 1.6 because no SNI support
-        {
-            String version = System.getProperty("java.version");
-            int pos = version.indexOf('.');
-            pos = version.indexOf('.', pos + 1);
-            fallbackDomain = Double.parseDouble(version.substring(0, pos)) <= 1.6 ? "algolia.net" : "algolianet.com";
-        }
+        fallbackDomain = getFallbackDomain();
     }
 
     private final String applicationID;
@@ -874,4 +869,33 @@ public class APIClient {
         }
     }
 
+    /**
+     * Get the appropriate fallback domain depending on the current SNI support.
+     * Checks Java version and Apache HTTP Client's version.
+     *
+     * @return algolianet.com if the current setup supports SNI, else algolia.net.
+     */
+    static String getFallbackDomain() {
+        String version = System.getProperty("java.version");
+        int pos = version.indexOf('.');
+        pos = version.indexOf('.', pos + 1);
+        boolean javaHasSNI = Double.parseDouble(version.substring(0, pos)) >= 1.7;
+
+        final VersionInfo vi = VersionInfo.loadVersionInfo
+                ("org.apache.http.client", APIClient.class.getClassLoader());
+        version = vi.getRelease();
+        String[] split = version.split("\\.");
+        int major = Integer.parseInt(split[0]);
+        int minor = Integer.parseInt(split[1]);
+        int patch = Integer.parseInt(split[2]);
+        boolean apacheClientHasSNI = major > 4 ||
+                major == 4 && minor > 3 ||
+                major == 4 && minor == 3 && patch >= 2; // if version >= 4.3.2
+
+        if (apacheClientHasSNI && javaHasSNI) {
+            return "algolianet.com";
+        } else {
+            return "algolia.net";
+        }
+    }
 }
