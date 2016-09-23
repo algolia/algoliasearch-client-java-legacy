@@ -59,7 +59,7 @@ Indexing
 
 1. [Add objects](#add-objects---addobjects)
 1. [Update objects](#update-objects---saveobjects)
-1. [Partial update](#partial-update---partialupdateobjects)
+1. [Partial update objects](#partial-update-objects---partialupdateobjects)
 1. [Delete objects](#delete-objects---deleteobjects)
 
 Settings
@@ -582,22 +582,31 @@ index.getObjects(Arrays.asList("myObj1", "myObj2"));
 
 Each entry in an index has a unique identifier called `objectID`. There are two ways to add an entry to the index:
 
- 1. Using automatic `objectID` assignment. You will be able to access it in the answer.
- 2. Supplying your own `objectID`.
+ 1. Supplying your own `objectID`.
+ 2. Using automatic `objectID` assignment. You will be able to access it in the answer.
 
 You don't need to explicitly create an index, it will be automatically created the first time you add an object.
 Objects are schema less so you don't need any configuration to start indexing. If you wish to configure things, the settings section provides details about advanced settings.
 
-Example with automatic `objectID` assignment:
+Example with automatic `objectID` assignments:
 
 ```java
-JSONObject obj = index.addObject(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger"));
-System.out.println(obj.getString("objectID"));
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
+index.addObjects(array);
 ```
 
-Example with manual `objectID` assignment:
+Example with manual `objectID` assignments:
+
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("objectID", "1").put("firstname", "Jimmie").put("lastname", "Barninger"));
+array.add(new JSONObject().put("objectID", "2").put("firstname", "Warren").put("lastname", "Speach"));
+index.addObjects(array);
+```
+
+To add a single object, use the `[Add object](#add-object---addobject)` method:
 
 ```java
 JSONObject obj = index.addObject(new JSONObject()
@@ -605,7 +614,6 @@ JSONObject obj = index.addObject(new JSONObject()
       .put("lastname", "Barninger"), "myID");
 System.out.println(obj.getString("objectID"));
 ```
-
 
 ### Update objects - `saveObjects`
 
@@ -615,7 +623,16 @@ You have three options when updating an existing object:
  2. Replace only some attributes.
  3. Apply an operation to some attributes.
 
-Example on how to replace all attributes of an existing object:
+Example on how to replace all attributes existing objects:
+
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
+index.saveObjects(array);
+```
+
+To update a single object, you can use the `[Update object](#update-object---saveobject) method:
 
 ```java
 index.saveObject(new JSONObject()
@@ -624,7 +641,8 @@ index.saveObject(new JSONObject()
       .put("city", "New York"), "myID");
 ```
 
-### Partial update - `partialUpdateObjects`
+
+### Partial update objects - `partialUpdateObjects`
 
 You have many ways to update an object's attributes:
 
@@ -677,10 +695,28 @@ index.partialUpdateObject(new JSONObject().put("price", new JSONObject().put("va
 Note: Here we are decrementing the value by `42`. To decrement just by one, put
 `value:1`.
 
+To partial update multiple objects using one API call, you can use the `[Partial update objects](#partial-update-objects---partialupdateobjects)` method:
+
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
+array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
+index.partialUpdateObjects(array);
+```
+
 
 ### Delete objects - `deleteObjects`
 
-You can delete an object using its `objectID`:
+You can delete objects using their `objectID`:
+
+```java
+List<String> ids = new ArrayList<String>();
+ids.add("myID1");
+ids.add("myID2");
+index.deleteObjects(ids);
+```
+
+To delete a single object, you can use the `[Delete object](#delete-object---deleteobject)` method:
 
 ```java
 index.deleteObject("myID");
@@ -2259,48 +2295,6 @@ SearchSynonymResult results = index.searchSynonyms(new SynonymQuery("street").se
 ### Custom batch - `batch`
 
 You may want to perform multiple operations with one API call to reduce latency.
-We expose four methods to perform batch operations:
-
-* Add objects - `addObjects`: Add an array of objects using automatic `objectID` assignment.
-* Update objects - `saveObjects`: Add or update an array of objects that contains an `objectID` attribute.
-* Delete objects - `deleteObjects`: Delete an array of objectIDs.
-* Partial update - `partialUpdateObjects`: Partially update an array of objects that contain an `objectID` attribute (only specified attributes will be updated).
-
-Example using automatic `objectID` assignment:
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
-array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
-index.addObjects(array);
-```
-
-Example with user defined `objectID` (add or update):
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
-array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
-index.saveObjects(array);
-```
-
-Example that deletes a set of records:
-
-```java
-List<String> ids = new ArrayList<String>();
-ids.add("myID1");
-ids.add("myID2");
-index.deleteObjects(ids);
-```
-
-Example that updates only the `firstname` attribute:
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
-array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
-index.partialUpdateObjects(array);
-```
 
 
 
