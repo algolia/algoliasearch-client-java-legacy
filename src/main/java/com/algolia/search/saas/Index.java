@@ -707,8 +707,8 @@ public class Index {
         return setSettings(settings, false);
     }
 
-    public JSONObject setSettings(JSONObject settings, Boolean forwardToSlaves) throws AlgoliaException {
-        return client.putRequest("/1/indexes/" + encodedIndexName + "/settings?forwardToSlaves=" + forwardToSlaves.toString(), settings.toString(), true);
+    public JSONObject setSettings(JSONObject settings, Boolean forwardToReplicas) throws AlgoliaException {
+        return client.putRequest("/1/indexes/" + encodedIndexName + "/settings?forwardToReplicas=" + forwardToReplicas.toString(), settings.toString(), true);
     }
 
     /**
@@ -1041,14 +1041,14 @@ public class Index {
      * Delete one synonym
      *
      * @param objectID          The objectId of the synonym to delete
-     * @param forwardToSlaves   Forward the operation to the slave indices
+     * @param forwardToReplicas   Forward the operation to the replica indices
      */
-    public JSONObject deleteSynonym(String objectID, boolean forwardToSlaves) throws AlgoliaException {
+    public JSONObject deleteSynonym(String objectID, boolean forwardToReplicas) throws AlgoliaException {
         if (objectID == null || objectID.length() == 0) {
             throw new AlgoliaException("Invalid objectID");
         }
         try {
-            return client.deleteRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "/?page=forwardToSlaves" + forwardToSlaves, false);
+            return client.deleteRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "/?page=forwardToReplicas" + forwardToReplicas, false);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -1061,10 +1061,10 @@ public class Index {
     /**
      * Delete all synonym set
      *
-     * @param forwardToSlaves   Forward the operation to the slave indices
+     * @param forwardToReplicas   Forward the operation to the replica indices
      */
-    public JSONObject clearSynonyms(boolean forwardToSlaves) throws AlgoliaException {
-        return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/clear?forwardToSlaves=" + forwardToSlaves, "", true, false);
+    public JSONObject clearSynonyms(boolean forwardToReplicas) throws AlgoliaException {
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/clear?forwardToReplicas=" + forwardToReplicas, "", true, false);
     }
     public JSONObject clearSynonyms() throws AlgoliaException {
         return clearSynonyms(false);
@@ -1074,21 +1074,20 @@ public class Index {
      * Add or Replace a list of synonyms
      *
      * @param objects                   List of synonyms
-     * @param forwardToSlaves           Forward the operation to the slave indices
+     * @param forwardToReplicas         Forward the operation to the replica indices
      * @param replaceExistingSynonyms   Replace the existing synonyms with this batch
-     * @return
      */
-    public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToSlaves, boolean replaceExistingSynonyms) throws AlgoliaException {
+    public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToReplicas, boolean replaceExistingSynonyms) throws AlgoliaException {
         JSONArray array = new JSONArray();
         for (JSONObject obj : objects) {
             array.put(obj);
         }
 
-        return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/batch?forwardToSlaves=" + forwardToSlaves + "&replaceExistingSynonyms=" + replaceExistingSynonyms, array.toString(), true, false);
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/batch?forwardToReplicas=" + forwardToReplicas + "&replaceExistingSynonyms=" + replaceExistingSynonyms, array.toString(), true, false);
     }
 
-    public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToSlaves) throws AlgoliaException {
-        return batchSynonyms(objects, forwardToSlaves, false);
+    public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToReplicas) throws AlgoliaException {
+        return batchSynonyms(objects, forwardToReplicas, false);
     }
 
     public JSONObject batchSynonyms(List<JSONObject> objects) throws AlgoliaException  {
@@ -1101,12 +1100,11 @@ public class Index {
      *
      * @param objectID                  The objectId of the synonym to save
      * @param content                   The new content of this synonym
-     * @param forwardToSlaves           Forward the operation to the slave indices
-     * @param replaceExistingSynonyms   Replace the existing synonyms with this save
+     * @param forwardToReplicas         Forward the operation to the replica indices
      */
-    public JSONObject saveSynonym(String objectID, JSONObject content, boolean forwardToSlaves) throws AlgoliaException {
+    public JSONObject saveSynonym(String objectID, JSONObject content, boolean forwardToReplicas) throws AlgoliaException {
         try {
-            return client.putRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToSlaves=" + forwardToSlaves, content.toString(), true);
+            return client.putRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToReplicas=" + forwardToReplicas, content.toString(), true);
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
