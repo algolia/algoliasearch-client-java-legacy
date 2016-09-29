@@ -123,6 +123,7 @@ public class Query {
     protected String userToken;
     protected String referers;
     protected Integer validUntil;
+    protected String restrictSources;
     protected String restrictIndices;
     protected String exactOnSingleWordQuery;
     protected String alternativesAsExact;
@@ -150,6 +151,7 @@ public class Query {
         aroundRadius = null;
         userToken = referers = null;
         validUntil = null;
+        restrictSources = null;
         restrictIndices = null;
         exactOnSingleWordQuery = null;
         alternativesAsExact = null;
@@ -213,6 +215,7 @@ public class Query {
         referers = other.referers;
         userToken = other.userToken;
         validUntil = other.validUntil;
+        restrictSources = other.restrictSources;
         restrictIndices = other.restrictIndices;
         exactOnSingleWordQuery = other.exactOnSingleWordQuery;
         alternativesAsExact = other.alternativesAsExact;
@@ -835,6 +838,18 @@ public class Query {
         return this;
     }
 
+    /**
+     * Restrict calls on the API only from this IP range
+     */
+    public String getRestrictSources() {
+        return restrictSources;
+    }
+
+    public Query setRestrictSources(String restrictSources) {
+        this.restrictSources = restrictSources;
+        return this;
+    }
+
     private StringBuilder append(StringBuilder stringBuilder, String key, List<String> values) throws UnsupportedEncodingException {
         if (values != null) {
             if (stringBuilder.length() > 0) {
@@ -1045,6 +1060,7 @@ public class Query {
             stringBuilder = appendWithEncoding(stringBuilder, "referer", referers);
             stringBuilder = appendWithEncoding(stringBuilder, "userToken", userToken);
             stringBuilder = append(stringBuilder, "validUntil", validUntil);
+            stringBuilder = append(stringBuilder, "restrictSources", restrictSources);
             stringBuilder = appendWithEncoding(stringBuilder, "restrictIndices", restrictIndices);
             stringBuilder = appendWithEncoding(stringBuilder, "exactOnSingleWordQuery", exactOnSingleWordQuery);
             stringBuilder = appendWithEncoding(stringBuilder, "alternativesAsExact", alternativesAsExact);
