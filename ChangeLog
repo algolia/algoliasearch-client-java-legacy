@@ -1,6 +1,12 @@
 Changelog
 =========
 
+1.9.0 (2016-10-03)
+------------------
+- Add attributesToRetrieve to getObjects
+- Add support for restrictSources
+- Rename master/slaves to primary/replicas
+
 1.8.4 (2016-08-17)
 ------------------
 - Fix builder to support App Engine
