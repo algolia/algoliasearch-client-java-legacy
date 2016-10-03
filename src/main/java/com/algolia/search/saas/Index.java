@@ -184,8 +184,8 @@ public class Index {
     /**
      * Get an object from this index
      *
-     * @param objectID              the unique identifier of the object to retrieve
-     * @param attributesToRetrieve, contains the list of attributes to retrieve.
+     * @param objectID             the unique identifier of the object to retrieve
+     * @param attributesToRetrieve contains the list of attributes to retrieve.
      */
     public JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
         try {
@@ -415,7 +415,7 @@ public class Index {
     	query.setAttributesToSnippet(new ArrayList<String>());
     	query.setHitsPerPage(1000);
     	query.enableDistinct(false);
-    	
+
     	IndexBrowser it = this.browse(query);
     	try {
     	    while (true) {
@@ -602,7 +602,7 @@ public class Index {
      *
      * @param page         Pagination parameter used to select the page to retrieve.
      *                     Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
-     * @param hitsPerPage: Pagination parameter used to select the number of hits per page. Defaults to 1000.
+     * @param hitsPerPage  Pagination parameter used to select the number of hits per page. Defaults to 1000.
      */
     public JSONObject browse(int page, int hitsPerPage) throws AlgoliaException {
         return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage, false);
