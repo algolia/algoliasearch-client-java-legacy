@@ -452,6 +452,25 @@ public class Index {
     }
 
     /**
+     * Search into a facet
+     */
+    public JSONObject searchFacet(String facetName, String facetQuery, Query params) throws AlgoliaException {
+        params = params == null ? new Query() : params;
+        String paramsString = params.setFacetQuery(facetQuery).getQueryString();
+        JSONObject body = new JSONObject();
+        String encodedFacetName;
+        try {
+            encodedFacetName = URLEncoder.encode(facetName, "UTF-8");
+            body.put("params", paramsString);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+        return client.postRequest("/1/indexes/" + encodedIndexName + "/facets/" + encodedFacetName + "/query", body.toString(), false, true);
+    }
+
+    /**
      * Delete several objects
      *
      * @param objects the array of objectIDs to delete

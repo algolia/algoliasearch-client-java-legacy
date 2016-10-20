@@ -1,6 +1,10 @@
 Changelog
 =========
 
+1.10.0 (2016-??-??)
+-------------------
+- Add searchFacet
+
 1.9.0 (2016-10-03)
 ------------------
 - Add attributesToRetrieve to getObjects

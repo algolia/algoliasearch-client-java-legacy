@@ -104,6 +104,7 @@ public class Query {
     protected Boolean aroundLatLongViaIP;
     protected String query;
     protected String similarQuery;
+    protected String facetQuery;
     protected QueryType queryType;
     protected String optionalWords;
     protected String facets;
@@ -1026,6 +1027,7 @@ public class Query {
             stringBuilder = append(stringBuilder, "aroundPrecision", aroundPrecision);
             stringBuilder = appendWithEncoding(stringBuilder, "query", query);
             stringBuilder = appendWithEncoding(stringBuilder, "similarQuery", similarQuery);
+            stringBuilder = appendWithEncoding(stringBuilder, "facetQuery", facetQuery);
             stringBuilder = appendWithEncoding(stringBuilder, "facets", facets);
             stringBuilder = appendWithEncoding(stringBuilder, "filters", filters);
             stringBuilder = appendWithEncoding(stringBuilder, "facetFilters", facetFilters);
@@ -1313,5 +1315,14 @@ public class Query {
      */
     public String getRestrictIndices() {
         return restrictIndices;
+    }
+
+
+    /**
+     * Package protected, internal use only
+     */
+    Query setFacetQuery(String facetQuery) {
+        this.facetQuery = facetQuery;
+        return this;
     }
 }
