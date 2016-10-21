@@ -31,13 +31,6 @@ public class AlgoliaTest {
     return isPresent;
   }
 
-  protected void waitForIt() {
-    try {
-      Thread.sleep(5000);
-    } catch (InterruptedException ignored) {
-    }
-  }
-
   @BeforeClass
   public static void init() {
     String applicationID = System.getenv("ALGOLIA_APPLICATION_ID");

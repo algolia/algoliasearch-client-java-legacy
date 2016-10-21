@@ -54,6 +54,56 @@ public class SimpleTest extends AlgoliaTest {
     }
 
     @Test
+    public void searchFacets() throws AlgoliaException, JSONException {
+        final JSONObject setSettingsTask = index.setSettings(new JSONObject()
+          .put("attributesForFaceting", new JSONArray()
+            .put("searchable(series)")
+            .put("kind"))
+        );
+
+        final JSONObject addObjectsResult = index.addObjects(new JSONArray()
+          .put(new JSONObject()
+            .put("objectID", "1")
+            .put("name", "Snoopy")
+            .put("kind", new JSONArray().put("dog").put("animal"))
+            .put("born", 1950)
+            .put("series", "Peanuts"))
+          .put(new JSONObject()
+            .put("objectID", "2")
+            .put("name", "Woodstock")
+            .put("kind", new JSONArray().put("bird").put("animal"))
+            .put("born", 1960)
+            .put("series", "Peanuts"))
+          .put(new JSONObject()
+            .put("objectID", "3")
+            .put("name", "Charlie Brown")
+            .put("kind", new JSONArray().put("human"))
+            .put("born", 1950)
+            .put("series", "Peanuts"))
+          .put(new JSONObject()
+            .put("objectID", "4")
+            .put("name", "Hobbes")
+            .put("kind", new JSONArray().put("tiger").put("animal").put("teddy"))
+            .put("born", 1985)
+            .put("series", "Calvin & Hobbes"))
+          .put(new JSONObject()
+            .put("objectID", "5")
+            .put("name", "Calvin")
+            .put("kind", new JSONArray().put("human"))
+            .put("born", 1985)
+            .put("series", "Calvin & Hobbes"))
+        );
+
+        index.waitTask(setSettingsTask.getString("taskID"));
+        index.waitTask(addObjectsResult.getString("taskID"));
+
+        JSONObject searchFacet = index.searchFacet("series", "Peanutz", null);
+        final JSONArray facetHits = searchFacet.optJSONArray("facetHits");
+        assertTrue("The response should have facetHits.", facetHits != null);
+        assertEquals("There should be one facet match.", 1, facetHits.length());
+    }
+
+    @Test
     public void searchUpdated() throws AlgoliaException, JSONException {
         JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
         index.waitTask(obj.getString("taskID"));
