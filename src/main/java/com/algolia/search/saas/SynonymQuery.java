@@ -27,6 +27,70 @@ import java.util.List;
 
 public class SynonymQuery {
 
+  private String query;
+  private List<SynonymType> types = null;
+  private Integer page = null;
+  private Integer hitsPerPage = null;
+  public SynonymQuery(String query) {
+    this.query = query;
+  }
+
+  public SynonymQuery() {
+    this(null);
+  }
+
+  public String getQueryString() {
+    return query;
+  }
+
+  /**
+   * Set the full text query
+   */
+  public SynonymQuery setQueryString(String query) {
+    this.query = query;
+    return this;
+  }
+
+  public List<SynonymType> getTypes() {
+    return types;
+  }
+
+  /**
+   * Set the types of Synonym to search
+   */
+  public SynonymQuery setTypes(List<SynonymType> types) {
+    this.types = types;
+    return this;
+  }
+
+  public Integer getPage() {
+    return page;
+  }
+
+  /**
+   * Set the page to retrieve (zero base). Defaults to 0.
+   */
+  public SynonymQuery setPage(Integer page) {
+    this.page = page;
+    return this;
+  }
+
+  public Integer getHitsPerPage() {
+    return hitsPerPage;
+  }
+
+  /**
+   * Set the number of hits per page. Defaults to 10.
+   */
+  public SynonymQuery setHitsPerPage(Integer hitsPerPage) {
+    this.hitsPerPage = hitsPerPage;
+    return this;
+  }
+
+  public boolean hasTypes() {
+    return getTypes() != null && !getTypes().isEmpty();
+  }
+
   public enum SynonymType {
 
     SYNONYM("synonym"),
@@ -41,71 +105,6 @@ public class SynonymQuery {
       this.name = name;
     }
 
-  }
-
-  private String query;
-  private List<SynonymType> types = null;
-  private Integer page = null;
-  private Integer hitsPerPage = null;
-
-  public SynonymQuery(String query) {
-    this.query = query;
-  }
-
-  public SynonymQuery() {
-    this(null);
-  }
-
-  /**
-   * Set the full text query
-   */
-  public SynonymQuery setQueryString(String query) {
-    this.query = query;
-    return this;
-  }
-
-  /**
-   * Set the types of Synonym to search
-   */
-  public SynonymQuery setTypes(List<SynonymType> types) {
-    this.types = types;
-    return this;
-  }
-
-  /**
-   * Set the page to retrieve (zero base). Defaults to 0.
-   */
-  public SynonymQuery setPage(Integer page) {
-    this.page = page;
-    return this;
-  }
-
-  /**
-   * Set the number of hits per page. Defaults to 10.
-   */
-  public SynonymQuery setHitsPerPage(Integer hitsPerPage) {
-    this.hitsPerPage = hitsPerPage;
-    return this;
-  }
-
-  public String getQueryString() {
-    return query;
-  }
-
-  public List<SynonymType> getTypes() {
-    return types;
-  }
-
-  public Integer getPage() {
-    return page;
-  }
-
-  public Integer getHitsPerPage() {
-    return hitsPerPage;
-  }
-
-  public boolean hasTypes() {
-    return getTypes() != null && !getTypes().isEmpty();
   }
 
 }

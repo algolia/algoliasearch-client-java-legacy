@@ -1,8 +1,5 @@
 package com.algolia.search.saas;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.util.EntityUtils;
-
 /*
  * Copyright (c) 2015 Algolia
  * http://www.algolia.com/
@@ -27,19 +24,19 @@ import org.apache.http.util.EntityUtils;
  */
 public class AlgoliaInnerException extends Exception {
 
-    private final String host;
+  private final String host;
 
-    public AlgoliaInnerException(String host, Throwable cause) {
-        super(cause);
-        this.host = host;
-    }
+  public AlgoliaInnerException(String host, Throwable cause) {
+    super(cause);
+    this.host = host;
+  }
 
-    public AlgoliaInnerException(String host, String message) {
-        super(message);
-        this.host = host;
-    }
+  public AlgoliaInnerException(String host, String message) {
+    super(message);
+    this.host = host;
+  }
 
-    public String getHost() {
-        return host;
-    }
+  public String getHost() {
+    return host;
+  }
 }

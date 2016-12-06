@@ -17,53 +17,53 @@ import static org.junit.Assert.assertEquals;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SynonymTest extends AlgoliaTest {
 
-	@Test
-	public void saveAndGetSynonym() throws JSONException, AlgoliaException {
+  @Test
+  public void saveAndGetSynonym() throws JSONException, AlgoliaException {
     List<String> a = new ArrayList<String>();
     a.add("San Francisco");
     a.add("SF");
 
-		JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
-		index.waitTask(res.getString("taskID"));
+    JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
+    index.waitTask(res.getString("taskID"));
 
-		res = index.getSynonym("synonym1");
-		assertEquals("synonym", res.getString("type"));
-	}
+    res = index.getSynonym("synonym1");
+    assertEquals("synonym", res.getString("type"));
+  }
 
-	@Test
-	public void deleteSynonym() throws JSONException, AlgoliaException {
+  @Test
+  public void deleteSynonym() throws JSONException, AlgoliaException {
     List<String> a = new ArrayList<String>();
     a.add("San Francisco");
     a.add("SF");
 
-		JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
-		index.waitTask(res.getString("taskID"));
+    JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
+    index.waitTask(res.getString("taskID"));
 
-		res = index.deleteSynonym("synonym1");
-		index.waitTask(res.getString("taskID"));
+    res = index.deleteSynonym("synonym1");
+    index.waitTask(res.getString("taskID"));
 
-		res = index.searchSynonyms(new SynonymQuery(""));
-		assertEquals(0, res.getInt("nbHits"));
-	}
+    res = index.searchSynonyms(new SynonymQuery(""));
+    assertEquals(0, res.getInt("nbHits"));
+  }
 
-	@Test
-	public void clearSynonym() throws JSONException, AlgoliaException {
+  @Test
+  public void clearSynonym() throws JSONException, AlgoliaException {
     List<String> a = new ArrayList<String>();
     a.add("San Francisco");
     a.add("SF");
 
-		JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
-		index.waitTask(res.getString("taskID"));
+    JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
+    index.waitTask(res.getString("taskID"));
 
-		res = index.clearSynonyms();
-		index.waitTask(res.getString("taskID"));
+    res = index.clearSynonyms();
+    index.waitTask(res.getString("taskID"));
 
-		res = index.searchSynonyms(new SynonymQuery(""));
-		assertEquals(0, res.getInt("nbHits"));
-	}
+    res = index.searchSynonyms(new SynonymQuery(""));
+    assertEquals(0, res.getInt("nbHits"));
+  }
 
-	@Test
-	public void batchSaveSynonyms() throws JSONException, AlgoliaException {
+  @Test
+  public void batchSaveSynonyms() throws JSONException, AlgoliaException {
     List<String> a = new ArrayList<String>();
     a.add("San Francisco");
     a.add("SF");
@@ -72,16 +72,16 @@ public class SynonymTest extends AlgoliaTest {
     b.add("Paris");
     b.add("pas la province");
 
-		JSONObject syn1 = new JSONObject().put("objectID", "syn1").put("type", "synonym").put("synonyms", a);
-		JSONObject syn2 = new JSONObject().put("objectID", "syn2").put("type", "synonym").put("synonyms", b);
+    JSONObject syn1 = new JSONObject().put("objectID", "syn1").put("type", "synonym").put("synonyms", a);
+    JSONObject syn2 = new JSONObject().put("objectID", "syn2").put("type", "synonym").put("synonyms", b);
 
     List<JSONObject> c = new ArrayList<JSONObject>();
     c.add(syn1);
     c.add(syn2);
-		JSONObject res = index.batchSynonyms(c);
-		index.waitTask(res.getString("taskID"));
+    JSONObject res = index.batchSynonyms(c);
+    index.waitTask(res.getString("taskID"));
 
-		res = index.searchSynonyms(new SynonymQuery(""));
-		assertEquals(2, res.getInt("nbHits"));
-	}
+    res = index.searchSynonyms(new SynonymQuery(""));
+    assertEquals(2, res.getInt("nbHits"));
+  }
 }

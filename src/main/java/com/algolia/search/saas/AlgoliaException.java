@@ -26,47 +26,46 @@ import java.util.List;
  */
 public class AlgoliaException extends Exception {
 
-    public AlgoliaException(Throwable cause) {
-        super(cause);
-        this.code = 0;
+  private static final long serialVersionUID = 1L;
+  private final int code;
+
+  public AlgoliaException(Throwable cause) {
+    super(cause);
+    this.code = 0;
+  }
+
+  public AlgoliaException(String message) {
+    this(0, message);
+  }
+
+  public AlgoliaException(int code, String message) {
+    super(message);
+    this.code = code;
+  }
+
+  public AlgoliaException(String message, Throwable cause) {
+    super(message, cause);
+    this.code = 0;
+  }
+
+  public static AlgoliaException from(String message, List<AlgoliaInnerException> errorsByHost) {
+    AlgoliaInnerException lastException = null;
+    if (!errorsByHost.isEmpty()) {
+      lastException = errorsByHost.get(errorsByHost.size() - 1);
+    }
+    StringBuilder m = new StringBuilder(message);
+    for (AlgoliaInnerException e : errorsByHost) {
+      m
+        .append("\n")
+        .append(e.getHost())
+        .append(": ")
+        .append(e.getMessage());
     }
 
-    public AlgoliaException(String message) {
-        this(0, message);
-    }
+    return new AlgoliaException(m.toString(), lastException);
+  }
 
-    public AlgoliaException(int code, String message) {
-        super(message);
-        this.code = code;
-    }
-
-    public AlgoliaException(String message, Throwable cause) {
-        super(message, cause);
-        this.code = 0;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    private final int code;
-
-    private static final long serialVersionUID = 1L;
-
-    public static AlgoliaException from(String message, List<AlgoliaInnerException> errorsByHost) {
-        AlgoliaInnerException lastException = null;
-        if(!errorsByHost.isEmpty()) {
-            lastException = errorsByHost.get(errorsByHost.size() - 1);
-        }
-        StringBuilder m = new StringBuilder(message);
-        for (AlgoliaInnerException e : errorsByHost) {
-            m
-              .append("\n")
-              .append(e.getHost())
-              .append(": ")
-              .append(e.getMessage());
-        }
-
-        return new AlgoliaException(m.toString(), lastException);
-    }
+  public int getCode() {
+    return code;
+  }
 }
