@@ -42,15 +42,16 @@ public class NetworkTest {
   public void shouldHandleConnectTimeout() throws AlgoliaException {
     List<String> hosts = new ArrayList<String>();
     String fallbackDomain = APIClient.getFallbackDomain();
-    hosts.add("notcp-xx-1." + fallbackDomain);
+    hosts.add("notcp-xx-1.algolia.net");
     hosts.add(applicationID + "-1." + fallbackDomain);
 
     APIClient client = new APIClient(applicationID, apiKey, hosts, hosts);
     client.setTimeout(1000, 1000);
 
-    Long start = System.currentTimeMillis();
+    long start = System.currentTimeMillis();
     assertNotNull(client.listIndexes());
-    assertTrue((System.currentTimeMillis() - start) < 3 * 1000);
+    long totalTime = System.currentTimeMillis() - start;
+    assertTrue("connect timeout should be < 3.5s, was "+ totalTime, totalTime < 3500);
   }
 
   @Test
@@ -62,10 +63,10 @@ public class NetworkTest {
     APIClient client = new APIClient(applicationID, apiKey, hosts, hosts);
     client.setTimeout(1000, 1000);
 
-    Long start = System.currentTimeMillis();
+    long start = System.currentTimeMillis();
     try {
       client.listIndexes();
-    } catch (AlgoliaException e) {
+    } catch (Exception e) {
       //To be sure we get here
       assertTrue(e instanceof AlgoliaException);
     }

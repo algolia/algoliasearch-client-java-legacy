@@ -26,10 +26,7 @@ import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
@@ -91,6 +88,7 @@ public class APIClient {
   private int httpSocketTimeoutMS = 20000;
   private int httpConnectTimeoutMS = 2000;
   private int httpSearchTimeoutMS = 2000;
+  private int hostDownTimeoutMS = 5 * 60 * 1000; //5 minutes
   private String forwardRateLimitAPIKey;
   private String forwardEndUserIP;
   private String forwardAdminAPIKey;
@@ -249,6 +247,15 @@ public class APIClient {
   public void setTimeout(int connectTimeout, int readTimeout) {
     httpSocketTimeoutMS = readTimeout;
     httpConnectTimeoutMS = connectTimeout;
+  }
+
+  /**
+   * Allow to set the timeout for a down host
+   *
+   * @param hostDownTimeoutMS host down timeout in MS
+   */
+  public void setHostDownTimeoutMS(int hostDownTimeoutMS) {
+    this.hostDownTimeoutMS = hostDownTimeoutMS;
   }
 
   /**
@@ -779,6 +786,54 @@ public class APIClient {
     }
   }
 
+  private Map<String, HostStatus> hostStatuses = new HashMap<String, HostStatus>();
+
+  private static class HostStatus {
+    public boolean isUp = true;
+    public long lastModifiedTimestamp = new Date().getTime();
+
+    private HostStatus setDown() {
+      isUp = false;
+      return this;
+    }
+
+    public static HostStatus up() {
+      return new HostStatus();
+    }
+
+    public static HostStatus down() {
+      return new HostStatus().setDown();
+    }
+  }
+
+  private List<String> queryHostsThatAreUp() {
+    return hostsThatAreUp(this.queryHostsArray);
+  }
+
+  private List<String> buildHostsThatAreUp() {
+    return hostsThatAreUp(this.buildHostsArray);
+  }
+
+  private List<String> hostsThatAreUp(List<String> hosts) {
+    List<String> result = new ArrayList<String>(hosts.size());
+    for (String host : hosts) {
+      if(isHostUpOrCouldBeRetried(host)) {
+        result.add(host);
+      }
+    }
+    return result;
+  }
+
+  private boolean isHostUpOrCouldBeRetried(String host) {
+    HostStatus status = hostStatuses.get(host);
+    if(status == null) {
+      hostStatuses.put(host, HostStatus.up());
+      return true;
+    }
+
+    return status.isUp || (new Date().getTime() - status.lastModifiedTimestamp) >= hostDownTimeoutMS;
+  }
+
   private JSONObject _request(Method m, String url, String json, boolean build, boolean search) throws AlgoliaException {
     HttpRequestBase req;
     switch (m) {
@@ -798,13 +853,16 @@ public class APIClient {
         throw new IllegalArgumentException("Method " + m + " is not supported");
     }
     List<AlgoliaInnerException> errors = new ArrayList<AlgoliaInnerException>();
-    List<String> hosts = build ? this.buildHostsArray : this.queryHostsArray;
+    List<String> hosts = build ? buildHostsThatAreUp() : queryHostsThatAreUp();
 
     // for each host
     for (String host : hosts) {
       JSONObject res = _requestByHost(req, host, url, json, errors, search);
       if (res != null) {
+        hostStatuses.put(host, HostStatus.up());
         return res;
+      } else {
+        hostStatuses.put(host, HostStatus.down());
       }
     }
     throw AlgoliaException.from("Hosts unreachable", errors);
