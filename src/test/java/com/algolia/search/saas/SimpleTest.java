@@ -90,7 +90,7 @@ public class SimpleTest extends AlgoliaTest {
     index.waitTask(setSettingsTask.getString("taskID"));
     index.waitTask(addObjectsResult.getString("taskID"));
 
-    JSONObject searchFacet = index.searchFacet("series", "Peanutz", null);
+    JSONObject searchFacet = index.searchInFacetValues("series", "Peanutz", null);
     final JSONArray facetHits = searchFacet.optJSONArray("facetHits");
     assertTrue("The response should have facetHits.", facetHits != null);
     assertEquals("There should be one facet match.", 1, facetHits.length());
