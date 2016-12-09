@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.10.0 (2016-??-??)
+1.10.0 (2016-12-09)
 -------------------
 - Add searchInFacetValues
 - New stateful retry strategy
