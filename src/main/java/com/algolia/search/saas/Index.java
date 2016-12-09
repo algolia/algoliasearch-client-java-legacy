@@ -447,9 +447,9 @@ public class Index {
   }
 
   /**
-   * Search into a facet
+   * Search into a facet value
    */
-  public JSONObject searchFacet(String facetName, String facetQuery, Query params) throws AlgoliaException {
+  public JSONObject searchInFacetValues(String facetName, String facetQuery, Query params) throws AlgoliaException {
     params = params == null ? new Query() : params;
     String paramsString = params.setFacetQuery(facetQuery).getQueryString();
     JSONObject body = new JSONObject();
