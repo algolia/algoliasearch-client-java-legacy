@@ -30,6 +30,7 @@ import java.util.List;
  * THE SOFTWARE.
  */
 
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class Query {
   protected List<String> attributes;
   protected List<String> attributesToHighlight;
@@ -81,6 +82,8 @@ public class Query {
   protected String restrictIndices;
   protected String exactOnSingleWordQuery;
   protected String alternativesAsExact;
+  protected List<String> responseFields;
+
   public Query(String query) {
     minWordSizeForApprox1 = null;
     minWordSizeForApprox2 = null;
@@ -228,6 +231,7 @@ public class Query {
    *                 show_name and several hits have the same value for show_name,
    *                 then only the best one is kept and others are removed.
    */
+  @SuppressWarnings("SameParameterValue")
   public Query enableDistinct(boolean distinct) {
     this.distinct = distinct ? 1 : 0;
     return this;
@@ -250,6 +254,7 @@ public class Query {
    * @param enabled set to false, this query will not be taken into account in
    *                analytics feature. Default to true.
    */
+  @SuppressWarnings("SameParameterValue")
   public Query enableAnalytics(boolean enabled) {
     this.analytics = enabled;
     return this;
@@ -290,6 +295,7 @@ public class Query {
    * Specify the minimum number of characters in a query word to accept one
    * typo in this word. Defaults to 3.
    */
+  @SuppressWarnings("SameParameterValue")
   public Query setMinWordSizeToAllowOneTypo(int nbChars) {
     minWordSizeForApprox1 = nbChars;
     return this;
@@ -334,6 +340,7 @@ public class Query {
    * Specify the minimum number of characters in a query word to accept two
    * typos in this word. Defaults to 7.
    */
+  @SuppressWarnings("SameParameterValue")
   public Query setMinWordSizeToAllowTwoTypos(int nbChars) {
     minWordSizeForApprox2 = nbChars;
     return this;
@@ -352,6 +359,7 @@ public class Query {
    * if set, the result hits will contain ranking information in _rankingInfo
    * attribute.
    */
+  @SuppressWarnings("SameParameterValue")
   public Query getRankingInfo(boolean enabled) {
     getRankingInfo = enabled;
     return this;
@@ -417,6 +425,7 @@ public class Query {
   /**
    * Change the radius of around latitude/longitude query
    */
+  @SuppressWarnings("SameParameterValue")
   public Query setAroundRadius(int radius) {
     aroundRadius = radius;
     return this;
@@ -433,6 +442,7 @@ public class Query {
   /**
    * Change the minimum radius of around latitude/longitude query
    */
+  @SuppressWarnings("SameParameterValue")
   public Query setMinimumAroundRadius(int radius) {
     minimumAroundRadius = radius;
     return this;
@@ -441,6 +451,7 @@ public class Query {
   /**
    * Change the precision of around latitude/longitude query
    */
+  @SuppressWarnings("SameParameterValue")
   public Query setAroundPrecision(int precision) {
     aroundPrecision = precision;
     return this;
@@ -577,6 +588,7 @@ public class Query {
    * multiple conditions on one attribute like for example
    * `numerics=price>100,price<1000`.
    */
+  @SuppressWarnings("SameParameterValue")
   public Query setNumericFilters(String numerics) {
     this.numerics = numerics;
     return this;
@@ -719,7 +731,7 @@ public class Query {
     return stringBuilder;
   }
 
-  protected String getQueryString() {
+  String getQueryString() {
     StringBuilder stringBuilder = new StringBuilder();
 
     try {
@@ -875,6 +887,7 @@ public class Query {
       stringBuilder = appendWithEncoding(stringBuilder, "restrictIndices", restrictIndices);
       stringBuilder = appendWithEncoding(stringBuilder, "exactOnSingleWordQuery", exactOnSingleWordQuery);
       stringBuilder = appendWithEncoding(stringBuilder, "alternativesAsExact", alternativesAsExact);
+      stringBuilder = append(stringBuilder, "responseFields", responseFields);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -884,6 +897,7 @@ public class Query {
   /**
    * Set the full text query
    */
+  @SuppressWarnings("SameParameterValue")
   public Query setQueryString(String query) {
     this.query = query;
     return this;
@@ -988,6 +1002,7 @@ public class Query {
   /**
    * Set the page to retrieve (zero base). Defaults to 0.
    */
+  @SuppressWarnings("SameParameterValue")
   public Query setPage(int page) {
     this.page = page;
     return this;
@@ -1272,6 +1287,15 @@ public class Query {
    */
   Query setFacetQuery(String facetQuery) {
     this.facetQuery = facetQuery;
+    return this;
+  }
+
+  public List<String> getResponseFields() {
+    return responseFields;
+  }
+
+  public Query setResponseFields(List<String> responseFields) {
+    this.responseFields = responseFields;
     return this;
   }
 
