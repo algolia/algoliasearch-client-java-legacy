@@ -259,6 +259,14 @@ The server response will look like:
 
         - `filters` (integer): *This field is reserved for advanced usage.* It will be zero in most cases.
 
+        - `matchedGeoLocation` (object): Geo location that matched the query. *Note: Only returned for a geo search.*
+
+            - `lat` (float): Latitude of the matched location.
+
+            - `lng` (float): Longitude of the matched location.
+
+            - `distance` (integer): Distance between the matched location and the search location (in meters). **Caution:** Contrary to `geoDistance`, this value is *not* divided by the geo precision.
+
     - `_distinctSeqID` (integer): *Note: Only returned when [distinct](#distinct) is non-zero.* When two consecutive results have the same value for the attribute used for "distinct", this field is used to distinguish between them.
 
 - `nbHits` (integer): Number of hits that the search query matched.
@@ -654,7 +662,7 @@ index.partialUpdateObject(new JSONObject().put("price", new JSONObject().put("va
 Note: Here we are decrementing the value by `42`. To decrement just by one, put
 `value:1`.
 
-To partial update multiple objects using one API call, you can use the `[Partial update objects](#partial-update-objects)` method:
+To partial update multiple objects using one API call, you can use the following method:
 
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
@@ -674,7 +682,7 @@ ids.add("myID2");
 index.deleteObjects(ids);
 ```
 
-To delete a single object, you can use the `[Delete objects](#delete-objects)` method:
+To delete a single object, you can use the following method:
 
 ```java
 index.deleteObject("myID");
@@ -825,8 +833,6 @@ Parameters that can be overridden at search time also have the `search` [scope](
 
 
 
-<section id="api-client-parameters-overview">
-
 ## Overview
 
 ### Scope
@@ -954,32 +960,45 @@ The text to search for in the index. If empty or absent, the textual search will
 
 - scope: `settings`
 - type: array of strings
-- default: `*` (all string attributes)
+- default: `[]` (all string attributes)
 - formerly known as: `attributesToIndex`
 
-The list of attributes you want index (i.e. to make searchable).
+List of attributes eligible for textual search.
+In search engine parlance, those attributes will be "indexed", i.e. their content will be made searchable.
 
-If set to null, all textual and numerical attributes of your objects are indexed.
-Make sure you updated this setting to get optimal results.
+If not specified or empty, all string values of all attributes are indexed.
+If specified, only the specified attributes are indexed; any numerical values within those attributes are converted to strings and indexed.
+
+When an attribute is listed, it is *recursively* processed, i.e. all of its nested attributes, at any depth, are indexed
+according to the same policy.
+
+**Note:** Make sure you adjust this setting to get optimal results.
 
 This parameter has two important uses:
 
-1. **Limit the attributes to index.** For example, if you store the URL of a picture, you want to store it and be able to retrieve it,
-    but you probably don't want to search in the URL.
+1. **Limit the scope of the search.**
+    Restricting the searchable attributes to those containing meaningful text guarantees a better relevance.
+    For example, if your objects have associated pictures, you need to store the picture URLs in the records
+    in order to retrieve them for display at query time, but you probably don't want to *search* inside the URLs.
+
+    A side effect of limiting the attributes is **increased performance**: it keeps the index size at a minimum, which
+    has a direct and positive impact on both build time and search speed.
 
 2. **Control part of the ranking.** The contents of the `searchableAttributes` parameter impacts ranking in two complementary ways:
-    First, the order in which attributes are listed defines their ranking priority: matches in attributes at the beginning of the
-    list will be considered more important than matches in attributes further down the list. To assign the same priority to several attributes,
-    pass them within the same string, separated by commas. For example, by specifying `["title,"alternative_title", "text"]`,
-    `title` and `alternative_title` will have the same priority, but a higher priority than `text`.
 
-    Then, within the same attribute, matches near the beginning of the text will be considered more important than matches near the end.
-    You can disable this behavior by wrapping your attribute name inside an `unordered()` modifier. For example, `["title", "unordered(text)"]`
-    will consider all positions inside the `text` attribute as equal, but positions inside the `title` attribute will still matter.
+    - **Attribute priority**: The order in which attributes are listed defines their ranking priority:
+      matches in attributes at the beginning of the list will be considered more important than matches in
+      attributes further down the list.
 
-    You can decide to have the same priority for several attributes by passing them in the same string using comma as separator.
-    For example:
-    `title` and `alternative_title` have the same priority in this example: `searchableAttributes:["title,alternative_title", "text"]`
+        To assign the same priority to several attributes, pass them within the same string, separated by commas.
+        For example, by specifying `["title,alternative_title", "text"]`, `title` and `alternative_title` will have
+        the same priority, but a higher priority than `text`.
+
+    - **Importance of word positions**: Within a given attribute, matches near the beginning of the text are considered more
+      important than matches near the end.
+      You can disable this behavior by wrapping your attribute name inside an `unordered()` modifier.
+      For example, `["title", "unordered(text)"]` will consider all positions inside the `text` attribute as equal,
+      but positions inside the `title` attribute will still matter.
 
 **Note:** To get a full description of how the ranking works, you can have a look at our [Ranking guide](https://www.algolia.com/doc/guides/relevance/ranking).
 
@@ -1530,11 +1549,11 @@ Geo search requires that you provide at least one geo location in each record at
 }
 ```
 
-When performing a geo search (either via <%= parameter_link('aroundLatLng') -%> or <%= parameter_link('aroundLatLngViaIP') -%>),
+When performing a geo search (either via [aroundLatLng](#aroundlatlng) or [aroundLatLngViaIP](#aroundlatlngviaip)),
 the maximum distance is automatically guessed based on the density of the searched area.
-You may explicitly specify a maximum distance, however, via <%= parameter_link('aroundRadius') -%>.
+You may explicitly specify a maximum distance, however, via [aroundRadius](#aroundradius).
 
-The precision for the ranking is set via <%= parameter_link('aroundPrecision') -%>.
+The precision for the ranking is set via [aroundPrecision](#aroundprecision).
 
 #### aroundLatLng
 
@@ -1659,10 +1678,12 @@ It may be one of the following values:
   Only the last word is interpreted as a prefix (default behavior).
 
 * `prefixAll`:
-  All query words are interpreted as prefixes. This option is not recommended.
+  All query words are interpreted as prefixes. This option is not recommended, as it tends to yield counterintuitive
+  results and has a negative impact on performance.
 
 * `prefixNone`:
-  No query word is interpreted as a prefix. This option is not recommended.
+  No query word is interpreted as a prefix. This option is not recommended, especially in an instant search setup,
+  as the user will have to type the entire word(s) before getting any relevant results.
 
 #### removeWordsIfNoResults
 
@@ -1723,9 +1744,9 @@ List of words that should be considered as optional when found in the query.
 This parameter can be useful when you want to do an **OR** between all words of the query.
 To do that you can set optionalWords equals to the search query.
 
-```python
-query = 'the query'
-params = {'optionalWords': query}
+```js
+var query = 'the query';
+var params = {'optionalWords': query};
 ```
 
 **Note:** You don't need to put commas between words.
@@ -1825,14 +1846,19 @@ The following values are allowed:
 - default: all numeric attributes
 - formerly known as: `numericAttributesToIndex`
 
-All numerical attributes are automatically indexed as numerical filters
-(allowing filtering operations like `<` and `<=`).
-If you don't need filtering on some of your numerical attributes,
-you can specify this list to speed up the indexing.
+List of numeric attributes that can be used as numerical filters.
 
-**Note:** If you only need to filter on a numeric value with the operator `=` or `!=`,
-you can speed up the indexing by specifying the attribute with `equalOnly(AttributeName)`.
-The other operators will be disabled.
+If not specified, all numeric attributes are automatically indexed and available as numerical filters
+(via the [filters](#filters) parameter).
+If specified, only attributes explicitly listed are available as numerical filters.
+If empty, no numerical filters are allowed.
+
+If you don't need filtering on some of your numerical attributes, you can use `numericAttributesForFiltering` to
+speed up the indexing.
+
+If you only need to filter on a numeric value based on equality (i.e. with the operators `=` or `!=`),
+you can speed up the indexing by specifying `equalOnly(${attributeName})`.
+Other operators will be disabled.
 
 #### allowCompressionOfIntegerArray
 
@@ -2186,27 +2212,23 @@ move using the `moveIndex` method.
 client.moveIndex("MyNewIndex", "MyIndex");
 ```
 
-**Note**:
+**Note:** The moveIndex method overrides the destination index, and deletes the temporary one.
+  In other words, there is no need to call the `clearIndex` or `deleteIndex` methods to clean the temporary index.
+It also overrides all the settings of the destination index (except the [replicas](#replicas) parameter that need to not be part of the temporary index settings).
 
-The moveIndex method will overwrite the destination index, and delete the temporary index.
-
-**Warning**
-
-The moveIndex operation will override all settings of the destination,
-There is one exception for the [replicas](#replicas) parameter which is not impacted.
-
-For example, if you want to fully update your index `MyIndex` every night, we recommend the following process:
+**Recommended steps**
+If you want to fully update your index `MyIndex` every night, we recommend the following process:
 
  1. Get settings and synonyms from the old index using [Get settings](#get-settings)
   and [Get synonym](#get-synonym).
  1. Apply settings and synonyms to the temporary index `MyTmpIndex`, (this will create the `MyTmpIndex` index)
-  using [Set settings](#set-settings) and [Batch synonyms](#batch-synonyms)
-  (make sure to remove the [replicas](#replicas) parameter from the settings if it exists).
- 1. Import your records into a new index using [Add Objects](#add-objects).
+  using [Set settings](#set-settings) and [Batch synonyms](#batch-synonyms) ([!] Make sure to remove the [replicas](#replicas) parameter from the settings if it exists.
+ 1. Import your records into a new index using [Add Objects](#add-objects)).
  1. Atomically replace the index `MyIndex` with the content and settings of the index `MyTmpIndex`
  using the [Move index](#move-index) method.
  This will automatically override the old index without any downtime on the search.
- 1. You'll end up with only one index called `MyIndex`, that contains the records and settings pushed to `MyTmpIndex`
+ 
+ You'll end up with only one index called `MyIndex`, that contains the records and settings pushed to `MyTmpIndex`
  and the replica-indices that were initially attached to `MyIndex` will be in sync with the new data.
 
 
