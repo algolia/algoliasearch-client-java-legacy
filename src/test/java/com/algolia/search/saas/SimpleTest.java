@@ -335,40 +335,40 @@ public class SimpleTest extends AlgoliaTest {
   }
 
   @Test
-  public void userKeyIndex() throws AlgoliaException, JSONException {
-    JSONObject newKey = index.addUserKey(Collections.singletonList("search"));
+  public void apiKeyIndex() throws AlgoliaException, JSONException {
+    JSONObject newKey = index.addApiKey(Collections.singletonList("search"));
     waitKey(index, newKey.getString("key"), null);
     assertTrue(!newKey.getString("key").equals(""));
-    JSONObject res = index.listUserKeys();
+    JSONObject res = index.listApiKeys();
     assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
-    JSONObject getKey = index.getUserKeyACL(newKey.getString("key"));
+    JSONObject getKey = index.getApiKey(newKey.getString("key"));
     assertEquals(newKey.getString("key"), getKey.getString("value"));
-    index.updateUserKey(newKey.getString("key"), Collections.singletonList("addObject"));
+    index.updateApiKey(newKey.getString("key"), Collections.singletonList("addObject"));
     waitKey(index, newKey.getString("key"), "[\"addObject\"]");
-    getKey = index.getUserKeyACL(newKey.getString("key"));
+    getKey = index.getApiKey(newKey.getString("key"));
     assertEquals(getKey.getJSONArray("acl").get(0), "addObject");
-    index.deleteUserKey(getKey.getString("value"));
+    index.deleteApiKey(getKey.getString("value"));
     waitKeyDeleted(index, newKey.getString("key"));
-    JSONObject resAfter = index.listUserKeys();
+    JSONObject resAfter = index.listApiKeys();
     assertTrue(!isPresent(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
   }
 
   @Test
-  public void userKey() throws AlgoliaException, JSONException {
-    JSONObject newKey = client.addUserKey(Collections.singletonList("search"));
+  public void apiKey() throws AlgoliaException, JSONException {
+    JSONObject newKey = client.addApiKey(Collections.singletonList("search"));
     waitKey(client, newKey.getString("key"), null);
     assertTrue(!newKey.getString("key").equals(""));
-    JSONObject res = client.listUserKeys();
+    JSONObject res = client.listApiKeys();
     assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
-    JSONObject getKey = client.getUserKeyACL(newKey.getString("key"));
+    JSONObject getKey = client.getApiKey(newKey.getString("key"));
     assertEquals(newKey.getString("key"), getKey.getString("value"));
-    client.updateUserKey(newKey.getString("key"), Collections.singletonList("addObject"));
+    client.updateApiKey(newKey.getString("key"), Collections.singletonList("addObject"));
     waitKey(client, newKey.getString("key"), "[\"addObject\"]");
-    getKey = client.getUserKeyACL(newKey.getString("key"));
+    getKey = client.getApiKey(newKey.getString("key"));
     assertEquals(getKey.getJSONArray("acl").get(0), "addObject");
-    client.deleteUserKey(getKey.getString("value"));
+    client.deleteApiKey(getKey.getString("value"));
     waitKeyDeleted(client, newKey.getString("key"));
-    JSONObject resAfter = client.listUserKeys();
+    JSONObject resAfter = client.listApiKeys();
     assertTrue(!isPresent(resAfter.getJSONArray("keys"), newKey.getString("key"), "value"));
   }
 
@@ -497,7 +497,7 @@ public class SimpleTest extends AlgoliaTest {
   private void waitKey(APIClient client, String key, String acls) {
     for (int i = 0; i < 60; ++i) {
       try {
-        JSONObject obj = client.getUserKeyACL(key);
+        JSONObject obj = client.getApiKey(key);
         if (acls != null) {
           if (!obj.getJSONArray("acl").toString().equals(acls)) {
             throw new AlgoliaException("not good ACL");
@@ -518,7 +518,7 @@ public class SimpleTest extends AlgoliaTest {
   private void waitKey(Index index, String key, String acls) {
     for (int i = 0; i < 60; ++i) {
       try {
-        JSONObject obj = index.getUserKeyACL(key);
+        JSONObject obj = index.getApiKey(key);
         if (acls != null) {
           if (!obj.getJSONArray("acl").toString().equals(acls)) {
             throw new AlgoliaException("not good ACL");
@@ -539,7 +539,7 @@ public class SimpleTest extends AlgoliaTest {
   private void waitKeyDeleted(APIClient client, String key) {
     for (int i = 0; i < 60; ++i) {
       try {
-        client.getUserKeyACL(key);
+        client.getApiKey(key);
         // found
         try {
           Thread.sleep(1000);
@@ -555,7 +555,7 @@ public class SimpleTest extends AlgoliaTest {
   private void waitKeyDeleted(Index index, String key) {
     for (int i = 0; i < 60; ++i) {
       try {
-        index.getUserKeyACL(key);
+        index.getApiKey(key);
         // found
         try {
           Thread.sleep(1000);
@@ -569,23 +569,23 @@ public class SimpleTest extends AlgoliaTest {
   }
 
   @Test
-  public void userKeyLimit() throws AlgoliaException, JSONException {
-    JSONObject newKey = client.addUserKey(Collections.singletonList("search"), 0, 2, 2);
+  public void apiKeyLimit() throws AlgoliaException, JSONException {
+    JSONObject newKey = client.addApiKey(Collections.singletonList("search"), 0, 2, 2);
     waitKey(client, newKey.getString("key"), null);
     assertTrue(!newKey.getString("key").equals(""));
-    JSONObject res = client.listUserKeys();
+    JSONObject res = client.listApiKeys();
     assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
-    index.deleteUserKey(newKey.getString("key"));
+    index.deleteApiKey(newKey.getString("key"));
   }
 
   @Test
-  public void userKeyIndexLimit() throws AlgoliaException, JSONException {
-    JSONObject newKey = index.addUserKey(Collections.singletonList("search"), 0, 2, 2);
+  public void apiKeyIndexLimit() throws AlgoliaException, JSONException {
+    JSONObject newKey = index.addApiKey(Collections.singletonList("search"), 0, 2, 2);
     waitKey(client, newKey.getString("key"), null);
     assertTrue(!newKey.getString("key").equals(""));
-    JSONObject res = index.listUserKeys();
+    JSONObject res = index.listApiKeys();
     assertTrue(isPresent(res.getJSONArray("keys"), newKey.getString("key"), "value"));
-    index.deleteUserKey(newKey.getString("key"));
+    index.deleteApiKey(newKey.getString("key"));
   }
 
   @Test
