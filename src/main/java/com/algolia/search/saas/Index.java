@@ -632,28 +632,60 @@ public class Index {
   }
 
   /**
-   * List all existing user keys with their associated ACLs
+   * Deprecated: use listApiKeys
    */
+  @Deprecated
   public JSONObject listUserKeys() throws AlgoliaException {
+    return listApiKeys();
+  }
+
+  /**
+   * List all existing api keys with their associated ACLs
+   */
+  public JSONObject listApiKeys() throws AlgoliaException {
     return client.getRequest("/1/indexes/" + encodedIndexName + "/keys", false);
   }
 
   /**
-   * Get ACL of a user key
+   * Deprecated: use getApiKey
    */
+  @Deprecated
   public JSONObject getUserKeyACL(String key) throws AlgoliaException {
+    return getApiKey(key);
+  }
+
+  /**
+   * Get ACL of an api key
+   */
+  public JSONObject getApiKey(String key) throws AlgoliaException {
     return client.getRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, false);
   }
 
   /**
-   * Delete an existing user key
+   * Deprecated: use deleteApiKey
    */
+  @Deprecated
   public JSONObject deleteUserKey(String key) throws AlgoliaException {
+    return deleteApiKey(key);
+  }
+
+  /**
+   * Delete an existing api key
+   */
+  public JSONObject deleteApiKey(String key) throws AlgoliaException {
     return client.deleteRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, true);
   }
 
   /**
-   * Create a new user key
+   * Deprecated: use addApiKey
+   */
+  @Deprecated
+  public JSONObject addUserKey(JSONObject params) throws AlgoliaException {
+    return addApiKey(params);
+  }
+
+  /**
+   * Create a new api key
    *
    * @param params the list of parameters for this key. Defined by a JSONObject that
    *               can contains the following values:
@@ -666,12 +698,20 @@ public class Index {
    *               - queryParameters: string
    *               - maxQueriesPerIPPerHour: integer
    */
-  public JSONObject addUserKey(JSONObject params) throws AlgoliaException {
+  public JSONObject addApiKey(JSONObject params) throws AlgoliaException {
     return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", params.toString(), true, false);
   }
 
   /**
-   * Create a new user key
+   * Deprecated: use addApiKey
+   */
+  @Deprecated
+  public JSONObject addUserKey(List<String> acls) throws AlgoliaException {
+    return addApiKey(acls);
+  }
+
+  /**
+   * Create a new api key
    *
    * @param acls the list of ACL for this key. Defined by an array of strings that
    *             can contains the following values:
@@ -682,12 +722,20 @@ public class Index {
    *             - settings : allows to get index settings (https only)
    *             - editSettings : allows to change index settings (https only)
    */
-  public JSONObject addUserKey(List<String> acls) throws AlgoliaException {
-    return addUserKey(acls, 0, 0, 0);
+  public JSONObject addApiKey(List<String> acls) throws AlgoliaException {
+    return addApiKey(acls, 0, 0, 0);
   }
 
   /**
-   * Update a new user key
+   * Deprecated: use updateApiKey
+   */
+  @Deprecated
+  public JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
+    return updateApiKey(key, params);
+  }
+
+  /**
+   * Update a new api key
    *
    * @param params the list of parameters for this key. Defined by a JSONObject that
    *               can contains the following values:
@@ -700,12 +748,20 @@ public class Index {
    *               - queryParameters: string
    *               - maxQueriesPerIPPerHour: integer
    */
-  public JSONObject updateUserKey(String key, JSONObject params) throws AlgoliaException {
+  public JSONObject updateApiKey(String key, JSONObject params) throws AlgoliaException {
     return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, params.toString(), true);
   }
 
   /**
-   * Update a user key
+   * Deprecated: user updateApiKey
+   */
+  @Deprecated
+  public JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
+    return updateApiKey(key, acls);
+  }
+
+  /**
+   * Update an api key
    *
    * @param acls the list of ACL for this key. Defined by an array of strings that
    *             can contains the following values:
@@ -716,12 +772,20 @@ public class Index {
    *             - settings : allows to get index settings (https only)
    *             - editSettings : allows to change index settings (https only)
    */
-  public JSONObject updateUserKey(String key, List<String> acls) throws AlgoliaException {
-    return updateUserKey(key, acls, 0, 0, 0);
+  public JSONObject updateApiKey(String key, List<String> acls) throws AlgoliaException {
+    return updateApiKey(key, acls, 0, 0, 0);
   }
 
   /**
-   * Create a new user key
+   * Deprecated: use addApiKey
+   */
+  @Deprecated
+  public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+    return addApiKey(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery);
+  }
+
+  /**
+   * Create a new api key
    *
    * @param acls                   the list of ACL for this key. Defined by an array of strings that
    *                               can contains the following values:
@@ -735,17 +799,25 @@ public class Index {
    * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
    * @param maxHitsPerQuery        Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
    */
-  public JSONObject addUserKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+  public JSONObject addApiKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
     try {
       JSONObject jsonObject = generateUpdateUser(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery);
-      return addUserKey(jsonObject);
+      return addApiKey(jsonObject);
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
   }
 
   /**
-   * Update a user key
+   * Deprecated: use updateApiKey
+   */
+  @Deprecated
+  public JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+    return updateApiKey(key, acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery);
+  }
+
+  /**
+   * Update an api key
    *
    * @param acls                   the list of ACL for this key. Defined by an array of strings that
    *                               can contains the following values:
@@ -759,10 +831,10 @@ public class Index {
    * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
    * @param maxHitsPerQuery        Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
    */
-  public JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+  public JSONObject updateApiKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
     try {
       JSONObject jsonObject = generateUpdateUser(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery);
-      return updateUserKey(key, jsonObject);
+      return updateApiKey(key, jsonObject);
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
