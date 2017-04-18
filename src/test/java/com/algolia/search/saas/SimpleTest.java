@@ -16,7 +16,6 @@ import java.util.*;
 
 import static org.junit.Assert.*;
 
-@RunWith(JUnit4.class)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SimpleTest extends AlgoliaTest {
 
