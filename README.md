@@ -1098,6 +1098,9 @@ You have many ways to update an object's attributes:
  5. Increment an attribute
  6. Decrement an attribute
 
+**Warning:** Nested attributes cannot be individually updated. If you specify a nested attribute, it will be treated as a
+replacement of its first-level ancestor.
+
 Example to update only the city attribute of an existing object:
 
 ```java
