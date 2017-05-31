@@ -7,9 +7,10 @@ after_success:
 env:
   global:
   - VERBOSE=1
-  - secure: i9jW5TP+4Zih4PuLZbm0i8eHnDMDMTOr+CQhzlX7+xQDc8H8y5YGKMn4efffVsYrRubPoQDdRljFGyQE+cW7qYScvH+9QdbVqT2uc0/CiU4vjEdpB5qj5Z0g7bj05vaPiSdWe93fU/Bjf4tpNgA4Yoan9oUTU3Ii/hR4c0js6+E=
-  - secure: Xylor/wHKbL3vvDNaSJdF6QrFdkGXG4Xb6L8u06Yhm1G+zLVErMmkW0N4wBRT3bqvI4WwevduGpumljcREIieoLhDjGDI/EHJLNDYC+3fefG8XDMy1acetNpbVAHIs9kpl8e20CWp13Ee/esPNMFsXie0NxTFgJaXAArY4AlEpY=
-  - secure: jmuPc/868gO5IagJyFf/U300ILNbaaPNvH99jtxzE2Xs13GkzWL4JUdv+EYUX8xUJ0rlnSKA6oGxw2+ZCBG5yc8GF9qYYqHHFy5DiQleTI246B5+3zZVNBa5qfcZm6Pki+vN4VEJeTq0F2b1C8rmE2ofRKloLd7h+WLGy04+CcQ=
+  # ALGOLIA_APPLICATION_ID
+  - secure: "SkDFRfL7ytlf2WIGnCsEfQFR4E0ok6Tg8CNTyEnxp7Rep/DG8z0RMsPbfZ5ith6SmLqn16R5454tg/SQEocRMoTkpPx14YFilsMBUvxfJn/9lkkJPCjot0gHGJMGky3BMfJzSkettariSeINFPDuY6hBJq9FyjEvEzltI20fCjE="
+  # ALGOLIA_API_KEY
+  - secure: "Rzc5cEHu7i5JQZA5Dcu4JmEiGIKfrHmn/LtGxwc/e3SaIw6d8mQCmFuFAKdd5ap1neQvH9BPG7yQEHvR0ITcoAlu2WebJyajGwg/zJUDOLw3cDfFsxGqsJcb84nuWw0BgM/JHf6upQg2NC/Sg9Bze921BjVCIgQNOCtzz32TTDY="
 
 # force non-container build
 sudo: required
