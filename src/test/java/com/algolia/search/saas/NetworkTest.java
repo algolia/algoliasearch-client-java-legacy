@@ -51,7 +51,7 @@ public class NetworkTest {
     long start = System.currentTimeMillis();
     assertNotNull(client.listIndexes());
     long totalTime = System.currentTimeMillis() - start;
-    assertTrue("connect timeout should be < 3.5s, was "+ totalTime, totalTime < 3500);
+    assertTrue("connect timeout should be < 3.5s, was " + totalTime, totalTime < 3500);
   }
 
   @Test
