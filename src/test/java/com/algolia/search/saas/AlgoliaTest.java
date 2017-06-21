@@ -9,10 +9,10 @@ import org.junit.BeforeClass;
 
 public class AlgoliaTest {
 
-  protected static final String indexName = safe_name("àlgol?à-java");
+  static final String indexName = safe_name("àlgol?à-java");
 
-  protected static APIClient client;
-  protected static Index index;
+  static APIClient client;
+  static Index index;
 
   static String safe_name(String name) {
     if (System.getenv("TRAVIS") != null) {

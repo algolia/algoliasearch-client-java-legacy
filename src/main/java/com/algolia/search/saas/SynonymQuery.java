@@ -25,6 +25,7 @@ package com.algolia.search.saas;
 
 import java.util.List;
 
+@SuppressWarnings("WeakerAccess")
 public class SynonymQuery {
 
   private String query;

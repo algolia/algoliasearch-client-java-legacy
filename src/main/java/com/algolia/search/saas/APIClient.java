@@ -58,6 +58,7 @@ import java.util.zip.GZIPInputStream;
  * You should instantiate a Client object with your ApplicationID, ApiKey and Hosts
  * to start using Algolia Search API
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public class APIClient {
   private final static String version;
   private final static String fallbackDomain;
@@ -157,7 +158,7 @@ public class APIClient {
     this.headers = new HashMap<String, String>();
   }
 
-  static String hmac(String key, String msg) {
+  private static String hmac(String key, String msg) {
     Mac hmac;
     try {
       hmac = Mac.getInstance("HmacSHA256");
@@ -659,8 +660,6 @@ public class APIClient {
    *
    * @param privateApiKey your private API Key
    * @param tagFilters    the list of tags applied to the query (used as security)
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
    * @deprecated Use `generateSecuredApiKey(String privateApiKey, Query query)` version
    */
   @Deprecated
@@ -678,8 +677,6 @@ public class APIClient {
    *
    * @param privateApiKey your private API Key
    * @param query         contains the parameter applied to the query (used as security)
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
    */
   public String generateSecuredApiKey(String privateApiKey, Query query) throws NoSuchAlgorithmException, InvalidKeyException {
     return generateSecuredApiKey(privateApiKey, query, null);
@@ -692,9 +689,6 @@ public class APIClient {
    * @param privateApiKey your private API Key
    * @param tagFilters    the list of tags applied to the query (used as security)
    * @param userToken     an optional token identifying the current user
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
-   * @throws AlgoliaException
    * @deprecated Use `generateSecuredApiKey(String privateApiKey, Query query, String userToken)` version
    */
   @Deprecated
@@ -720,8 +714,6 @@ public class APIClient {
    * @param privateApiKey your private API Key
    * @param query         contains the parameter applied to the query (used as security)
    * @param userToken     an optional token identifying the current user
-   * @throws NoSuchAlgorithmException
-   * @throws InvalidKeyException
    */
   public String generateSecuredApiKey(String privateApiKey, Query query, String userToken) throws NoSuchAlgorithmException, InvalidKeyException {
     if (userToken != null && userToken.length() > 0) {
@@ -954,16 +946,14 @@ public class APIClient {
       JSONObject body = new JSONObject().put("requests", requests);
       return postRequest("/1/indexes/*/queries?strategy=" + strategy, body.toString(), false, true);
     } catch (JSONException e) {
-      new AlgoliaException(e);
+      throw new AlgoliaException(e);
     }
-    return null;
   }
 
   /**
    * Custom batch
    *
    * @param actions the array of actions
-   * @throws AlgoliaException
    */
   public JSONObject batch(JSONArray actions) throws AlgoliaException {
     return postBatch(actions);
@@ -973,7 +963,6 @@ public class APIClient {
    * Custom batch
    *
    * @param actions the array of actions
-   * @throws AlgoliaException
    */
   public JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
     return postBatch(actions);
