@@ -22,6 +22,7 @@ package com.algolia.search.saas;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+@SuppressWarnings("WeakerAccess")
 public class AlgoliaInnerException extends Exception {
 
   private final String host;

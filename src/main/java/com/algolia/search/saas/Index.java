@@ -37,6 +37,7 @@ import java.util.*;
  * Contains all the functions related to one index
  * You should use APIClient.initIndex(indexName) to retrieve this object
  */
+@SuppressWarnings({"WeakerAccess", "SameParameterValue"})
 public class Index {
   private static final long MAX_TIME_MS_TO_WAIT = 10000L;
 
@@ -92,7 +93,6 @@ public class Index {
    * Custom batch
    *
    * @param actions the array of actions
-   * @throws AlgoliaException
    */
   public JSONObject batch(JSONArray actions) throws AlgoliaException {
     return postBatch(actions);
@@ -102,7 +102,6 @@ public class Index {
    * Custom batch
    *
    * @param actions the array of actions
-   * @throws AlgoliaException
    */
   public JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
     return postBatch(actions);
@@ -195,7 +194,6 @@ public class Index {
    * Get several objects from this index
    *
    * @param objectIDs the array of unique identifier of objects to retrieve
-   * @throws AlgoliaException
    */
   public JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
     return getObjects(objectIDs, null);
@@ -206,7 +204,6 @@ public class Index {
    *
    * @param objectIDs            the array of unique identifier of objects to retrieve
    * @param attributesToRetrieve contains the list of attributes to retrieve.
-   * @throws AlgoliaException
    */
   public JSONObject getObjects(List<String> objectIDs, List<String> attributesToRetrieve) throws AlgoliaException {
     try {
@@ -396,7 +393,6 @@ public class Index {
    * Delete all objects matching a query
    *
    * @param query the query string
-   * @throws AlgoliaException
    */
   public void deleteByQuery(Query query) throws AlgoliaException {
     deleteByQuery(query, 100000);
@@ -856,7 +852,6 @@ public class Index {
    * @param disjunctiveFacets the array of disjunctive facets
    * @param refinements       Map<String, List<String>> representing the current refinements
    *                          ex: { "my_facet1" => ["my_value1", "my_value2"], "my_disjunctive_facet1" => ["my_value1", "my_value2"] }
-   * @throws AlgoliaException
    */
   public JSONObject searchDisjunctiveFaceting(Query query, List<String> disjunctiveFacets, Map<String, List<String>> refinements) throws AlgoliaException {
     if (refinements == null) {
@@ -987,21 +982,20 @@ public class Index {
 
   /**
    * @param query the query
-   * @throws AlgoliaException
    */
   public JSONObject searchSynonyms(SynonymQuery query) throws AlgoliaException, JSONException {
     JSONObject body = new JSONObject().put("query", query.getQueryString());
     if (query.hasTypes()) {
-      String type = "";
+      StringBuilder type = new StringBuilder();
       boolean first = true;
       for (SynonymQuery.SynonymType t : query.getTypes()) {
         if (!first) {
-          type += ",";
+          type.append(",");
         }
-        type += t.name;
+        type.append(t.name);
         first = false;
       }
-      body = body.put("type", type);
+      body = body.put("type", type.toString());
     }
     if (query.getPage() != null) {
       body = body.put("page", query.getPage());

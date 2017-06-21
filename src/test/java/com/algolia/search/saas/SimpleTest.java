@@ -425,6 +425,7 @@ public class SimpleTest extends AlgoliaTest {
     client.deleteIndex(indexName + "2");
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void browse() throws AlgoliaException, JSONException {
     JSONObject task = index.addObject(new JSONObject()
@@ -629,6 +630,7 @@ public class SimpleTest extends AlgoliaTest {
     index.waitTask(task.getString("taskID"));
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void newSecuredApiKeys() throws InvalidKeyException, NoSuchAlgorithmException {
     assertEquals("MDZkNWNjNDY4M2MzMDA0NmUyNmNkZjY5OTMzYjVlNmVlMTk1NTEwMGNmNTVjZmJhMmIwOTIzYjdjMTk2NTFiMnRhZ0ZpbHRlcnM9JTI4cHVibGljJTJDdXNlcjElMjk=", client.generateSecuredApiKey("182634d8894831d5dbce3b3185c50881", "(public,user1)"));
@@ -757,7 +759,7 @@ public class SimpleTest extends AlgoliaTest {
     client = new APIClient(applicationID, apiKey);
     index = client.initIndex(indexName);
 
-    double firstDSNQuery = 0;
+    double firstDSNQuery;
     double avgDSNQuery = 0;
     long current = System.currentTimeMillis();
     index.search(new Query());
@@ -784,6 +786,7 @@ public class SimpleTest extends AlgoliaTest {
     assertEquals(2, res.getInt("nbHits"));
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void checkFallBack() throws AlgoliaException, JSONException, NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
     String applicationID = System.getenv("ALGOLIA_APPLICATION_ID");

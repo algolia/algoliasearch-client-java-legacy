@@ -24,6 +24,7 @@ import java.util.List;
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+@SuppressWarnings({"SameParameterValue", "WeakerAccess"})
 public class AlgoliaException extends Exception {
 
   private static final long serialVersionUID = 1L;
