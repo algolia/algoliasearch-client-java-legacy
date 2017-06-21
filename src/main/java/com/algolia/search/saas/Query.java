@@ -112,9 +112,11 @@ public class Query {
     exactOnSingleWordQuery = null;
     alternativesAsExact = null;
   }
+
   public Query() {
     this((String) null);
   }
+
   public Query(Query other) {
     if (other.noTypoToleranceOn != null) {
       noTypoToleranceOn = new ArrayList<String>(other.noTypoToleranceOn);

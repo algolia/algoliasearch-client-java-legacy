@@ -94,6 +94,7 @@ public class APIClient {
   private String forwardAdminAPIKey;
   private HashMap<String, String> headers;
   private String userAgent;
+  private Map<String, HostStatus> hostStatuses = new HashMap<String, HostStatus>();
 
   /**
    * Algolia Search initialization
@@ -874,26 +875,6 @@ public class APIClient {
     }
   }
 
-  private Map<String, HostStatus> hostStatuses = new HashMap<String, HostStatus>();
-
-  private static class HostStatus {
-    public boolean isUp = true;
-    public long lastModifiedTimestamp = new Date().getTime();
-
-    private HostStatus setDown() {
-      isUp = false;
-      return this;
-    }
-
-    public static HostStatus up() {
-      return new HostStatus();
-    }
-
-    public static HostStatus down() {
-      return new HostStatus().setDown();
-    }
-  }
-
   private List<String> queryHostsThatAreUp() {
     return hostsThatAreUp(this.queryHostsArray);
   }
@@ -905,7 +886,7 @@ public class APIClient {
   private List<String> hostsThatAreUp(List<String> hosts) {
     List<String> result = new ArrayList<String>(hosts.size());
     for (String host : hosts) {
-      if(isHostUpOrCouldBeRetried(host)) {
+      if (isHostUpOrCouldBeRetried(host)) {
         result.add(host);
       }
     }
@@ -914,7 +895,7 @@ public class APIClient {
 
   private boolean isHostUpOrCouldBeRetried(String host) {
     HostStatus status = hostStatuses.get(host);
-    if(status == null) {
+    if (status == null) {
       hostStatuses.put(host, HostStatus.up());
       return true;
     }
@@ -1021,6 +1002,24 @@ public class APIClient {
 
   private enum Method {
     GET, POST, PUT, DELETE
+  }
+
+  private static class HostStatus {
+    public boolean isUp = true;
+    public long lastModifiedTimestamp = new Date().getTime();
+
+    public static HostStatus up() {
+      return new HostStatus();
+    }
+
+    public static HostStatus down() {
+      return new HostStatus().setDown();
+    }
+
+    private HostStatus setDown() {
+      isUp = false;
+      return this;
+    }
   }
 
   public static class IndexQuery {

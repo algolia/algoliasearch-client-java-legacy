@@ -31,6 +31,7 @@ public class SynonymQuery {
   private List<SynonymType> types = null;
   private Integer page = null;
   private Integer hitsPerPage = null;
+
   public SynonymQuery(String query) {
     this.query = query;
   }
