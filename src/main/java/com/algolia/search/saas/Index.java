@@ -981,6 +981,8 @@ public class Index {
   }
 
   /**
+   * Search for synonyms
+   *
    * @param query the query
    */
   public JSONObject searchSynonyms(SynonymQuery query) throws AlgoliaException, JSONException {
@@ -1040,6 +1042,11 @@ public class Index {
     }
   }
 
+  /**
+   * Delete one synonym
+   *
+   * @param objectID The objectId of the synonym to delete
+   */
   public JSONObject deleteSynonym(String objectID) throws AlgoliaException {
     return deleteSynonym(objectID, false);
   }
@@ -1053,6 +1060,9 @@ public class Index {
     return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/clear?forwardToReplicas=" + forwardToReplicas, "", true, false);
   }
 
+  /**
+   * Delete all synonym set
+   */
   public JSONObject clearSynonyms() throws AlgoliaException {
     return clearSynonyms(false);
   }
@@ -1073,10 +1083,21 @@ public class Index {
     return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/batch?forwardToReplicas=" + forwardToReplicas + "&replaceExistingSynonyms=" + replaceExistingSynonyms, array.toString(), true, false);
   }
 
+  /**
+   * Add or Replace a list of synonyms
+   *
+   * @param objects           List of synonyms
+   * @param forwardToReplicas Forward the operation to the replica indices
+   */
   public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToReplicas) throws AlgoliaException {
     return batchSynonyms(objects, forwardToReplicas, false);
   }
 
+  /**
+   * Add or Replace a list of synonyms
+   *
+   * @param objects List of synonyms
+   */
   public JSONObject batchSynonyms(List<JSONObject> objects) throws AlgoliaException {
     return batchSynonyms(objects, false, false);
   }
@@ -1096,8 +1117,148 @@ public class Index {
     }
   }
 
+  /**
+   * Update one synonym
+   *
+   * @param objectID The objectId of the synonym to save
+   * @param content  The new content of this synonym
+   */
   public JSONObject saveSynonym(String objectID, JSONObject content) throws AlgoliaException {
     return saveSynonym(objectID, content, false);
+  }
+
+  /**
+   * Save a query rule
+   *
+   * @param objectID          the objectId of the query rule to save
+   * @param rule              the content of this query rule
+   * @param forwardToReplicas Forward this operation to the replica indices
+   */
+  public JSONObject saveRule(String objectID, JSONObject rule, boolean forwardToReplicas) throws AlgoliaException {
+    try {
+      return client.putRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToReplicas=" + forwardToReplicas, rule.toString(), true);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Save a query rule
+   *
+   * @param objectID the objectId of the query rule to save
+   * @param rule     the content of this query rule
+   */
+  public JSONObject saveRule(String objectID, JSONObject rule) throws AlgoliaException {
+    return saveRule(objectID, rule, false);
+  }
+
+  /**
+   * Add or Replace a list of synonyms
+   *
+   * @param rules              the list of rules to add/replace
+   * @param forwardToReplicas  Forward this operation to the replica indices
+   * @param clearExistingRules Replace the existing query rules with this batch
+   */
+  public JSONObject batchRules(List<JSONObject> rules, boolean forwardToReplicas, boolean clearExistingRules) throws AlgoliaException {
+    JSONArray array = new JSONArray();
+    for (JSONObject obj : rules) {
+      array.put(obj);
+    }
+
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/batch?forwardToReplicas=" + forwardToReplicas + "&clearExistingRules=" + clearExistingRules, array.toString(), true, false);
+  }
+
+  /**
+   * Add or Replace a list of synonyms
+   *
+   * @param rules             the list of rules to add/replace
+   * @param forwardToReplicas Forward this operation to the replica indices
+   */
+  public JSONObject batchRules(List<JSONObject> rules, boolean forwardToReplicas) throws AlgoliaException {
+    return batchRules(rules, forwardToReplicas, false);
+  }
+
+  /**
+   * Add or Replace a list of synonyms
+   *
+   * @param rules the list of rules to add/replace
+   */
+  public JSONObject batchRules(List<JSONObject> rules) throws AlgoliaException {
+    return batchRules(rules, false, false);
+  }
+
+  /**
+   * Get a query rule
+   *
+   * @param objectID the objectID of the query rule to get
+   */
+  public JSONObject getRule(String objectID) throws AlgoliaException {
+    if (objectID == null || objectID.length() == 0) {
+      throw new AlgoliaException("Invalid objectID");
+    }
+    try {
+      return client.getRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8"), true);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Delete a query rule
+   *
+   * @param objectID the objectID of the query rule to delete
+   */
+  public JSONObject deleteRule(String objectID) throws AlgoliaException {
+    if (objectID == null || objectID.length() == 0) {
+      throw new AlgoliaException("Invalid objectID");
+    }
+    try {
+      return client.deleteRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8"), true);
+    } catch (UnsupportedEncodingException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Delete all query rules
+   *
+   * @param forwardToReplicas Forward the operation to the replica indices
+   */
+  public JSONObject clearRules(boolean forwardToReplicas) throws AlgoliaException {
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/clear?forwardToReplicas=" + forwardToReplicas, "", true, false);
+  }
+
+  /**
+   * Delete all query rules
+   */
+  public JSONObject clearRules() throws AlgoliaException {
+    return clearRules(false);
+  }
+
+  /**
+   * Search for query rules
+   *
+   * @param query the query
+   */
+  public JSONObject searchRules(RuleQuery query) throws AlgoliaException, JSONException {
+    JSONObject body = new JSONObject();
+    if (query.getQuery() != null) {
+      body = body.put("query", query.getQuery());
+    }
+    if (query.getAnchoring() != null) {
+      body = body.put("anchoring", query.getAnchoring());
+    }
+    if (query.getContext() != null) {
+      body = body.put("context", query.getContext());
+    }
+    if (query.getPage() != null) {
+      body = body.put("page", query.getPage());
+    }
+    if (query.getHitsPerPage() != null) {
+      body = body.put("hitsPerPage", query.getHitsPerPage());
+    }
+
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/search", body.toString(), false, true);
   }
 
   /**
