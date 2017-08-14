@@ -24,19 +24,16 @@ java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
 
 
-## Table of Contents
 
 
 
-
-
-# Missing title
+# Getting Started
 
 
 
 ## Install
 
-If you're using Maven, add the following dependency to your `pom.xml` file:
+If you're using `Maven`, add the following dependency to your `pom.xml` file:
 ```xml
 <dependency>
     <groupId>com.algolia</groupId>
@@ -45,121 +42,28 @@ If you're using Maven, add the following dependency to your `pom.xml` file:
 </dependency>
 ```
 
-## Quick Start
+## Init Index
 
-In 30 seconds, this quick start tutorial will show you how to index and search objects.
-
-### Initialize the client
-
-You first need to initialize the client. For that you need your **Application ID** and **API Key**.
-You can find both of them on [your Algolia account](https://www.algolia.com/api-keys).
+To begin, you will need to initialize the client. In order to do this you will need your **Application ID** and **API Key**.
+You can find both on [your Algolia account](https://www.algolia.com/api-keys).
 
 ```java
 APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
 ```
 
-### Push data
-
-Without any prior configuration, you can start indexing contacts in the ```contacts``` index using the following code:
-```java
-Index index = client.initIndex("contacts");
-index.addObject(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger")
-      .put("followers", 93)
-      .put("company", "California Paint"));
-index.addObject(new JSONObject()
-      .put("firstname", "Warren")
-      .put("lastname", "Speach")
-      .put("followers", 42)
-      .put("company", "Norwalk Crmc"));
-```
-
-### Search
-
-You can now search for contacts using firstname, lastname, company, etc. (even with typos):
-
-```java
-// search by firstname
-System.out.println(index.search(new Query("jimmie")));
-// search a firstname with typo
-System.out.println(index.search(new Query("jimie")));
-// search for a company
-System.out.println(index.search(new Query("california paint")));
-// search for a firstname & company
-System.out.println(index.search(new Query("jimmie paint")));
-```
-
-### Configure
-
-Settings can be customized to tune the search behavior. For example, you can add a custom sort by number of followers to the already great built-in relevance:
-
-```java
-index.setSettings(new JSONObject().append("customRanking", "desc(followers)"));
-```
-
-You can also configure the list of attributes you want to index by order of importance (first = most important):
-
-**Note:** Since the engine is designed to suggest results as you type, you'll generally search by prefix.
-In this case the order of attributes is very important to decide which hit is the best:
-
-### Frontend search
-
-**Note:** If you are building a web application, you may be more interested in using our [JavaScript client](https://github.com/algolia/algoliasearch-client-javascript) to perform queries.
-
-It brings two benefits:
-  * Your users get a better response time by not going through your servers
-  * It will offload unnecessary tasks from your servers
-
-```html
-<script src="https://cdn.jsdelivr.net/algoliasearch/3/algoliasearch.min.js"></script>
-<script>
-var client = algoliasearch('ApplicationID', 'apiKey');
-var index = client.initIndex('indexName');
-
-// perform query "jim"
-index.search('jim', searchCallback);
-
-// the last optional argument can be used to add search parameters
-index.search(
-  'jim', {
-    hitsPerPage: 5,
-    facets: '*',
-    maxValuesPerFacet: 10
-  },
-  searchCallback
-);
-
-function searchCallback(err, content) {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  console.log(content);
-}
-</script>
-```
-
-## Getting Help
-
-- **Need help**? Ask a question to the [Algolia Community](https://discourse.algolia.com/) or on [Stack Overflow](http://stackoverflow.com/questions/tagged/algolia).
-- **Found a bug?** You can open a [GitHub issue](https://github.com/algolia/algoliasearch-client-java/issues).
 
 
-# Missing title
+# Search
 
 
 
 ## Search an index - `Search` 
 
-**Notes:** If you are building a web application, you may be more interested in using our [JavaScript client](https://github.com/algolia/algoliasearch-client-javascript) to perform queries. It brings two benefits:
-  * Your users get a better response time by not going through your servers
-  * It will offload unnecessary tasks from your servers.
+To perform a search, you need to initialize the index and perform a call to the search function.
 
-To perform a search, you only need to initialize the index and perform a call to the search function.
-
-The search query allows only to retrieve 1000 hits. If you need to retrieve more than 1000 hits (e.g. for SEO), you can use [Backup / Export an index](#backup--export-an-index).
+The search query only allows for the retrieval of up to 1000 hits.
+If you need to retrieve more than 1000 hits (e.g. for SEO), you can either leverage the [Backup / Export an index](https://www.algolia.com/doc/api-client/java1/advanced/#backup--export-an-index)
+method or increase the [`paginationLimitedTo`](https://www.algolia.com/doc/api-reference/api-parameters/paginationLimitedTo/) parameter.
 
 ```java
 Index index = client.initIndex("contacts");
@@ -168,6 +72,60 @@ System.out.println(index.search(new Query("query string").
              setAttributesToRetrieve(Arrays.asList("firstname", "lastname")).
              setNbHitsPerPage(50)));
 ```
+
+If you are building a web application, you may be more interested in one
+of our [frontend search UI librairies](https://www.algolia.com/doc/guides/search-ui/search-libraries/)
+
+It brings several benefits:
+  * Your users will see a better response time as the request will not need to go through your servers
+  * You will be able to offload unnecessary tasks from your servers
+
+### Building search UIs
+
+To build a search user interface on top of the Algolia API, we recommend using one of our
+[frontend search UI librairies](https://www.algolia.com/doc/guides/search-ui/search-libraries/) instead of using the API client directly.
+
+You might be interested in the following tutorials on getting started with building search UIs:
+
+<a href="/doc/tutorials/search-ui/instant-search/build-an-instant-search-results-page/instantsearchjs/">
+
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <title>Search UI</title>
+  <defs>
+    <linearGradient x1="50%" y1="-227.852%" x2="77.242%" y2="191.341%" id="a">
+      <stop stop-color="#8995C7" offset="0%" />
+      <stop stop-color="#F1F4FD" offset="100%" />
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <path d="M21 20.385a.62.62 0 0 1-.615.615.603.603 0 0 1-.433-.183l-1.65-1.644A3.383 3.383 0 0 1 13 16.385 3.383 3.383 0 0 1 16.386 13a3.383 3.383 0 0 1 2.788 5.303l1.65 1.649c.11.11.177.27.177.433zm-2.667-4.052c0-1.102-.897-2-2-2-1.102 0-2 .898-2 2 0 1.103.898 2 2 2 1.103 0 2-.897 2-2zM14 5h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-5V6a1 1 0 0 1 1-1zm-8 8h5v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zm0-8h4a1 1 0 0 1 1 1v5H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="url(#a)" />
+  </g>
+</svg>
+
+Tutorials
+
+Building an instant search result page
+
+</a><a href="/doc/tutorials/search-ui/autocomplete/auto-complete/">
+
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <title>Search UI</title>
+  <defs>
+    <linearGradient x1="50%" y1="-227.852%" x2="77.242%" y2="191.341%" id="a">
+      <stop stop-color="#8995C7" offset="0%" />
+      <stop stop-color="#F1F4FD" offset="100%" />
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <path d="M21 20.385a.62.62 0 0 1-.615.615.603.603 0 0 1-.433-.183l-1.65-1.644A3.383 3.383 0 0 1 13 16.385 3.383 3.383 0 0 1 16.386 13a3.383 3.383 0 0 1 2.788 5.303l1.65 1.649c.11.11.177.27.177.433zm-2.667-4.052c0-1.102-.897-2-2-2-1.102 0-2 .898-2 2 0 1.103.898 2 2 2 1.103 0 2-.897 2-2zM14 5h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-5V6a1 1 0 0 1 1-1zm-8 8h5v5a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1zm0-8h4a1 1 0 0 1 1 1v5H6a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1z" fill="url(#a)" />
+  </g>
+</svg>
+
+Tutorials
+
+Autocomplete
+
+</a>
 
 ## Search Response Format
 
@@ -214,11 +172,11 @@ The server response will look like:
 
     Hits are made of the JSON objects that you stored in the index; therefore, they are mostly schema-less. However, Algolia does enrich them with a few additional fields:
 
-    - `_highlightResult` (object, optional): Highlighted attributes. *Note: Only returned when [attributesToHighlight](/doc/api-client/java1/parameters/attributesToHighlight/) is non-empty.*
+    - `_highlightResult` (object, optional): Highlighted attributes. *Note: Only returned when [`attributesToHighlight`](https://www.algolia.com/doc/api-reference/api-parameters/attributesToHighlight/) is non-empty.*
 
         - `${attribute_name}` (object): Highlighting for one attribute.
 
-            - `value` (string): Markup text with occurrences highlighted. The tags used for highlighting are specified via [highlightPreTag](/doc/api-client/java1/parameters/highlightPreTag/) and [highlightPostTag](/doc/api-client/java1/parameters/highlightPostTag/).
+            - `value` (string): Markup text with occurrences highlighted. The tags used for highlighting are specified via [`highlightPreTag`](https://www.algolia.com/doc/api-reference/api-parameters/highlightPreTag/) and [`highlightPostTag`](https://www.algolia.com/doc/api-reference/api-parameters/highlightPostTag/).
 
             - `matchLevel` (string, enum) = {`none` \| `partial` \| `full`}: Indicates how well the attribute matched the search query.
 
@@ -226,15 +184,15 @@ The server response will look like:
 
             - `fullyHighlighted` (boolean): Whether the entire attribute value is highlighted.
 
-    - `_snippetResult` (object, optional): Snippeted attributes. *Note: Only returned when [attributesToSnippet](/doc/api-client/java1/parameters/attributesToSnippet/) is non-empty.*
+    - `_snippetResult` (object, optional): Snippeted attributes. *Note: Only returned when [`attributesToSnippet`](https://www.algolia.com/doc/api-reference/api-parameters/attributesToSnippet/) is non-empty.*
 
         - `${attribute_name}` (object): Snippeting for the corresponding attribute.
 
-            - `value` (string): Markup text with occurrences highlighted and optional ellipsis indicators. The tags used for highlighting are specified via [highlightPreTag](/doc/api-client/java1/parameters/highlightPreTag/) and [highlightPostTag](/doc/api-client/java1/parameters/highlightPostTag/). The text used to indicate ellipsis is specified via [snippetEllipsisText](/doc/api-client/java1/parameters/snippetEllipsisText/).
+            - `value` (string): Markup text with occurrences highlighted and optional ellipsis indicators. The tags used for highlighting are specified via [`highlightPreTag`](https://www.algolia.com/doc/api-reference/api-parameters/highlightPreTag/) and [`highlightPostTag`](https://www.algolia.com/doc/api-reference/api-parameters/highlightPostTag/). The text used to indicate ellipsis is specified via [`snippetEllipsisText`](https://www.algolia.com/doc/api-reference/api-parameters/snippetEllipsisText/).
 
             - `matchLevel` (string, enum) = {`none` \| `partial` \| `full`}: Indicates how well the attribute matched the search query.
 
-    - `_rankingInfo` (object, optional): Ranking information. *Note: Only returned when [getRankingInfo](/doc/api-client/java1/parameters/getRankingInfo/) is `true`.*
+    - `_rankingInfo` (object, optional): Ranking information. *Note: Only returned when [`getRankingInfo`](https://www.algolia.com/doc/api-reference/api-parameters/getRankingInfo/) is `true`.*
 
         - `nbTypos` (integer): Number of typos encountered when matching the record. Corresponds to the `typos` ranking criterion in the ranking formula.
 
@@ -262,13 +220,13 @@ The server response will look like:
 
             - `distance` (integer): Distance between the matched location and the search location (in meters). **Caution:** Contrary to `geoDistance`, this value is *not* divided by the geo precision.
 
-    - `_distinctSeqID` (integer): *Note: Only returned when [distinct](/doc/api-client/java1/parameters/distinct/) is non-zero.* When two consecutive results have the same value for the attribute used for "distinct", this field is used to distinguish between them.
+    - `_distinctSeqID` (integer): *Note: Only returned when [`distinct`](https://www.algolia.com/doc/api-reference/api-parameters/distinct/) is non-zero.* When two consecutive results have the same value for the attribute used for "distinct", this field is used to distinguish between them.
 
 - `nbHits` (integer): Number of hits that the search query matched.
 
-- `page` (integer): Index of the current page (zero-based). See the [page](/doc/api-client/java1/parameters/page/) search parameter. *Note: Not returned if you use `offset`/`length` for pagination.*
+- `page` (integer): Index of the current page (zero-based). See the [`page`](https://www.algolia.com/doc/api-reference/api-parameters/page/) search parameter. *Note: Not returned if you use `offset`/`length` for pagination.*
 
-- `hitsPerPage` (integer): Maximum number of hits returned per page. See the [hitsPerPage](/doc/api-client/java1/parameters/hitsPerPage/) search parameter. *Note: Not returned if you use `offset`/`length` for pagination.*
+- `hitsPerPage` (integer): Maximum number of hits returned per page. See the [`hitsPerPage`](https://www.algolia.com/doc/api-reference/api-parameters/hitsPerPage/) search parameter. *Note: Not returned if you use `offset`/`length` for pagination.*
 
 - `nbPages` (integer): Number of pages corresponding to the number of hits. Basically, `ceil(nbHits / hitsPerPage)`. *Note: Not returned if you use `offset`/`length` for pagination.*
 
@@ -276,23 +234,23 @@ The server response will look like:
 
 - `exhaustiveNbHits` (boolean): Whether the `nbHits` is exhaustive (`true`) or approximate (`false`). *Note: An approximation is done when the query takes more than 50ms to be processed (this can happen when doing complex filters on millions on records).*
 
-- `query` (string): An echo of the query text. See the [query](/doc/api-client/java1/parameters/query/) search parameter.
+- `query` (string): An echo of the query text. See the [`query`](https://www.algolia.com/doc/api-reference/api-parameters/query/) search parameter.
 
-- `queryAfterRemoval` (string, optional): *Note: Only returned when [removeWordsIfNoResults](/doc/api-client/java1/parameters/removeWordsIfNoResults/) is set to `lastWords` or `firstWords`.* A markup text indicating which parts of the original query have been removed in order to retrieve a non-empty result set. The removed parts are surrounded by `<em>` tags.
+- `queryAfterRemoval` (string, optional): *Note: Only returned when [`removeWordsIfNoResults`](https://www.algolia.com/doc/api-reference/api-parameters/removeWordsIfNoResults/) is set to `lastWords` or `firstWords`.* A markup text indicating which parts of the original query have been removed in order to retrieve a non-empty result set. The removed parts are surrounded by `<em>` tags.
 
 - `params` (string, URL-encoded): An echo of all search parameters.
 
 - `message` (string, optional): Used to return warnings about the query.
 
-- `aroundLatLng` (string, optional): *Note: Only returned when [aroundLatLngViaIP](/doc/api-client/java1/parameters/aroundLatLngViaIP/) is set.* The computed geo location. **Warning: for legacy reasons, this parameter is a string and not an object.** Format: `${lat},${lng}`, where the latitude and longitude are expressed as decimal floating point numbers.
+- `aroundLatLng` (string, optional): *Note: Only returned when [`aroundLatLngViaIP`](https://www.algolia.com/doc/api-reference/api-parameters/aroundLatLngViaIP/) is set.* The computed geo location. **Warning: for legacy reasons, this parameter is a string and not an object.** Format: `${lat},${lng}`, where the latitude and longitude are expressed as decimal floating point numbers.
 
 - `automaticRadius` (integer, optional): *Note: Only returned for geo queries without an explicitly specified radius (see `aroundRadius`).* The automatically computed radius. **Warning: for legacy reasons, this parameter is a string and not an integer.**
 
-When [getRankingInfo](/doc/api-client/java1/parameters/getRankingInfo/) is set to `true`, the following additional fields are returned:
+When [`getRankingInfo`](https://www.algolia.com/doc/api-reference/api-parameters/getRankingInfo/) is set to `true`, the following additional fields are returned:
 
 - `serverUsed` (string): Actual host name of the server that processed the request. (Our DNS supports automatic failover and load balancing, so this may differ from the host name used in the request.)
 
-- `parsedQuery` (string): The query string that will be searched, after normalization. Normalization includes removing stop words (if [removeStopWords](/doc/api-client/java1/parameters/removeStopWords/) is enabled), and transforming portions of the query string into phrase queries (see [advancedSyntax](/doc/api-client/java1/parameters/advancedSyntax/)).
+- `parsedQuery` (string): The query string that will be searched, after normalization. Normalization includes removing stop words (if [`removeStopWords`](https://www.algolia.com/doc/api-reference/api-parameters/removeStopWords/) is enabled), and transforming portions of the query string into phrase queries (see [`advancedSyntax`](https://www.algolia.com/doc/api-reference/api-parameters/advancedSyntax/)).
 
 - `timeoutCounts` (boolean) - DEPRECATED: Please use `exhaustiveFacetsCount` in remplacement.
 
@@ -300,7 +258,7 @@ When [getRankingInfo](/doc/api-client/java1/parameters/getRankingInfo/) is set t
 
 ... and ranking information is also added to each of the hits (see above).
 
-When [facets](/doc/api-client/java1/parameters/facets/) is non-empty, the following additional fields are returned:
+When [`facets`](https://www.algolia.com/doc/api-reference/api-parameters/facets/) is non-empty, the following additional fields are returned:
 
 - `facets` (object): Maps each facet name to the corresponding facet counts:
 
@@ -324,553 +282,26 @@ When [facets](/doc/api-client/java1/parameters/facets/) is non-empty, the follow
 
 ## Search Parameters
 
-Here is the list of parameters you can use with the search method (`search` [scope](#scope)):
-Parameters that can also be used in a setSettings also have the `indexing` [scope](#scope)
+Here is the list of parameters you can use with the search method (`search` [scope](https://www.algolia.com/doc/api-reference/api-parameters#scope)):
+Parameters that can also be used in a setSettings also have the `indexing` [scope](https://www.algolia.com/doc/api-reference/api-parameters#scope)
 
 #### Search
 
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/query/">query</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>The text to search for in the index.</p>
-
-        </td>
-      </tr>
-</table>
-
 #### Attributes
-
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/attributesToRetrieve/">attributesToRetrieve</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of object attributes you want to retrieve.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/restrictSearchableAttributes/">restrictSearchableAttributes</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of attributes to be considered for textual search.</p>
-
-        </td>
-      </tr>
-</table>
 
 #### Filtering / Faceting
 
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/filters/">filters</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Filter the query with numeric, facet and/or tag filters.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/facets/">facets</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Facets to retrieve.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/maxValuesPerFacet/">maxValuesPerFacet</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Maximum number of facet values returned for each facet.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/facetFilters/">facetFilters</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Filter hits by facet value.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/facetingAfterDistinct/">facetingAfterDistinct</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Force faceting to be applied after de-duplication.</p>
-
-        </td>
-      </tr>
-</table>
-
 #### Highlighting / Snippeting
-
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/attributesToHighlight/">attributesToHighlight</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of attributes to highlight.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/attributesToSnippet/">attributesToSnippet</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of attributes to snippet, with an optional maximum number of words to snippet.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/highlightPreTag/">highlightPreTag</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>String inserted before highlighted parts in highlight and snippet results.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/highlightPostTag/">highlightPostTag</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>String inserted after highlighted parts in highlight and snippet results.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/snippetEllipsisText/">snippetEllipsisText</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>String used as an ellipsis indicator when a snippet is truncated.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/restrictHighlightAndSnippetArrays/">restrictHighlightAndSnippetArrays</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Restrict arrays in highlight and snippet results to items that matched the query.</p>
-
-        </td>
-      </tr>
-</table>
 
 #### Pagination
 
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/page/">page</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Number of the page to retrieve.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/hitsPerPage/">hitsPerPage</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Maximum number of hits per page.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/offset/">offset</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Offset of the first hit to return (zero-based).</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/length/">length</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Maximum number of hits to return. (1000 is the maximum)</p>
-
-        </td>
-      </tr>
-</table>
-
 #### Typos
-
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/minWordSizefor1Typo/">minWordSizefor1Typo</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Minimum number of characters a word in the query string must contain to accept matches with one typo.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/minWordSizefor2Typos/">minWordSizefor2Typos</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Minimum number of characters a word in the query string must contain to accept matches with two typos.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/typoTolerance/">typoTolerance</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Controls whether typo tolerance is enabled and how it is applied:</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/allowTyposOnNumericTokens/">allowTyposOnNumericTokens</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Whether to allow typos on numbers (“numeric tokens”) in the query string.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/ignorePlurals/">ignorePlurals</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Consider singular and plurals forms a match without typo.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/disableTypoToleranceOnAttributes/">disableTypoToleranceOnAttributes</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of attributes on which you want to disable typo tolerance</p>
-
-        </td>
-      </tr>
-</table>
 
 #### Geo-Search
 
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/aroundLatLng/">aroundLatLng</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Search for entries around a given location.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/aroundLatLngViaIP/">aroundLatLngViaIP</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Search for entries around a given location automatically computed from the requester’s IP address.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/aroundRadius/">aroundRadius</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Maximum radius for geo search (in meters).</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/aroundPrecision/">aroundPrecision</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Precision of geo search (in meters).</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/minimumAroundRadius/">minimumAroundRadius</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Minimum radius (in meters) used for a geo search when <a href="/doc/api-client/java1/parameters/aroundRadius/">aroundRadius</a> is not set.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/insideBoundingBox/">insideBoundingBox</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Search inside a rectangular area (in geo coordinates).</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/insidePolygon/">insidePolygon</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Search inside a polygon (in geo coordinates).</p>
-
-        </td>
-      </tr>
-</table>
-
 #### Query Strategy
 
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/queryType/">queryType</a><br /><code>search</code> <code>settings</code></p>
-
-        </td>
-        <td>
-          <p>Controls if and how query words are interpreted as prefixes.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/removeWordsIfNoResults/">removeWordsIfNoResults</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Selects a strategy to remove words from the query when it doesn’t match any hits.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/advancedSyntax/">advancedSyntax</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Enables the advanced query syntax.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/optionalWords/">optionalWords</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of words that should be considered as optional when found in the query.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/removeStopWords/">removeStopWords</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Remove stop words from the query <strong>before</strong> executing it.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/disableExactOnAttributes/">disableExactOnAttributes</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of attributes on which you want to disable computation of the <code>exact</code> ranking criterion</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/exactOnSingleWordQuery/">exactOnSingleWordQuery</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Controls how the <code>exact</code> ranking criterion is computed when the query contains only one word.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/alternativesAsExact/">alternativesAsExact</a><br /><code>setting</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of alternatives that should be considered an exact match by the <code>exact</code> ranking criterion.</p>
-
-        </td>
-      </tr>
-</table>
-
 #### Advanced
-
-<table class='table table-parameters-list-small'>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/distinct/">distinct</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Controls de-duplication of results.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/getRankingInfo/">getRankingInfo</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Enables detailed ranking information.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/numericFilters/">numericFilters</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Filter hits based on values of numeric attributes.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/tagFilters/">tagFilters</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Filter hits by tags.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/analytics/">analytics</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Whether the current query will be taken into account in the Analytics.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/analyticsTags/">analyticsTags</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>List of tags to apply to the query in the Analytics.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/synonyms/">synonyms</a><br /><code>search</code></p>
-
-        </td>
-        <td>
-          <p>Whether to take into account synonyms defined for the targeted index.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/replaceSynonymsInHighlight/">replaceSynonymsInHighlight</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Whether to replace words matched via synonym expansion by the matched synonym in highlight and snippet results.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/minProximity/">minProximity</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Precision of the <code>proximity</code> ranking criterion.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/responseFields/">responseFields</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Choose which fields the response will contain. Applies to search and browse queries.</p>
-
-        </td>
-      </tr>
-      <tr>
-        <td>
-          <p><a href="/doc/api-client/java1/parameters/maxFacetHits/">maxFacetHits</a><br /><code>settings</code> <code>search</code></p>
-
-        </td>
-        <td>
-          <p>Maximum number of facet hits to return during a search for facet values.</p>
-
-        </td>
-      </tr>
-</table>
 
 ## Search multiple indices - `multipleQueries` 
 
@@ -895,13 +326,13 @@ System.out.println(res.getJSONArray("results").toString())
 You can specify a `strategy` parameter to optimize your multiple queries:
 
 - `none`: Execute the sequence of queries until the end.
-- `stopIfEnoughMatches`: Execute the sequence of queries until the number of hits is reached by the sum of hits.
+- `stopIfEnoughMatches`: Execute queries one by one, but stop as soon as the cumulated number of hits is at least `hitsPerPage`.
 
 ### Response
 
 The resulting JSON contains the following fields:
 
-- `results` (array): The results for each request, in the order they were submitted. The contents are the same as in [Search an index](#search-an-index).
+- `results` (array): The results for each request, in the order they were submitted. The contents are the same as in [Search an index](https://www.algolia.com/doc/api-client/java1/search/#search-an-index).
     Each result also includes the following additional fields:
 
     - `index` (string): The name of the targeted index.
@@ -930,7 +361,7 @@ When there are many facet values for a given facet, it may be useful to search w
 
 Searching on facet values is different than a regular search because you are searching only on *facet values*, not *objects*.
 
-The results are sorted by decreasing count. By default, maximum 10 results are returned. This can be adjusted via [maxFacetHits](/doc/api-client/java1/parameters/maxFacetHits/). No pagination is possible.
+The results are sorted by decreasing count. By default, maximum 10 results are returned. This can be adjusted via [`maxFacetHits`](https://www.algolia.com/doc/api-reference/api-parameters/maxFacetHits/). No pagination is possible.
 
 The facet search can optionally take regular search query parameters.
 In that case, it will return only facet values that both:
@@ -938,7 +369,7 @@ In that case, it will return only facet values that both:
 1. match the facet query
 2. are contained in objects matching the regular search query.
 
-**Warning:** For a facet to be searchable, it must have been declared with the `searchable()` modifier in the [attributesForFaceting](/doc/api-client/java1/parameters/attributesForFaceting/) index setting.
+**Warning:** For a facet to be searchable, it must have been declared with the `searchable()` modifier in the [`attributesForFaceting`](https://www.algolia.com/doc/api-reference/api-parameters/attributesForFaceting/) index setting.
 
 #### Example
 
@@ -1005,10 +436,13 @@ System.out.println(index.searchFacet("category", "phone", query));
 }
 ```
 
-**Warning:** **Building your search implementation in Javascript?** Look at the [Filtering & Faceting guide](/doc/guides/search/filtering-faceting) to see how to use Search for facet values from the front-end.
+**Warning:** **Building your search implementation in Javascript?** Look at the
+[Filtering & Faceting guide](https://www.algolia.com/doc/guides/searching/faceting)
+to see how to use Search for facet values from the front-end.
 
 
-# Missing title
+
+# Indexing
 
 
 
@@ -1043,8 +477,8 @@ Example with manual `objectID` assignments:
 
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("objectID", "1").put("firstname", "Jimmie").put("lastname", "Barninger"));
-array.add(new JSONObject().put("objectID", "2").put("firstname", "Warren").put("lastname", "Speach"));
+array.add(new JSONObject().put("objectID", "myID1").put("firstname", "Jimmie").put("lastname", "Barninger"));
+array.add(new JSONObject().put("objectID", "myID2").put("firstname", "Warren").put("lastname", "Speach"));
 index.addObjects(array);
 ```
 
@@ -1073,8 +507,8 @@ To replace all attributes existing objects:
 
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "SFO"));
-array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "LA"));
+array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "myID"));
+array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "myID2"));
 index.saveObjects(array);
 ```
 
@@ -1147,8 +581,8 @@ To partial update multiple objects using one API call, you can use the following
 
 ```java
 List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "SFO"));
-array.add(new JSONObject().put("firstname", "Warren").put("objectID", "LA"));
+array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "myID"));
+array.add(new JSONObject().put("firstname", "Warren").put("objectID", "myID2"));
 index.partialUpdateObjects(array);
 ```
 
@@ -1171,7 +605,7 @@ index.deleteObject("myID");
 
 ## Delete by query - `deleteByQuery` 
 
-The "delete by query" helper deletes all objects matching a query. Internally, the API client will browse the index (as in [Backup / Export an index](#backup--export-an-index)), delete all matching hits, and wait until all deletion tasks have been applied.
+The "delete by query" helper deletes all objects matching a query. Internally, the API client will browse the index (as in [Backup / Export an index](https://www.algolia.com/doc/api-client/java1/advanced/#backup--export-an-index)), delete all matching hits, and wait until all deletion tasks have been applied.
 
 **Warning:** Be careful when using this method. Calling it with an empty query will result in cleaning the index of all its records.
 
@@ -1203,7 +637,8 @@ If you want to ensure multiple objects have been indexed, you only need to check
 the biggest `taskID`.
 
 
-# Missing title
+
+# Settings
 
 
 
@@ -1238,18 +673,17 @@ index.setSettings(new JSONObject().append("customRanking", "desc(followers)"), t
 ## Index settings parameters
 
 You can see the full list of settings parameters here:
-[https://www.algolia.com/doc/api-client/java1/parameters/](https://www.algolia.com/doc/api-client/java1/parameters/)
+[https://www.algolia.com/doc/api-reference/api-parameters/](https://www.algolia.com/doc/api-reference/api-parameters/)
 
 
-# Missing title
+
+# Manage Indices
 
 
 
 ## Create an index
-
-To create an index, you need to perform any indexing operation like:
-- set settings
-- add object
+  
+You don’t need to explicitly create an index, it will be automatically created the first time you [add an object](https://www.algolia.com/doc/api-client/java1/indexing/#add-objects) or [set settings](https://www.algolia.com/doc/api-client/java1/settings/#set-settings).
 
 ## List indices - `listIndexes` 
 
@@ -1293,73 +727,34 @@ running while re-importing your data we recommend the usage of a temporary index
 move using the `moveIndex` method.
 
 ```java
-// Rename MyNewIndex in MyIndex (and overwrite it)
-client.moveIndex("MyNewIndex", "MyIndex");
+// Rename MyTmpIndex to MyIndex (and overwrite it)
+client.moveIndex("MyTmpIndex", "MyIndex");
 ```
 
 **Note:** The moveIndex method overrides the destination index, and deletes the temporary one.
   In other words, there is no need to call the `clearIndex` or `deleteIndex` methods to clean the temporary index.
-It also overrides all the settings of the destination index (except the [replicas](/doc/api-client/java1/parameters/replicas/) parameter that need to not be part of the temporary index settings).
+It also overrides all the settings of the destination index (except the [`replicas`](https://www.algolia.com/doc/api-reference/api-parameters/replicas/) parameter that need to not be part of the temporary index settings).
 
 **Recommended steps**
 If you want to fully update your index `MyIndex` every night, we recommend the following process:
 
- 1. Get settings and synonyms from the old index using [Get settings](#get-settings)
-  and [Get synonym](#get-synonym).
+ 1. Get settings and synonyms from the old index using [Get settings](https://www.algolia.com/doc/api-client/java1/settings/#get-settings)
+  and [Get synonym](https://www.algolia.com/doc/api-client/java1/synonyms/#get-synonym).
  1. Apply settings and synonyms to the temporary index `MyTmpIndex`, (this will create the `MyTmpIndex` index)
-  using [Set settings](#set-settings) and [Batch synonyms](#batch-synonyms) ([!] Make sure to remove the [replicas](/doc/api-client/java1/parameters/replicas/) parameter from the settings if it exists.
- 1. Import your records into a new index using [Add Objects](#add-objects)).
+  using [Set settings](https://www.algolia.com/doc/api-client/java1/settings/#set-settings) and [Batch synonyms](https://www.algolia.com/doc/api-client/java1/synonyms/#batch-synonyms) ([!] Make sure to remove the [`replicas`](https://www.algolia.com/doc/api-reference/api-parameters/replicas/) parameter from the settings if it exists.
+ 1. Import your records into a new index using [Add Objects](https://www.algolia.com/doc/api-client/java1/indexing/#add-objects)).
  1. Atomically replace the index `MyIndex` with the content and settings of the index `MyTmpIndex`
- using the [Move index](#move-index) method.
+ using the [Move index](https://www.algolia.com/doc/api-client/java1/manage-indices/#move-index) method.
  This will automatically override the old index without any downtime on the search.
  
  You'll end up with only one index called `MyIndex`, that contains the records and settings pushed to `MyTmpIndex`
  and the replica-indices that were initially attached to `MyIndex` will be in sync with the new data.
 
 
-# Missing title
+
+# Api keys
 
 
-
-## Overview
-
-When creating your Algolia Account, you'll notice there are 3 different API Keys:
-
-- **Admin API Key** - it provides full control of all your indices.
-*The admin API key should always be kept secure;
-do NOT give it to anybody; do NOT use it in any application and always create a new key that will be more restricted*
-
-- **Search-Only API Key** - It allows you to search on every indices.
-
-- **Monitoring API Key** - It allows you to access the [Monitoring API](https://www.algolia.com/doc/rest-api/monitoring)
-  
-API keys are very sensitive part of your application and should follow our recommendations of [best practices](/doc/guides/security/best-security-practices/#api-key-security).
-
-### Other types of API keys
-
-The *Admin API Key* and *Search-Only API Key* both have really large scope and sometimes you want to give a key to
-someone that have restricted permissions, can it be an index, a rate limit, a validity limit, ...
-
-To address those use-cases we have two different type of keys:
-
-- **Secured API Keys**
-
-When you need to restrict the scope of the *Search Key*, we recommend to use *Secured API Key*.
-You can generate them on the fly (without any call to the API)
-from the *Search Only API Key* or any search *User Key* using the [Generate key](#generate-key) method
-
-- **User API Keys**
-
-If *Secured API Keys* does not meet your requirements, you can make use of *User keys*.
-Managing and especially creating those keys requires a call to the API.
-
-We have several methods to manage them:
-
-- [Add API key](#add-api-key)
-- [Update api key](#update-api-key)
-- [Delete api key](#delete-api-key)
-- [List user keys](#list-user-keys)
-- [Get key permissions](#get-key-permissions)
 
 ## Generate key - `generateSecuredApiKey` 
 
@@ -1392,7 +787,7 @@ index.search('something', function(err, content) {
 
 #### Filters
 
-Every filter set in the API key will always be applied. On top of that [filters](/doc/api-client/java1/parameters/filters/) can be applied
+Every filter set in the API key will always be applied. On top of that [`filters`](https://www.algolia.com/doc/api-reference/api-parameters/filters/) can be applied
 in the query parameters.
 
 ```java
@@ -1445,7 +840,7 @@ String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", new Quer
 
 If you want to rate limit a secured API Key, the API key you generate the secured api key from need to be rate-limited.
 You can do that either via the dashboard or via the API using the
-[Add API key](#add-api-key) or [Update api key](#update-api-key) method
+[Add API key](https://www.algolia.com/doc/api-client/java1/api-keys/#add-api-key) or [Update api key](https://www.algolia.com/doc/api-client/java1/api-keys/#update-api-key) method
 
 ##### User Rate Limiting
 
@@ -1473,251 +868,6 @@ For more protection against API key leaking and reuse you can restrict the key t
 String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", new Query().setRestrictSources("192.168.1.0/24"));
 ```
 
-
-# Missing title
-
-
-
-## Overview
-
-Synonyms tell the engine about sets of words and expressions that should be considered equal with regard to textual relevance.
-
-All synonym records have a type attribute. The two most used types are:
-
-- (Regular) Synonyms - `synonym`: Regular synonyms are the most common, all words or expressions are considered equals
-
-  ```json
-  {
-     "objectID": "NAME",
-     "type": "synonym",
-     "synonyms":[
-        "tv",
-        "television",
-        "tv set"
-     ]
-  }
-  ```
-
-- One-way Synonym - `oneWaySynonym`: When the `input` is searched all words or expressions in synonyms are considered equals to the input
-
-  ```json
-  {
-     "objectID": "NAME",
-     "type": "oneWaySynonym",
-     "input": "tablet",
-     "synonyms":[
-        "ipad",
-        "galaxy note"
-     ]
-  }
-  ```
-
-If you're looking for other types of synonyms or want more details you can have a look at our [synonyms guide](https://www.algolia.com/doc/guides/relevance/synonyms)
-
-## Save synonym - `saveSynonym` 
-
-This method saves a single synonym record into the index.
-
-In this example, we specify true to forward the creation to replica indices.
-By default the behavior is to save only on the specified index.
-
-```java
-index.saveSynonym("a-unique-identifier", new Synonym()
-           .setSynonyms(Arrays.asList("car", "vehicle", "auto")), true);
-```
-
-## Batch synonyms - `batchSynonyms` 
-
-Use the batch method to create a large number of synonyms at once,
-forward them to replica indices if desired,
-and optionally replace all existing synonyms
-on the index with the content of the batch using the replaceExistingSynonyms parameter.
-
-You should always use replaceExistingSynonyms to atomically replace all synonyms
-on a production index. This is the only way to ensure the index always
-has a full list of synonyms to use during the indexing of the new list.
-
-```java
-// Batch synonyms, with replica forwarding and atomic replacement of existing synonyms
-index.batchSynonyms(Arrays.asList(
-      new Synonym()
-           .setObjectID("a-unique-identifier")
-           .setSynonyms(Arrays.asList("car", "vehicle", "auto")),
-      new Synonym()
-           .setObjectID("another-unique-identifier")
-           .setSynonyms(Arrays.asList("street", "st"))
-), true);
-```
-
-## Editing Synonyms
-
-Updating the value of a specific synonym record is the same as creating one.
-Make sure you specify the same objectID used to create the record and the synonyms
-will be updated.
-When updating multiple synonyms in a batch call (but not all synonyms),
-make sure you set replaceExistingSynonyms to false (or leave it out,
-false is the default value).
-Otherwise, the entire synonym list will be replaced only partially with the records
-in the batch update.
-
-## Delete synonym - `deleteSynonym` 
-
-Use the normal index delete method to delete synonyms,
-specifying the objectID of the synonym record you want to delete.
-Forward the deletion to replica indices by setting the forwardToReplicas parameter to true.
-
-```java
-// Delete and forward to replicas
-index.deleteSynonym("a-unique-identifier", true);
-```
-
-## Clear all synonyms - `clearSynonyms` 
-
-This is a convenience method to delete all synonyms at once.
-It should not be used on a production index to then push a new list of synonyms:
-there would be a short period of time during which the index would have no synonyms
-at all.
-
-To atomically replace all synonyms of an index,
-use the batch method with the replaceExistingSynonyms parameter set to true.
-
-```java
-// Clear synonyms and forward to replicas
-index.clearSynonyms(true);
-```
-
-## Get synonym - `getSynonym` 
-
-Search for synonym records by their objectID or by the text they contain.
-Both methods are covered here.
-
-```java
-Optional<AbstractSynonym> synonym = index.getSynonym("a-unique-identifier");
-```
-
-## Search synonyms - `searchSynonyms` 
-
-Search for synonym records similar to how you’d search normally.
-
-Accepted search parameters:
-- query: the actual search query to find synonyms. Use an empty query to browse all the synonyms of an index.
-- type: restrict the search to a specific type of synonym. Use an empty string to search all types (default behavior). Multiple types can be specified using a comma-separated list or an array.
-- page: the page to fetch when browsing through several pages of results. This value is zero-based.
-hitsPerPage: the number of synonyms to return for each call. The default value is 100.
-
-```java
-// Searching for "street" in synonyms and one-way synonyms; fetch the second page with 10 hits per page
-SearchSynonymResult results = index.searchSynonyms(new SynonymQuery("street").setTypes(Arrays.asList("synonym", "one_way")).setPage(1).setHitsPerPage(10));
-```
-
-
-# Missing title
-
-
-
-## Custom batch - `batch` 
-
-You may want to perform multiple operations with one API call to reduce latency.
-
-If you have one index per user, you may want to perform a batch operations across several indices.
-We expose a method to perform this type of batch:
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("action". "addObject").put("indexName", "index1")
-  .put("body", new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger")));
-array.add(new JSONObject().put("action". "addObject").put("indexName", "index2")
-  .put("body", new JSONObject().put("firstname", "Warren").put("lastname", "Speach")));
-client.batch(array);
-```
-
-The attribute **action** can have these values:
-
-- addObject
-- updateObject
-- partialUpdateObject
-- partialUpdateObjectNoCreate
-- deleteObject
-
-## Backup / Export an index - `browse` 
-
-The `search` method cannot return more than 1,000 results. If you need to
-retrieve all the content of your index (for backup, SEO purposes or for running
-a script on it), you should use the `browse` method instead. This method lets
-you retrieve objects beyond the 1,000 limit.
-
-This method is optimized for speed. To make it fast, distinct, typo-tolerance,
-word proximity, geo distance and number of matched words are disabled. Results
-are still returned ranked by attributes and custom ranking.
-
-#### Response Format
-
-##### Sample
-
-```json
-{
-  "hits": [
-    {
-      "firstname": "Jimmie",
-      "lastname": "Barninger",
-      "objectID": "433"
-    }
-  ],
-  "processingTimeMS": 7,
-  "query": "",
-  "params": "filters=level%3D20",
-  "cursor": "ARJmaWx0ZXJzPWxldmVsJTNEMjABARoGODA4OTIzvwgAgICAgICAgICAAQ=="
-}
-```
-
-##### Fields
-
-- `cursor` (string, optional): A cursor to retrieve the next chunk of data. If absent, it means that the end of the index has been reached.
-- `query` (string): Query text used to filter the results.
-- `params` (string, URL-encoded): Search parameters used to filter the results.
-- `processingTimeMS` (integer): Time that the server took to process the request, in milliseconds. *Note: This does not include network time.*
-
-The following fields are provided for convenience purposes, and **only when the browse is not filtered**:
-
-- `nbHits` (integer): Number of objects in the index.
-- `page` (integer): Index of the current page (zero-based).
-- `hitsPerPage` (integer): Maximum number of hits returned per page.
-- `nbPages` (integer): Number of pages corresponding to the number of hits. Basically, `ceil(nbHits / hitsPerPage)`.
-
-#### Example
-
-```java
-// Iterate with a filter over the index
-Iterator<JSONObject> it = index.browse(new Query("text").setFilters("i<42"));
-
-// Retrieve the next cursor from the browse method
-Iterator<JSONObject> it  = index.browseFrom(new Query("text").setFilters("i<42"), "");
-System.out.println(it.getCursor());
-```
-
-## List user keys - `listApiKeys` 
-
-To list existing keys, you can use:
-
-```java
-// Lists API Keys
-client.listApiKeys();
-// Lists API Keys that can access only to this index
-index.listApiKeys();
-```
-
-Each key is defined by a set of permissions that specify the authorized actions. The different permissions are:
-
-* **search**: Allowed to search.
-* **browse**: Allowed to retrieve all index contents via the browse API.
-* **addObject**: Allowed to add/update an object in the index.
-* **deleteObject**: Allowed to delete an existing object.
-* **deleteIndex**: Allowed to delete index content.
-* **settings**: allows to get index settings.
-* **editSettings**: Allowed to change index settings.
-* **analytics**: Allowed to retrieve analytics through the analytics API.
-* **listIndexes**: Allowed to list all accessible indexes.
-
 ## Add API key - `addApiKey` 
 
 To create API keys:
@@ -1730,6 +880,24 @@ System.out.println("Key: " + res.getString("key"));
 JSONObject res = index.addApiKey(Arrays.asList("search"));
 System.out.println("Key: " + res.getString("key"));
 ```
+
+##### ACLs
+
+You need to specify the set of ACLs the key will have.
+
+The following rights can be used:
+
+- `search`: allows to search the index
+- `browse`: allows to retrieve all index content via the browse API
+- `addObject`: allows to add/update an object in the index (copy/move index are also allowed with this right)
+- `deleteObject`: allows to delete objects from the index
+- `deleteIndex`: allows to delete or clear index content
+- `settings`: allows to get index settings
+- `editSettings`: allows to change index settings
+- `analytics`: allows to retrieve the analytics through the Analytics API
+- `listIndexes`: allows to list all accessible indices
+
+#### Avanced Settings
 
 You can also create an API Key with advanced settings:
 
@@ -1828,6 +996,253 @@ client.getApiKey("f420238212c54dcfad07ea0aa6d5c45f");
 index.getApiKey("71671c38001bf3ac857bc82052485107");
 ```
 
+## List user keys - `listApiKeys` 
+
+To list existing keys, you can use:
+
+```java
+// Lists API Keys
+client.listApiKeys();
+// Lists API Keys that can access only to this index
+index.listApiKeys();
+```
+
+Each key is defined by a set of permissions that specify the authorized actions. The different permissions are:
+
+* **search**: Allowed to search.
+* **browse**: Allowed to retrieve all index contents via the browse API.
+* **addObject**: Allowed to add/update an object in the index.
+* **deleteObject**: Allowed to delete an existing object.
+* **deleteIndex**: Allowed to delete index content.
+* **settings**: allows to get index settings.
+* **editSettings**: Allowed to change index settings.
+* **analytics**: Allowed to retrieve analytics through the analytics API.
+* **listIndexes**: Allowed to list all accessible indexes.
+
+
+
+# Synonyms
+
+
+
+## Overview
+
+Synonyms tell the engine about sets of words and expressions that should be considered equal with regard to textual relevance.
+
+All synonym records have a type attribute. The two most used types are:
+
+- (Regular) Synonyms - `synonym`: Regular synonyms are the most common, all words or expressions are considered equals
+
+  ```json
+  {
+     "objectID": "NAME",
+     "type": "synonym",
+     "synonyms":[
+        "tv",
+        "television",
+        "tv set"
+     ]
+  }
+  ```
+
+- One-way Synonym - `oneWaySynonym`: When the `input` is searched all words or expressions in synonyms are considered equals to the input
+
+  ```json
+  {
+     "objectID": "NAME",
+     "type": "oneWaySynonym",
+     "input": "tablet",
+     "synonyms":[
+        "ipad",
+        "galaxy note"
+     ]
+  }
+  ```
+
+If you're looking for other types of synonyms or want more details you can have a look at our [synonyms guide](https://www.algolia.com/doc/guides/textual-relevance/synonyms)
+
+## Save synonym - `saveSynonym` 
+
+This method saves a single synonym record into the index.
+
+In this example, we specify true to forward the creation to replica indices.
+By default the behavior is to save only on the specified index.
+
+```java
+index.saveSynonym("a-unique-identifier", new Synonym()
+           .setSynonyms(Arrays.asList("car", "vehicle", "auto")), true);
+```
+
+## Batch synonyms - `batchSynonyms` 
+
+Use the batch method to create a large number of synonyms at once,
+forward them to replica indices if desired,
+and optionally replace all existing synonyms
+on the index with the content of the batch using the replaceExistingSynonyms parameter.
+
+You should always use replaceExistingSynonyms to atomically replace all synonyms
+on a production index. This is the only way to ensure the index always
+has a full list of synonyms to use during the indexing of the new list.
+
+```java
+// Batch synonyms, with replica forwarding and atomic replacement of existing synonyms
+index.batchSynonyms(Arrays.asList(
+      new Synonym()
+           .setObjectID("a-unique-identifier")
+           .setSynonyms(Arrays.asList("car", "vehicle", "auto")),
+      new Synonym()
+           .setObjectID("another-unique-identifier")
+           .setSynonyms(Arrays.asList("street", "st"))
+), true);
+```
+
+## Editing Synonyms
+
+Updating the value of a specific synonym record is the same as creating one.
+Make sure you specify the same objectID used to create the record and the synonyms
+will be updated.
+When updating multiple synonyms in a batch call (but not all synonyms),
+make sure you set replaceExistingSynonyms to false (or leave it out,
+false is the default value).
+Otherwise, the entire synonym list will be replaced only partially with the records
+in the batch update.
+
+## Delete synonym - `deleteSynonym` 
+
+Use the normal index delete method to delete synonyms,
+specifying the objectID of the synonym record you want to delete.
+Forward the deletion to replica indices by setting the forwardToReplicas parameter to true.
+
+```java
+// Delete and forward to replicas
+index.deleteSynonym("a-unique-identifier", true);
+```
+
+## Clear all synonyms - `clearSynonyms` 
+
+This is a convenience method to delete all synonyms at once.
+It should not be used on a production index to then push a new list of synonyms:
+there would be a short period of time during which the index would have no synonyms
+at all.
+
+To atomically replace all synonyms of an index,
+use the batch method with the replaceExistingSynonyms parameter set to true.
+
+```java
+// Clear synonyms and forward to replicas
+index.clearSynonyms(true);
+```
+
+## Get synonym - `getSynonym` 
+
+Search for synonym records by their objectID or by the text they contain.
+Both methods are covered here.
+
+```java
+Optional<AbstractSynonym> synonym = index.getSynonym("a-unique-identifier");
+```
+
+## Search synonyms - `searchSynonyms` 
+
+Search for synonym records similar to how you’d search normally.
+
+Accepted search parameters:
+- `query`: the actual search query to find synonyms. Use an empty query to browse all the synonyms of an index.
+- `type`: restrict the search to a specific type of synonym. Use an empty string to search all types (default behavior). Multiple types can be specified using a comma-separated list or an array.
+- `page`: the page to fetch when browsing through several pages of results. This value is zero-based.
+- `hitsPerPage`: the number of synonyms to return for each call. The default value is 100.
+
+```java
+// Searching for "street" in synonyms and one-way synonyms; fetch the second page with 10 hits per page
+SearchSynonymResult results = index.searchSynonyms(new SynonymQuery("street").setTypes(Arrays.asList("synonym", "one_way")).setPage(1).setHitsPerPage(10));
+```
+
+
+
+# Advanced
+
+
+
+## Custom batch - `batch` 
+
+You may want to perform multiple operations with one API call to reduce latency.
+
+If you have one index per user, you may want to perform a batch operations across several indices.
+We expose a method to perform this type of batch:
+
+```java
+List<JSONObject> array = new ArrayList<JSONObject>();
+array.add(new JSONObject().put("action". "addObject").put("indexName", "index1")
+  .put("body", new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger")));
+array.add(new JSONObject().put("action". "addObject").put("indexName", "index2")
+  .put("body", new JSONObject().put("firstname", "Warren").put("lastname", "Speach")));
+client.batch(array);
+```
+
+The attribute **action** can have these values:
+
+- addObject
+- updateObject
+- partialUpdateObject
+- partialUpdateObjectNoCreate
+- deleteObject
+
+## Backup / Export an index - `browse` 
+
+The `search` method cannot return more than 1,000 results. If you need to
+retrieve all the content of your index (for backup, SEO purposes or for running
+a script on it), you should use the `browse` method instead. This method lets
+you retrieve objects beyond the 1,000 limit.
+
+This method is optimized for speed. To make it fast, distinct, typo-tolerance,
+word proximity, geo distance and number of matched words are disabled. Results
+are still returned ranked by attributes and custom ranking.
+
+#### Response Format
+
+##### Sample
+
+```json
+{
+  "hits": [
+    {
+      "firstname": "Jimmie",
+      "lastname": "Barninger",
+      "objectID": "433"
+    }
+  ],
+  "processingTimeMS": 7,
+  "query": "",
+  "params": "filters=level%3D20",
+  "cursor": "ARJmaWx0ZXJzPWxldmVsJTNEMjABARoGODA4OTIzvwgAgICAgICAgICAAQ=="
+}
+```
+
+##### Fields
+
+- `cursor` (string, optional): A cursor to retrieve the next chunk of data. If absent, it means that the end of the index has been reached.
+- `query` (string): Query text used to filter the results.
+- `params` (string, URL-encoded): Search parameters used to filter the results.
+- `processingTimeMS` (integer): Time that the server took to process the request, in milliseconds. *Note: This does not include network time.*
+
+The following fields are provided for convenience purposes, and **only when the browse is not filtered**:
+
+- `nbHits` (integer): Number of objects in the index.
+- `page` (integer): Index of the current page (zero-based).
+- `hitsPerPage` (integer): Maximum number of hits returned per page.
+- `nbPages` (integer): Number of pages corresponding to the number of hits. Basically, `ceil(nbHits / hitsPerPage)`.
+
+#### Example
+
+```java
+// Iterate with a filter over the index
+Iterator<JSONObject> it = index.browse(new Query("text").setFilters("i<42"));
+
+// Retrieve the next cursor from the browse method
+Iterator<JSONObject> it  = index.browseFrom(new Query("text").setFilters("i<42"), "");
+System.out.println(it.getCursor());
+```
+
 ## Get latest logs - `getLogs` 
 
 You can retrieve the latest logs via this API. Each log entry contains:
@@ -1906,6 +1321,5 @@ Network & DNS resolution can be slow. That is why we have pre-configured timeout
   );
   client.setHostDownTimeoutMS(4000);
 ```
-
 
 
