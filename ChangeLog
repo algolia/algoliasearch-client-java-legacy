@@ -1,7 +1,13 @@
 Changelog
 =========
 
-1.11.0 (20XX-XX-XX)
+1.12.0 (2017-08-22)
+-------------------
+- Rename Key to ApiKey
+- Add support for query rules
+- Add request options 
+
+1.11.0 (2016-12-20)
 -------------------
 - Add responseFields
 
