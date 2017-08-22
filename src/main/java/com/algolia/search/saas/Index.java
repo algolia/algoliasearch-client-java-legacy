@@ -71,7 +71,17 @@ public class Index {
    * @param obj the object to add
    */
   public JSONObject addObject(JSONObject obj) throws AlgoliaException {
-    return client.postRequest("/1/indexes/" + encodedIndexName, obj.toString(), true, false);
+    return this.addObject(obj, RequestOptions.empty);
+  }
+
+  /**
+   * Add an object in this index
+   *
+   * @param obj            the object to add
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject addObject(JSONObject obj, RequestOptions requestOptions) throws AlgoliaException {
+    return client.postRequest("/1/indexes/" + encodedIndexName, obj.toString(), true, false, requestOptions);
   }
 
   /**
@@ -82,8 +92,20 @@ public class Index {
    *                 (if this objectID already exist the old object will be overriden)
    */
   public JSONObject addObject(JSONObject obj, String objectID) throws AlgoliaException {
+    return this.addObject(obj, objectID, RequestOptions.empty);
+  }
+
+  /**
+   * Add an object in this index with a uniq identifier
+   *
+   * @param obj            the object to add
+   * @param objectID       the objectID associated to this object
+   *                       (if this objectID already exist the old object will be overriden)
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject addObject(JSONObject obj, String objectID, RequestOptions requestOptions) throws AlgoliaException {
     try {
-      return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString(), true);
+      return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), obj.toString(), requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -95,7 +117,17 @@ public class Index {
    * @param actions the array of actions
    */
   public JSONObject batch(JSONArray actions) throws AlgoliaException {
-    return postBatch(actions);
+    return postBatch(actions, RequestOptions.empty);
+  }
+
+  /**
+   * Custom batch
+   *
+   * @param actions        the array of actions
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject batch(JSONArray actions, RequestOptions requestOptions) throws AlgoliaException {
+    return postBatch(actions, requestOptions);
   }
 
   /**
@@ -104,14 +136,24 @@ public class Index {
    * @param actions the array of actions
    */
   public JSONObject batch(List<JSONObject> actions) throws AlgoliaException {
-    return postBatch(actions);
+    return postBatch(actions, RequestOptions.empty);
   }
 
-  private JSONObject postBatch(Object actions) throws AlgoliaException {
+  /**
+   * Custom batch
+   *
+   * @param actions        the array of actions
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject batch(List<JSONObject> actions, RequestOptions requestOptions) throws AlgoliaException {
+    return postBatch(actions, requestOptions);
+  }
+
+  private JSONObject postBatch(Object actions, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONObject content = new JSONObject();
       content.put("requests", actions);
-      return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString(), true, false);
+      return client.postRequest("/1/indexes/" + encodedIndexName + "/batch", content.toString(), true, false, requestOptions);
     } catch (JSONException e) {
       throw new AlgoliaException(e);
     }
@@ -123,6 +165,16 @@ public class Index {
    * @param objects the array of objects to add
    */
   public JSONObject addObjects(List<JSONObject> objects) throws AlgoliaException {
+    return this.addObjects(objects, RequestOptions.empty);
+  }
+
+  /**
+   * Add several objects
+   *
+   * @param objects        the array of objects to add
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject addObjects(List<JSONObject> objects, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONArray array = new JSONArray();
       for (JSONObject obj : objects) {
@@ -131,7 +183,7 @@ public class Index {
         action.put("body", obj);
         array.put(action);
       }
-      return batch(array);
+      return batch(array, requestOptions);
     } catch (JSONException e) {
       throw new AlgoliaException(e.getMessage());
     }
@@ -143,6 +195,16 @@ public class Index {
    * @param objects the array of objects to add
    */
   public JSONObject addObjects(JSONArray objects) throws AlgoliaException {
+    return this.addObjects(objects, RequestOptions.empty);
+  }
+
+  /**
+   * Add several objects
+   *
+   * @param objects        the array of objects to add
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject addObjects(JSONArray objects, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONArray array = new JSONArray();
       for (int n = 0; n < objects.length(); n++) {
@@ -151,7 +213,7 @@ public class Index {
         action.put("body", objects.getJSONObject(n));
         array.put(action);
       }
-      return batch(array);
+      return batch(array, requestOptions);
     } catch (JSONException e) {
       throw new AlgoliaException(e.getMessage());
     }
@@ -163,8 +225,18 @@ public class Index {
    * @param objectID the unique identifier of the object to retrieve
    */
   public JSONObject getObject(String objectID) throws AlgoliaException {
+    return this.getObject(objectID, RequestOptions.empty);
+  }
+
+  /**
+   * Get an object from this index. Return null if the object doens't exist.
+   *
+   * @param objectID       the unique identifier of the object to retrieve
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject getObject(String objectID, RequestOptions requestOptions) throws AlgoliaException {
     try {
-      return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), false);
+      return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), false, requestOptions);
     } catch (AlgoliaException e) {
       if (e.getCode() == 404) {
         return null;
@@ -182,9 +254,20 @@ public class Index {
    * @param attributesToRetrieve contains the list of attributes to retrieve.
    */
   public JSONObject getObject(String objectID, List<String> attributesToRetrieve) throws AlgoliaException {
+    return this.getObject(objectID, attributesToRetrieve, RequestOptions.empty);
+  }
+
+  /**
+   * Get an object from this index
+   *
+   * @param objectID             the unique identifier of the object to retrieve
+   * @param attributesToRetrieve contains the list of attributes to retrieve.
+   * @param requestOptions       Options to pass to this request
+   */
+  public JSONObject getObject(String objectID, List<String> attributesToRetrieve, RequestOptions requestOptions) throws AlgoliaException {
     try {
       String params = encodeAttributes(attributesToRetrieve, true);
-      return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString(), false);
+      return client.getRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8") + params.toString(), false, requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -196,7 +279,17 @@ public class Index {
    * @param objectIDs the array of unique identifier of objects to retrieve
    */
   public JSONObject getObjects(List<String> objectIDs) throws AlgoliaException {
-    return getObjects(objectIDs, null);
+    return getObjects(objectIDs, null, RequestOptions.empty);
+  }
+
+  /**
+   * Get several objects from this index
+   *
+   * @param objectIDs      the array of unique identifier of objects to retrieve
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject getObjects(List<String> objectIDs, RequestOptions requestOptions) throws AlgoliaException {
+    return getObjects(objectIDs, null, requestOptions);
   }
 
   /**
@@ -206,6 +299,17 @@ public class Index {
    * @param attributesToRetrieve contains the list of attributes to retrieve.
    */
   public JSONObject getObjects(List<String> objectIDs, List<String> attributesToRetrieve) throws AlgoliaException {
+    return this.getObjects(objectIDs, attributesToRetrieve, RequestOptions.empty);
+  }
+
+  /**
+   * Get several objects from this index
+   *
+   * @param objectIDs            the array of unique identifier of objects to retrieve
+   * @param attributesToRetrieve contains the list of attributes to retrieve.
+   * @param requestOptions       Options to pass to this request
+   */
+  public JSONObject getObjects(List<String> objectIDs, List<String> attributesToRetrieve, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONArray requests = new JSONArray();
       for (String id : objectIDs) {
@@ -217,7 +321,7 @@ public class Index {
       }
       JSONObject body = new JSONObject();
       body.put("requests", requests);
-      return client.postRequest("/1/indexes/*/objects", body.toString(), false, false);
+      return client.postRequest("/1/indexes/*/objects", body.toString(), false, false, requestOptions);
     } catch (JSONException e) {
       throw new AlgoliaException(e.getMessage());
     } catch (UnsupportedEncodingException e) {
@@ -250,7 +354,17 @@ public class Index {
    * @param partialObject the object to override
    */
   public JSONObject partialUpdateObject(JSONObject partialObject, String objectID) throws AlgoliaException {
-    return partialUpdateObject(partialObject, objectID, true);
+    return partialUpdateObject(partialObject, objectID, true, RequestOptions.empty);
+  }
+
+  /**
+   * Update partially an object (only update attributes passed in argument), create the object if it does not exist
+   *
+   * @param partialObject  the object to override
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject partialUpdateObject(JSONObject partialObject, String objectID, RequestOptions requestOptions) throws AlgoliaException {
+    return partialUpdateObject(partialObject, objectID, true, requestOptions);
   }
 
   /**
@@ -259,17 +373,27 @@ public class Index {
    * @param partialObject the object to override
    */
   public JSONObject partialUpdateObjectNoCreate(JSONObject partialObject, String objectID) throws AlgoliaException {
-    return partialUpdateObject(partialObject, objectID, false);
+    return partialUpdateObject(partialObject, objectID, false, RequestOptions.empty);
   }
 
-  private JSONObject partialUpdateObject(JSONObject partialObject, String objectID, Boolean createIfNotExists) throws AlgoliaException {
+  /**
+   * Update partially an object (only update attributes passed in argument), do nothing if object does not exist
+   *
+   * @param partialObject  the object to override
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject partialUpdateObjectNoCreate(JSONObject partialObject, String objectID, RequestOptions requestOptions) throws AlgoliaException {
+    return partialUpdateObject(partialObject, objectID, false, requestOptions);
+  }
+
+  private JSONObject partialUpdateObject(JSONObject partialObject, String objectID, Boolean createIfNotExists, RequestOptions requestOptions) throws AlgoliaException {
     String parameters = "";
     if (!createIfNotExists) {
       parameters = "?createIfNotExists=false";
     }
     try {
       return client.postRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8")
-        + "/partial" + parameters, partialObject.toString(), true, false);
+        + "/partial" + parameters, partialObject.toString(), true, false, requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -281,12 +405,22 @@ public class Index {
    * @param objects the array of objects to update (each object must contains an objectID attribute)
    */
   public JSONObject partialUpdateObjects(JSONArray objects) throws AlgoliaException {
+    return this.partialUpdateObjects(objects, RequestOptions.empty);
+  }
+
+  /**
+   * Partially Override the content of several objects
+   *
+   * @param objects        the array of objects to update (each object must contains an objectID attribute)
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject partialUpdateObjects(JSONArray objects, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONArray array = new JSONArray();
       for (int n = 0; n < objects.length(); n++) {
         array.put(partialUpdateObject(objects.getJSONObject(n)));
       }
-      return batch(array);
+      return batch(array, requestOptions);
     } catch (JSONException e) {
       throw new AlgoliaException(e.getMessage());
     }
@@ -309,6 +443,24 @@ public class Index {
     }
   }
 
+  /**
+   * Partially Override the content of several objects
+   *
+   * @param objects        the array of objects to update (each object must contains an objectID attribute)
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject partialUpdateObjects(List<JSONObject> objects, RequestOptions requestOptions) throws AlgoliaException {
+    try {
+      JSONArray array = new JSONArray();
+      for (JSONObject obj : objects) {
+        array.put(partialUpdateObject(obj));
+      }
+      return batch(array, requestOptions);
+    } catch (JSONException e) {
+      throw new AlgoliaException(e.getMessage());
+    }
+  }
+
   private JSONObject partialUpdateObject(JSONObject object) throws JSONException {
     JSONObject action = new JSONObject();
     action.put("action", "partialUpdateObject");
@@ -323,8 +475,18 @@ public class Index {
    * @param object the object to update
    */
   public JSONObject saveObject(JSONObject object, String objectID) throws AlgoliaException {
+    return this.saveObject(object, objectID, RequestOptions.empty);
+  }
+
+  /**
+   * Override the content of object
+   *
+   * @param object         the object to update
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject saveObject(JSONObject object, String objectID, RequestOptions requestOptions) throws AlgoliaException {
     try {
-      return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object.toString(), true);
+      return client.putRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), object.toString(), requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -336,6 +498,16 @@ public class Index {
    * @param objects the array of objects to update (each object must contains an objectID attribute)
    */
   public JSONObject saveObjects(List<JSONObject> objects) throws AlgoliaException {
+    return this.saveObjects(objects, RequestOptions.empty);
+  }
+
+  /**
+   * Override the content of several objects
+   *
+   * @param objects        the array of objects to update (each object must contains an objectID attribute)
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject saveObjects(List<JSONObject> objects, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONArray array = new JSONArray();
       for (JSONObject obj : objects) {
@@ -345,7 +517,7 @@ public class Index {
         action.put("body", obj);
         array.put(action);
       }
-      return batch(array);
+      return batch(array, requestOptions);
     } catch (JSONException e) {
       throw new AlgoliaException(e.getMessage());
     }
@@ -357,6 +529,16 @@ public class Index {
    * @param objects the array of objects to update (each object must contains an objectID attribute)
    */
   public JSONObject saveObjects(JSONArray objects) throws AlgoliaException {
+    return this.saveObjects(objects, RequestOptions.empty);
+  }
+
+  /**
+   * Override the content of several objects
+   *
+   * @param objects        the array of objects to update (each object must contains an objectID attribute)
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject saveObjects(JSONArray objects, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONArray array = new JSONArray();
       for (int n = 0; n < objects.length(); n++) {
@@ -367,7 +549,7 @@ public class Index {
         action.put("body", obj);
         array.put(action);
       }
-      return batch(array);
+      return batch(array, requestOptions);
     } catch (JSONException e) {
       throw new AlgoliaException(e.getMessage());
     }
@@ -379,11 +561,21 @@ public class Index {
    * @param objectID the unique identifier of object to delete
    */
   public JSONObject deleteObject(String objectID) throws AlgoliaException {
+    return this.deleteObject(objectID, RequestOptions.empty);
+  }
+
+  /**
+   * Delete an object from the index
+   *
+   * @param objectID       the unique identifier of object to delete
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject deleteObject(String objectID, RequestOptions requestOptions) throws AlgoliaException {
     if (objectID == null || objectID.length() == 0) {
       throw new AlgoliaException("Invalid objectID");
     }
     try {
-      return client.deleteRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), true);
+      return client.deleteRequest("/1/indexes/" + encodedIndexName + "/" + URLEncoder.encode(objectID, "UTF-8"), requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -398,7 +590,21 @@ public class Index {
     deleteByQuery(query, 100000);
   }
 
+  /**
+   * Delete all objects matching a query
+   *
+   * @param query          the query string
+   * @param requestOptions Options to pass to this request
+   */
+  public void deleteByQuery(Query query, RequestOptions requestOptions) throws AlgoliaException {
+    this.deleteByQuery(query, 100000, requestOptions);
+  }
+
   public void deleteByQuery(Query query, int batchLimit) throws AlgoliaException {
+    this.deleteByQuery(query, batchLimit, RequestOptions.empty);
+  }
+
+  public void deleteByQuery(Query query, int batchLimit, RequestOptions requestOptions) throws AlgoliaException {
     List<String> attributesToRetrieve = new ArrayList<String>();
     attributesToRetrieve.add("objectID");
     query.setAttributesToRetrieve(attributesToRetrieve);
@@ -407,7 +613,7 @@ public class Index {
     query.setHitsPerPage(1000);
     query.enableDistinct(false);
 
-    IndexBrowser it = this.browse(query);
+    IndexBrowser it = this.browse(query, requestOptions);
     try {
       while (true) {
         List<String> objectIDs = new ArrayList<String>();
@@ -430,8 +636,20 @@ public class Index {
 
   /**
    * Search inside the index
+   *
+   * @param the query to search
    */
   public JSONObject search(Query params) throws AlgoliaException {
+    return this.search(params, RequestOptions.empty);
+  }
+
+  /**
+   * Search inside the index
+   *
+   * @param the            query to search
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject search(Query params, RequestOptions requestOptions) throws AlgoliaException {
     String paramsString = params.getQueryString();
     JSONObject body = new JSONObject();
     try {
@@ -439,13 +657,22 @@ public class Index {
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/query", body.toString(), false, true);
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/query", body.toString(), false, true, requestOptions);
   }
 
   /**
    * Search into a facet value
    */
   public JSONObject searchInFacetValues(String facetName, String facetQuery, Query params) throws AlgoliaException {
+    return this.searchInFacetValues(facetName, facetQuery, params, RequestOptions.empty);
+  }
+
+  /**
+   * Search into a facet value
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject searchInFacetValues(String facetName, String facetQuery, Query params, RequestOptions requestOptions) throws AlgoliaException {
     params = params == null ? new Query() : params;
     String paramsString = params.setFacetQuery(facetQuery).getQueryString();
     JSONObject body = new JSONObject();
@@ -458,7 +685,7 @@ public class Index {
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/facets/" + encodedFacetName + "/query", body.toString(), false, true);
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/facets/" + encodedFacetName + "/query", body.toString(), false, true, requestOptions);
   }
 
   /**
@@ -467,6 +694,16 @@ public class Index {
    * @param objects the array of objectIDs to delete
    */
   public JSONObject deleteObjects(List<String> objects) throws AlgoliaException {
+    return this.deleteObjects(objects, RequestOptions.empty);
+  }
+
+  /**
+   * Delete several objects
+   *
+   * @param objects        the array of objectIDs to delete
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject deleteObjects(List<String> objects, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONArray array = new JSONArray();
       for (String id : objects) {
@@ -477,7 +714,7 @@ public class Index {
         action.put("body", obj);
         array.put(action);
       }
-      return batch(array);
+      return batch(array, requestOptions);
     } catch (JSONException e) {
       throw new AlgoliaException(e.getMessage());
     }
@@ -491,21 +728,39 @@ public class Index {
    * @deprecated Use the `browse(Query params)` version
    */
   public JSONObject browse(int page) throws AlgoliaException {
-    return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page, false);
+    return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page, false, RequestOptions.empty);
   }
 
   /**
    * Browse all index content
    */
   public IndexBrowser browse(Query params) throws AlgoliaException {
-    return new IndexBrowser(client, encodedIndexName, params, null);
+    return new IndexBrowser(client, encodedIndexName, params, null, RequestOptions.empty);
+  }
+
+  /**
+   * Browse all index content
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public IndexBrowser browse(Query params, RequestOptions requestOptions) throws AlgoliaException {
+    return new IndexBrowser(client, encodedIndexName, params, null, requestOptions);
   }
 
   /**
    * Browse all index content starting from a cursor
    */
   public IndexBrowser browseFrom(Query params, String cursor) throws AlgoliaException {
-    return new IndexBrowser(client, encodedIndexName, params, cursor);
+    return new IndexBrowser(client, encodedIndexName, params, cursor, RequestOptions.empty);
+  }
+
+  /**
+   * Browse all index content starting from a cursor
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public IndexBrowser browseFrom(Query params, String cursor, RequestOptions requestOptions) throws AlgoliaException {
+    return new IndexBrowser(client, encodedIndexName, params, cursor, requestOptions);
   }
 
   @Deprecated
@@ -521,7 +776,19 @@ public class Index {
    * @param hitsPerPage Pagination parameter used to select the number of hits per page. Defaults to 1000.
    */
   public JSONObject browse(int page, int hitsPerPage) throws AlgoliaException {
-    return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage, false);
+    return this.browse(page, hitsPerPage, RequestOptions.empty);
+  }
+
+  /**
+   * Browse all index content
+   *
+   * @param page           Pagination parameter used to select the page to retrieve.
+   *                       Page is zero-based and defaults to 0. Thus, to retrieve the 10th page you need to set page=9
+   * @param hitsPerPage    Pagination parameter used to select the number of hits per page. Defaults to 1000.
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject browse(int page, int hitsPerPage, RequestOptions requestOptions) throws AlgoliaException {
+    return client.getRequest("/1/indexes/" + encodedIndexName + "/browse?page=" + page + "&hitsPerPage=" + hitsPerPage, false, requestOptions);
   }
 
   /**
@@ -532,9 +799,21 @@ public class Index {
    * @param timeToWait time to sleep seed
    */
   public void waitTask(String taskID, long timeToWait) throws AlgoliaException {
+    this.waitTask(taskID, timeToWait, RequestOptions.empty);
+  }
+
+  /**
+   * Wait the publication of a task on the server.
+   * All server task are asynchronous and you can check with this method that the task is published.
+   *
+   * @param taskID         the id of the task returned by server
+   * @param timeToWait     time to sleep seed
+   * @param requestOptions Options to pass to this request
+   */
+  public void waitTask(String taskID, long timeToWait, RequestOptions requestOptions) throws AlgoliaException {
     try {
       while (true) {
-        JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), false);
+        JSONObject obj = client.getRequest("/1/indexes/" + encodedIndexName + "/task/" + URLEncoder.encode(taskID, "UTF-8"), false, requestOptions);
         if (obj.getString("status").equals("published"))
           return;
         try {
@@ -565,66 +844,60 @@ public class Index {
    * Get settings of this index
    */
   public JSONObject getSettings() throws AlgoliaException {
-    return client.getRequest("/1/indexes/" + encodedIndexName + "/settings?getVersion=2", false);
+    return this.getSettings(RequestOptions.empty);
+  }
+
+  /**
+   * Get settings of this index
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject getSettings(RequestOptions requestOptions) throws AlgoliaException {
+    return client.getRequest("/1/indexes/" + encodedIndexName + "/settings?getVersion=2", false, requestOptions);
   }
 
   /**
    * Delete the index content without removing settings and index specific API keys.
    */
   public JSONObject clearIndex() throws AlgoliaException {
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/clear", "", true, false);
+    return this.clearIndex(RequestOptions.empty);
+  }
+
+  /**
+   * Delete the index content without removing settings and index specific API keys.
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject clearIndex(RequestOptions requestOptions) throws AlgoliaException {
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/clear", "", true, false, requestOptions);
   }
 
   /**
    * Set settings for this index
    *
-   * @param settings the settings object that can contains :
-   *                 - minWordSizefor1Typo: (integer) the minimum number of characters to accept one typo (default = 3).
-   *                 - minWordSizefor2Typos: (integer) the minimum number of characters to accept two typos (default = 7).
-   *                 - hitsPerPage: (integer) the number of hits per page (default = 10).
-   *                 - attributesToRetrieve: (array of strings) default list of attributes to retrieve in objects.
-   *                 If set to null, all attributes are retrieved.
-   *                 - attributesToHighlight: (array of strings) default list of attributes to highlight.
-   *                 If set to null, all indexed attributes are highlighted.
-   *                 - attributesToSnippet**: (array of strings) default list of attributes to snippet alongside the number of words to return (syntax is attributeName:nbWords).
-   *                 By default no snippet is computed. If set to null, no snippet is computed.
-   *                 - attributesToIndex: (array of strings) the list of fields you want to index.
-   *                 If set to null, all textual and numerical attributes of your objects are indexed, but you should update it to get optimal results.
-   *                 This parameter has two important uses:
-   *                 - Limit the attributes to index: For example if you store a binary image in base64, you want to store it and be able to
-   *                 retrieve it but you don't want to search in the base64 string.
-   *                 - Control part of the ranking*: (see the ranking parameter for full explanation) Matches in attributes at the beginning of
-   *                 the list will be considered more important than matches in attributes further down the list.
-   *                 In one attribute, matching text at the beginning of the attribute will be considered more important than text after, you can disable
-   *                 this behavior if you add your attribute inside `unordered(AttributeName)`, for example attributesToIndex: ["title", "unordered(text)"].
-   *                 - attributesForFaceting: (array of strings) The list of fields you want to use for faceting.
-   *                 All strings in the attribute selected for faceting are extracted and added as a facet. If set to null, no attribute is used for faceting.
-   *                 - ranking: (array of strings) controls the way results are sorted.
-   *                 We have six available criteria:
-   *                 - typo: sort according to number of typos,
-   *                 - geo: sort according to decreassing distance when performing a geo-location based search,
-   *                 - proximity: sort according to the proximity of query words in hits,
-   *                 - attribute: sort according to the order of attributes defined by attributesToIndex,
-   *                 - exact: sort according to the number of words that are matched identical to query word (and not as a prefix),
-   *                 - custom: sort according to a user defined formula set in **customRanking** attribute.
-   *                 The standard order is ["typo", "geo", "proximity", "attribute", "exact", "custom"]
-   *                 - customRanking: (array of strings) lets you specify part of the ranking.
-   *                 The syntax of this condition is an array of strings containing attributes prefixed by asc (ascending order) or desc (descending order) operator.
-   *                 For example `"customRanking" => ["desc(population)", "asc(name)"]`
-   *                 - queryType: Select how the query words are interpreted, it can be one of the following value:
-   *                 - prefixAll: all query words are interpreted as prefixes,
-   *                 - prefixLast: only the last word is interpreted as a prefix (default behavior),
-   *                 - prefixNone: no query word is interpreted as a prefix. This option is not recommended.
-   *                 - highlightPreTag: (string) Specify the string that is inserted before the highlighted parts in the query result (default to "<em>").
-   *                 - highlightPostTag: (string) Specify the string that is inserted after the highlighted parts in the query result (default to "</em>").
-   *                 - optionalWords: (array of strings) Specify a list of words that should be considered as optional when found in the query.
+   * @param settings the settings for an index
    */
   public JSONObject setSettings(JSONObject settings) throws AlgoliaException {
     return setSettings(settings, false);
   }
 
+  /**
+   * Set settings for this index
+   *
+   * @param settings       the settings for an index
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject setSettings(JSONObject settings, RequestOptions requestOptions) throws AlgoliaException {
+    return setSettings(settings, false, requestOptions);
+  }
+
+
   public JSONObject setSettings(JSONObject settings, Boolean forwardToReplicas) throws AlgoliaException {
-    return client.putRequest("/1/indexes/" + encodedIndexName + "/settings?forwardToReplicas=" + forwardToReplicas.toString(), settings.toString(), true);
+    return this.setSettings(settings, forwardToReplicas, RequestOptions.empty);
+  }
+
+  public JSONObject setSettings(JSONObject settings, Boolean forwardToReplicas, RequestOptions requestOptions) throws AlgoliaException {
+    return client.putRequest("/1/indexes/" + encodedIndexName + "/settings?forwardToReplicas=" + forwardToReplicas.toString(), settings.toString(), requestOptions);
   }
 
   /**
@@ -639,7 +912,16 @@ public class Index {
    * List all existing api keys with their associated ACLs
    */
   public JSONObject listApiKeys() throws AlgoliaException {
-    return client.getRequest("/1/indexes/" + encodedIndexName + "/keys", false);
+    return this.listApiKeys(RequestOptions.empty);
+  }
+
+  /**
+   * List all existing api keys with their associated ACLs
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject listApiKeys(RequestOptions requestOptions) throws AlgoliaException {
+    return client.getRequest("/1/indexes/" + encodedIndexName + "/keys", false, requestOptions);
   }
 
   /**
@@ -654,7 +936,16 @@ public class Index {
    * Get ACL of an api key
    */
   public JSONObject getApiKey(String key) throws AlgoliaException {
-    return client.getRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, false);
+    return this.getApiKey(key, RequestOptions.empty);
+  }
+
+  /**
+   * Get ACL of an api key
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject getApiKey(String key, RequestOptions requestOptions) throws AlgoliaException {
+    return client.getRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, false, requestOptions);
   }
 
   /**
@@ -669,7 +960,16 @@ public class Index {
    * Delete an existing api key
    */
   public JSONObject deleteApiKey(String key) throws AlgoliaException {
-    return client.deleteRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, true);
+    return this.deleteApiKey(key, RequestOptions.empty);
+  }
+
+  /**
+   * Delete an existing api key
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject deleteApiKey(String key, RequestOptions requestOptions) throws AlgoliaException {
+    return client.deleteRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, requestOptions);
   }
 
   /**
@@ -695,7 +995,26 @@ public class Index {
    *               - maxQueriesPerIPPerHour: integer
    */
   public JSONObject addApiKey(JSONObject params) throws AlgoliaException {
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", params.toString(), true, false);
+    return this.addApiKey(params, RequestOptions.empty);
+  }
+
+  /**
+   * Create a new api key
+   *
+   * @param params         the list of parameters for this key. Defined by a JSONObject that
+   *                       can contains the following values:
+   *                       - acl: array of string
+   *                       - indices: array of string
+   *                       - validity: int
+   *                       - referers: array of string
+   *                       - description: string
+   *                       - maxHitsPerQuery: integer
+   *                       - queryParameters: string
+   *                       - maxQueriesPerIPPerHour: integer
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject addApiKey(JSONObject params, RequestOptions requestOptions) throws AlgoliaException {
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/keys", params.toString(), true, false, requestOptions);
   }
 
   /**
@@ -745,7 +1064,26 @@ public class Index {
    *               - maxQueriesPerIPPerHour: integer
    */
   public JSONObject updateApiKey(String key, JSONObject params) throws AlgoliaException {
-    return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, params.toString(), true);
+    return this.updateApiKey(key, params, RequestOptions.empty);
+  }
+
+  /**
+   * Update a new api key
+   *
+   * @param params         the list of parameters for this key. Defined by a JSONObject that
+   *                       can contains the following values:
+   *                       - acl: array of string
+   *                       - indices: array of string
+   *                       - validity: int
+   *                       - referers: array of string
+   *                       - description: string
+   *                       - maxHitsPerQuery: integer
+   *                       - queryParameters: string
+   *                       - maxQueriesPerIPPerHour: integer
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject updateApiKey(String key, JSONObject params, RequestOptions requestOptions) throws AlgoliaException {
+    return client.putRequest("/1/indexes/" + encodedIndexName + "/keys/" + key, params.toString(), requestOptions);
   }
 
   /**
@@ -796,9 +1134,29 @@ public class Index {
    * @param maxHitsPerQuery        Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
    */
   public JSONObject addApiKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
+    return this.addApiKey(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, RequestOptions.empty);
+  }
+
+  /**
+   * Create a new api key
+   *
+   * @param acls                   the list of ACL for this key. Defined by an array of strings that
+   *                               can contains the following values:
+   *                               - search: allow to search (https and http)
+   *                               - addObject: allows to add/update an object in the index (https only)
+   *                               - deleteObject : allows to delete an existing object (https only)
+   *                               - deleteIndex : allows to delete index content (https only)
+   *                               - settings : allows to get index settings (https only)
+   *                               - editSettings : allows to change index settings (https only)
+   * @param validity               the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+   * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
+   * @param maxHitsPerQuery        Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
+   * @param requestOptions         Options to pass to this request
+   */
+  public JSONObject addApiKey(List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONObject jsonObject = generateUpdateUser(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery);
-      return addApiKey(jsonObject);
+      return addApiKey(jsonObject, requestOptions);
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
@@ -809,7 +1167,7 @@ public class Index {
    */
   @Deprecated
   public JSONObject updateUserKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery) throws AlgoliaException {
-    return updateApiKey(key, acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery);
+    return updateApiKey(key, acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery, RequestOptions.empty);
   }
 
   /**
@@ -831,6 +1189,31 @@ public class Index {
     try {
       JSONObject jsonObject = generateUpdateUser(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery);
       return updateApiKey(key, jsonObject);
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Update an api key
+   *
+   * @param acls                   the list of ACL for this key. Defined by an array of strings that
+   *                               can contains the following values:
+   *                               - search: allow to search (https and http)
+   *                               - addObject: allows to add/update an object in the index (https only)
+   *                               - deleteObject : allows to delete an existing object (https only)
+   *                               - deleteIndex : allows to delete index content (https only)
+   *                               - settings : allows to get index settings (https only)
+   *                               - editSettings : allows to change index settings (https only)
+   * @param validity               the number of seconds after which the key will be automatically removed (0 means no time limit for this key)
+   * @param maxQueriesPerIPPerHour Specify the maximum number of API calls allowed from an IP address per hour.  Defaults to 0 (no rate limit).
+   * @param maxHitsPerQuery        Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited)
+   * @param requestOptions         Options to pass to this request
+   */
+  public JSONObject updateApiKey(String key, List<String> acls, int validity, int maxQueriesPerIPPerHour, int maxHitsPerQuery, RequestOptions requestOptions) throws AlgoliaException {
+    try {
+      JSONObject jsonObject = generateUpdateUser(acls, validity, maxQueriesPerIPPerHour, maxHitsPerQuery);
+      return updateApiKey(key, jsonObject, requestOptions);
     } catch (JSONException e) {
       throw new RuntimeException(e);
     }
@@ -986,6 +1369,16 @@ public class Index {
    * @param query the query
    */
   public JSONObject searchSynonyms(SynonymQuery query) throws AlgoliaException, JSONException {
+    return this.searchSynonyms(query, RequestOptions.empty);
+  }
+
+  /**
+   * Search for synonyms
+   *
+   * @param query          the query
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject searchSynonyms(SynonymQuery query, RequestOptions requestOptions) throws AlgoliaException, JSONException {
     JSONObject body = new JSONObject().put("query", query.getQueryString());
     if (query.hasTypes()) {
       StringBuilder type = new StringBuilder();
@@ -1006,7 +1399,7 @@ public class Index {
       body = body.put("hitsPerPage", query.getHitsPerPage());
     }
 
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/search", body.toString(), false, true);
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/search", body.toString(), false, true, requestOptions);
   }
 
   /**
@@ -1015,11 +1408,21 @@ public class Index {
    * @param objectID the objectId of the synonym to get
    */
   public JSONObject getSynonym(String objectID) throws AlgoliaException {
+    return this.getSynonym(objectID, RequestOptions.empty);
+  }
+
+  /**
+   * Get one synonym
+   *
+   * @param objectID       the objectId of the synonym to get
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject getSynonym(String objectID, RequestOptions requestOptions) throws AlgoliaException {
     if (objectID == null || objectID.length() == 0) {
       throw new AlgoliaException("Invalid objectID");
     }
     try {
-      return client.getRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8"), true);
+      return client.getRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8"), true, requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -1032,11 +1435,22 @@ public class Index {
    * @param forwardToReplicas Forward the operation to the replica indices
    */
   public JSONObject deleteSynonym(String objectID, boolean forwardToReplicas) throws AlgoliaException {
+    return this.deleteSynonym(objectID, forwardToReplicas, RequestOptions.empty);
+  }
+
+  /**
+   * Delete one synonym
+   *
+   * @param objectID          The objectId of the synonym to delete
+   * @param forwardToReplicas Forward the operation to the replica indices
+   * @param requestOptions    Options to pass to this request
+   */
+  public JSONObject deleteSynonym(String objectID, boolean forwardToReplicas, RequestOptions requestOptions) throws AlgoliaException {
     if (objectID == null || objectID.length() == 0) {
       throw new AlgoliaException("Invalid objectID");
     }
     try {
-      return client.deleteRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "/?page=forwardToReplicas" + forwardToReplicas, false);
+      return client.deleteRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "/?page=forwardToReplicas" + forwardToReplicas, requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -1051,13 +1465,34 @@ public class Index {
     return deleteSynonym(objectID, false);
   }
 
+
+  /**
+   * Delete one synonym
+   *
+   * @param objectID       The objectId of the synonym to delete
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject deleteSynonym(String objectID, RequestOptions requestOptions) throws AlgoliaException {
+    return deleteSynonym(objectID, false, requestOptions);
+  }
+
   /**
    * Delete all synonym set
    *
    * @param forwardToReplicas Forward the operation to the replica indices
    */
   public JSONObject clearSynonyms(boolean forwardToReplicas) throws AlgoliaException {
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/clear?forwardToReplicas=" + forwardToReplicas, "", true, false);
+    return this.clearSynonyms(forwardToReplicas, RequestOptions.empty);
+  }
+
+  /**
+   * Delete all synonym set
+   *
+   * @param forwardToReplicas Forward the operation to the replica indices
+   * @param requestOptions    Options to pass to this request
+   */
+  public JSONObject clearSynonyms(boolean forwardToReplicas, RequestOptions requestOptions) throws AlgoliaException {
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/clear?forwardToReplicas=" + forwardToReplicas, "", true, false, requestOptions);
   }
 
   /**
@@ -1068,6 +1503,15 @@ public class Index {
   }
 
   /**
+   * Delete all synonym set
+   *
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject clearSynonyms(RequestOptions requestOptions) throws AlgoliaException {
+    return clearSynonyms(false, requestOptions);
+  }
+
+  /**
    * Add or Replace a list of synonyms
    *
    * @param objects                 List of synonyms
@@ -1075,12 +1519,24 @@ public class Index {
    * @param replaceExistingSynonyms Replace the existing synonyms with this batch
    */
   public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToReplicas, boolean replaceExistingSynonyms) throws AlgoliaException {
+    return this.batchSynonyms(objects, forwardToReplicas, replaceExistingSynonyms, RequestOptions.empty);
+  }
+
+  /**
+   * Add or Replace a list of synonyms
+   *
+   * @param objects                 List of synonyms
+   * @param forwardToReplicas       Forward the operation to the replica indices
+   * @param replaceExistingSynonyms Replace the existing synonyms with this batch
+   * @param requestOptions          Options to pass to this request
+   */
+  public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToReplicas, boolean replaceExistingSynonyms, RequestOptions requestOptions) throws AlgoliaException {
     JSONArray array = new JSONArray();
     for (JSONObject obj : objects) {
       array.put(obj);
     }
 
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/batch?forwardToReplicas=" + forwardToReplicas + "&replaceExistingSynonyms=" + replaceExistingSynonyms, array.toString(), true, false);
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/synonyms/batch?forwardToReplicas=" + forwardToReplicas + "&replaceExistingSynonyms=" + replaceExistingSynonyms, array.toString(), true, false, requestOptions);
   }
 
   /**
@@ -1096,10 +1552,31 @@ public class Index {
   /**
    * Add or Replace a list of synonyms
    *
+   * @param objects           List of synonyms
+   * @param forwardToReplicas Forward the operation to the replica indices
+   * @param requestOptions    Options to pass to this request
+   */
+  public JSONObject batchSynonyms(List<JSONObject> objects, boolean forwardToReplicas, RequestOptions requestOptions) throws AlgoliaException {
+    return batchSynonyms(objects, forwardToReplicas, false, requestOptions);
+  }
+
+  /**
+   * Add or Replace a list of synonyms
+   *
    * @param objects List of synonyms
    */
   public JSONObject batchSynonyms(List<JSONObject> objects) throws AlgoliaException {
     return batchSynonyms(objects, false, false);
+  }
+
+  /**
+   * Add or Replace a list of synonyms
+   *
+   * @param objects        List of synonyms
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject batchSynonyms(List<JSONObject> objects, RequestOptions requestOptions) throws AlgoliaException {
+    return batchSynonyms(objects, false, false, requestOptions);
   }
 
   /**
@@ -1110,8 +1587,20 @@ public class Index {
    * @param forwardToReplicas Forward the operation to the replica indices
    */
   public JSONObject saveSynonym(String objectID, JSONObject content, boolean forwardToReplicas) throws AlgoliaException {
+    return this.saveSynonym(objectID, content, forwardToReplicas, RequestOptions.empty);
+  }
+
+  /**
+   * Update one synonym
+   *
+   * @param objectID          The objectId of the synonym to save
+   * @param content           The new content of this synonym
+   * @param forwardToReplicas Forward the operation to the replica indices
+   * @param requestOptions    Options to pass to this request
+   */
+  public JSONObject saveSynonym(String objectID, JSONObject content, boolean forwardToReplicas, RequestOptions requestOptions) throws AlgoliaException {
     try {
-      return client.putRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToReplicas=" + forwardToReplicas, content.toString(), true);
+      return client.putRequest("/1/indexes/" + encodedIndexName + "/synonyms/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToReplicas=" + forwardToReplicas, content.toString(), requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -1128,6 +1617,17 @@ public class Index {
   }
 
   /**
+   * Update one synonym
+   *
+   * @param objectID       The objectId of the synonym to save
+   * @param content        The new content of this synonym
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject saveSynonym(String objectID, JSONObject content, RequestOptions requestOptions) throws AlgoliaException {
+    return saveSynonym(objectID, content, false, requestOptions);
+  }
+
+  /**
    * Save a query rule
    *
    * @param objectID          the objectId of the query rule to save
@@ -1135,8 +1635,20 @@ public class Index {
    * @param forwardToReplicas Forward this operation to the replica indices
    */
   public JSONObject saveRule(String objectID, JSONObject rule, boolean forwardToReplicas) throws AlgoliaException {
+    return this.saveRule(objectID, rule, forwardToReplicas, RequestOptions.empty);
+  }
+
+  /**
+   * Save a query rule
+   *
+   * @param objectID          the objectId of the query rule to save
+   * @param rule              the content of this query rule
+   * @param forwardToReplicas Forward this operation to the replica indices
+   * @param requestOptions    Options to pass to this request
+   */
+  public JSONObject saveRule(String objectID, JSONObject rule, boolean forwardToReplicas, RequestOptions requestOptions) throws AlgoliaException {
     try {
-      return client.putRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToReplicas=" + forwardToReplicas, rule.toString(), true);
+      return client.putRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8") + "?forwardToReplicas=" + forwardToReplicas, rule.toString(), requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -1160,12 +1672,24 @@ public class Index {
    * @param clearExistingRules Replace the existing query rules with this batch
    */
   public JSONObject batchRules(List<JSONObject> rules, boolean forwardToReplicas, boolean clearExistingRules) throws AlgoliaException {
+    return this.batchRules(rules, forwardToReplicas, clearExistingRules, RequestOptions.empty);
+  }
+
+  /**
+   * Add or Replace a list of synonyms
+   *
+   * @param rules              the list of rules to add/replace
+   * @param forwardToReplicas  Forward this operation to the replica indices
+   * @param clearExistingRules Replace the existing query rules with this batch
+   * @param requestOptions     Options to pass to this request
+   */
+  public JSONObject batchRules(List<JSONObject> rules, boolean forwardToReplicas, boolean clearExistingRules, RequestOptions requestOptions) throws AlgoliaException {
     JSONArray array = new JSONArray();
     for (JSONObject obj : rules) {
       array.put(obj);
     }
 
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/batch?forwardToReplicas=" + forwardToReplicas + "&clearExistingRules=" + clearExistingRules, array.toString(), true, false);
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/batch?forwardToReplicas=" + forwardToReplicas + "&clearExistingRules=" + clearExistingRules, array.toString(), true, false, requestOptions);
   }
 
   /**
@@ -1193,11 +1717,21 @@ public class Index {
    * @param objectID the objectID of the query rule to get
    */
   public JSONObject getRule(String objectID) throws AlgoliaException {
+    return this.getRule(objectID, RequestOptions.empty);
+  }
+
+  /**
+   * Get a query rule
+   *
+   * @param objectID       the objectID of the query rule to get
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject getRule(String objectID, RequestOptions requestOptions) throws AlgoliaException {
     if (objectID == null || objectID.length() == 0) {
       throw new AlgoliaException("Invalid objectID");
     }
     try {
-      return client.getRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8"), true);
+      return client.getRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8"), true, requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -1209,11 +1743,21 @@ public class Index {
    * @param objectID the objectID of the query rule to delete
    */
   public JSONObject deleteRule(String objectID) throws AlgoliaException {
+    return this.deleteRule(objectID, RequestOptions.empty);
+  }
+
+  /**
+   * Delete a query rule
+   *
+   * @param objectID       the objectID of the query rule to delete
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject deleteRule(String objectID, RequestOptions requestOptions) throws AlgoliaException {
     if (objectID == null || objectID.length() == 0) {
       throw new AlgoliaException("Invalid objectID");
     }
     try {
-      return client.deleteRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8"), true);
+      return client.deleteRequest("/1/indexes/" + encodedIndexName + "/rules/" + URLEncoder.encode(objectID, "UTF-8"), requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
@@ -1225,7 +1769,17 @@ public class Index {
    * @param forwardToReplicas Forward the operation to the replica indices
    */
   public JSONObject clearRules(boolean forwardToReplicas) throws AlgoliaException {
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/clear?forwardToReplicas=" + forwardToReplicas, "", true, false);
+    return this.clearRules(forwardToReplicas, RequestOptions.empty);
+  }
+
+  /**
+   * Delete all query rules
+   *
+   * @param forwardToReplicas Forward the operation to the replica indices
+   * @param requestOptions    Options to pass to this request
+   */
+  public JSONObject clearRules(boolean forwardToReplicas, RequestOptions requestOptions) throws AlgoliaException {
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/clear?forwardToReplicas=" + forwardToReplicas, "", true, false, requestOptions);
   }
 
   /**
@@ -1241,6 +1795,16 @@ public class Index {
    * @param query the query
    */
   public JSONObject searchRules(RuleQuery query) throws AlgoliaException, JSONException {
+    return this.searchRules(query, RequestOptions.empty);
+  }
+
+  /**
+   * Search for query rules
+   *
+   * @param query          the query
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject searchRules(RuleQuery query, RequestOptions requestOptions) throws AlgoliaException, JSONException {
     JSONObject body = new JSONObject();
     if (query.getQuery() != null) {
       body = body.put("query", query.getQuery());
@@ -1258,7 +1822,7 @@ public class Index {
       body = body.put("hitsPerPage", query.getHitsPerPage());
     }
 
-    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/search", body.toString(), false, true);
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/rules/search", body.toString(), false, true, requestOptions);
   }
 
   /**
@@ -1266,7 +1830,7 @@ public class Index {
    */
   static class IndexBrower extends IndexBrowser {
     IndexBrower(APIClient client, String encodedIndexName, Query params, String startingCursor) throws AlgoliaException {
-      super(client, encodedIndexName, params, startingCursor);
+      super(client, encodedIndexName, params, startingCursor, RequestOptions.empty);
     }
   }
 
@@ -1278,14 +1842,16 @@ public class Index {
     final APIClient client;
     final Query params;
     final String encodedIndexName;
+    final RequestOptions requestOptions;
     JSONObject answer;
     JSONObject hit;
     int pos;
 
-    IndexBrowser(APIClient client, String encodedIndexName, Query params, String startingCursor) throws AlgoliaException {
+    IndexBrowser(APIClient client, String encodedIndexName, Query params, String startingCursor, RequestOptions requestOptions) throws AlgoliaException {
       this.client = client;
       this.params = params;
       this.encodedIndexName = encodedIndexName;
+      this.requestOptions = requestOptions;
 
       doQuery(startingCursor);
       this.pos = 0;
@@ -1351,7 +1917,7 @@ public class Index {
           throw new IllegalStateException(e);
         }
       }
-      this.answer = client.getRequest("/1/indexes/" + encodedIndexName + "/browse" + ((paramsString.length() > 0) ? ("?" + paramsString) : ""), true);
+      this.answer = client.getRequest("/1/indexes/" + encodedIndexName + "/browse" + ((paramsString.length() > 0) ? ("?" + paramsString) : ""), true, requestOptions);
     }
   }
 
