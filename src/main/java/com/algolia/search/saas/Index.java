@@ -593,7 +593,7 @@ public class Index {
   /**
    * Delete all objects matching a query
    *
-   * @param query the query string
+   * @param query          the query string
    * @param requestOptions Options to pass to this request
    */
   public JSONObject deleteBy(Query query, RequestOptions requestOptions) throws AlgoliaException {
@@ -609,9 +609,9 @@ public class Index {
 
   /**
    * Delete all objects matching a query
-   * Deprecated use deleteBy
    *
    * @param query the query string
+   * @deprecated use deleteBy
    */
   @Deprecated
   public void deleteByQuery(Query query) throws AlgoliaException {
@@ -620,10 +620,10 @@ public class Index {
 
   /**
    * Delete all objects matching a query
-   * Deprecated use deleteBy
    *
    * @param query          the query string
    * @param requestOptions Options to pass to this request
+   * @deprecated use deleteBy
    */
   @Deprecated
   public void deleteByQuery(Query query, RequestOptions requestOptions) throws AlgoliaException {
@@ -631,8 +631,8 @@ public class Index {
   }
 
   /**
-   * Deprecated use deleteBy
    * @throws AlgoliaException
+   * @deprecated use deleteBy
    */
   @Deprecated
   public void deleteByQuery(Query query, int batchLimit, RequestOptions requestOptions) throws AlgoliaException {
@@ -666,8 +666,8 @@ public class Index {
   }
 
   /**
-   * Deprecated use deleteBy
    * @throws AlgoliaException
+   * @deprecated use deleteBy
    */
   @Deprecated
   public void deleteByQuery(Query query, int batchLimit) throws AlgoliaException {

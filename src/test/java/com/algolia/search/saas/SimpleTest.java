@@ -184,14 +184,17 @@ public class SimpleTest extends AlgoliaTest {
 
   @Test
   public void deleteBy() throws JSONException, AlgoliaException {
-    JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
-      .put("name", "Washington"))
-      .put(new JSONObject().put("name", "San Francisco"))
-      .put(new JSONObject().put("name", "San Jose")));
+    JSONObject task = index.addObjects(
+      new JSONArray()
+        .put(new JSONObject().put("name", "Washington"))
+        .put(new JSONObject().put("name", "San Francisco"))
+        .put(new JSONObject().put("name", "San Jose"))
+    );
     index.waitTask(task.getString("taskID"));
-    index.deleteBy(new Query("San"));
+    task = index.deleteBy(new Query().setTagFilters("a"));
+    index.waitTask(task.getString("taskID"));
     JSONObject res = index.search(new Query(""));
-    assertEquals(1, res.getInt("nbHits"));
+    assertEquals(3, res.getInt("nbHits"));
   }
 
   @Test
