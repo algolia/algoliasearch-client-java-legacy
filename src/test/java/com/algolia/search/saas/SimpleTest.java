@@ -169,6 +169,7 @@ public class SimpleTest extends AlgoliaTest {
     assertEquals(true, res.getJSONArray("results").getJSONObject(0).getJSONArray("hits").getJSONObject(0).getBoolean("b"));
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void deleteByQuery() throws JSONException, AlgoliaException {
     JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
@@ -177,6 +178,18 @@ public class SimpleTest extends AlgoliaTest {
       .put(new JSONObject().put("name", "San Jose")));
     index.waitTask(task.getString("taskID"));
     index.deleteByQuery(new Query("San"));
+    JSONObject res = index.search(new Query(""));
+    assertEquals(1, res.getInt("nbHits"));
+  }
+
+  @Test
+  public void deleteBy() throws JSONException, AlgoliaException {
+    JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
+      .put("name", "Washington"))
+      .put(new JSONObject().put("name", "San Francisco"))
+      .put(new JSONObject().put("name", "San Jose")));
+    index.waitTask(task.getString("taskID"));
+    index.deleteBy(new Query("San"));
     JSONObject res = index.search(new Query(""));
     assertEquals(1, res.getInt("nbHits"));
   }

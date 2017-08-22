@@ -586,24 +586,55 @@ public class Index {
    *
    * @param query the query string
    */
+  public JSONObject deleteBy(Query query) throws AlgoliaException {
+    return deleteBy(query, RequestOptions.empty);
+  }
+
+  /**
+   * Delete all objects matching a query
+   *
+   * @param query the query string
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject deleteBy(Query query, RequestOptions requestOptions) throws AlgoliaException {
+    String paramsString = query.getQueryString();
+    JSONObject body = new JSONObject();
+    try {
+      body.put("params", paramsString);
+    } catch (JSONException e) {
+      throw new RuntimeException(e);
+    }
+    return client.postRequest("/1/indexes/" + encodedIndexName + "/deleteByQuery", body.toString(), false, false, requestOptions);
+  }
+
+  /**
+   * Delete all objects matching a query
+   * Deprecated use deleteBy
+   *
+   * @param query the query string
+   */
+  @Deprecated
   public void deleteByQuery(Query query) throws AlgoliaException {
     deleteByQuery(query, 100000);
   }
 
   /**
    * Delete all objects matching a query
+   * Deprecated use deleteBy
    *
    * @param query          the query string
    * @param requestOptions Options to pass to this request
    */
+  @Deprecated
   public void deleteByQuery(Query query, RequestOptions requestOptions) throws AlgoliaException {
     this.deleteByQuery(query, 100000, requestOptions);
   }
 
-  public void deleteByQuery(Query query, int batchLimit) throws AlgoliaException {
-    this.deleteByQuery(query, batchLimit, RequestOptions.empty);
-  }
-
+  /**
+   * Deprecated use deleteBy
+   * @throws AlgoliaException
+   */
+  @Deprecated
   public void deleteByQuery(Query query, int batchLimit, RequestOptions requestOptions) throws AlgoliaException {
     List<String> attributesToRetrieve = new ArrayList<String>();
     attributesToRetrieve.add("objectID");
@@ -632,6 +663,15 @@ public class Index {
     } catch (JSONException e) {
       throw new AlgoliaException(e.getMessage());
     }
+  }
+
+  /**
+   * Deprecated use deleteBy
+   * @throws AlgoliaException
+   */
+  @Deprecated
+  public void deleteByQuery(Query query, int batchLimit) throws AlgoliaException {
+    this.deleteByQuery(query, batchLimit, RequestOptions.empty);
   }
 
   /**
