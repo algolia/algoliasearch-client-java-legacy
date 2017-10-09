@@ -1157,7 +1157,12 @@ public class APIClient {
         result.add(host);
       }
     }
-    return result;
+
+    if (result.isEmpty()) {
+      return hosts;
+    } else {
+      return result;
+    }
   }
 
   private boolean isHostUpOrCouldBeRetried(String host) {
