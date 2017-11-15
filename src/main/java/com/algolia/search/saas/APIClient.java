@@ -314,7 +314,7 @@ public class APIClient {
    * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
    */
   public JSONObject moveIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
-    return operationOnIndex("move", srcIndexName, dstIndexName, RequestOptions.empty);
+    return operationOnIndex("move", srcIndexName, dstIndexName, null, RequestOptions.empty);
   }
 
   /**
@@ -325,7 +325,7 @@ public class APIClient {
    * @param requestOptions Options to pass to this request
    */
   public JSONObject moveIndex(String srcIndexName, String dstIndexName, RequestOptions requestOptions) throws AlgoliaException {
-    return operationOnIndex("move", srcIndexName, dstIndexName, requestOptions);
+    return operationOnIndex("move", srcIndexName, dstIndexName, null, requestOptions);
   }
 
   /**
@@ -335,7 +335,7 @@ public class APIClient {
    * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
    */
   public JSONObject copyIndex(String srcIndexName, String dstIndexName) throws AlgoliaException {
-    return operationOnIndex("copy", srcIndexName, dstIndexName, RequestOptions.empty);
+    return operationOnIndex("copy", srcIndexName, dstIndexName, null, RequestOptions.empty);
   }
 
   /**
@@ -346,14 +346,40 @@ public class APIClient {
    * @param requestOptions Options to pass to this request
    */
   public JSONObject copyIndex(String srcIndexName, String dstIndexName, RequestOptions requestOptions) throws AlgoliaException {
-    return operationOnIndex("copy", srcIndexName, dstIndexName, requestOptions);
+    return operationOnIndex("copy", srcIndexName, dstIndexName, null, requestOptions);
   }
 
-  private JSONObject operationOnIndex(String operation, String srcIndexName, String dstIndexName, RequestOptions requestOptions) throws AlgoliaException {
+  /**
+   * Copy an existing index.
+   *
+   * @param srcIndexName the name of index to copy.
+   * @param dstIndexName the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+   * @param scopes       the list of scopes to copy
+   */
+  public JSONObject copyIndex(String srcIndexName, String dstIndexName, List<String> scopes) throws AlgoliaException {
+    return operationOnIndex("copy", srcIndexName, dstIndexName, scopes, RequestOptions.empty);
+  }
+
+  /**
+   * Copy an existing index.
+   *
+   * @param srcIndexName   the name of index to copy.
+   * @param dstIndexName   the new index name that will contains a copy of srcIndexName (destination will be overriten if it already exist).
+   * @param scopes         the list of scopes to copy
+   * @param requestOptions Options to pass to this request
+   */
+  public JSONObject copyIndex(String srcIndexName, String dstIndexName, List<String> scopes, RequestOptions requestOptions) throws AlgoliaException {
+    return operationOnIndex("copy", srcIndexName, dstIndexName, scopes, requestOptions);
+  }
+
+  private JSONObject operationOnIndex(String operation, String srcIndexName, String dstIndexName, List<String> scopes, RequestOptions requestOptions) throws AlgoliaException {
     try {
       JSONObject content = new JSONObject();
       content.put("operation", operation);
       content.put("destination", dstIndexName);
+      if(scopes != null) {
+        content.put("scopes", scopes);
+      }
       return postRequest("/1/indexes/" + URLEncoder.encode(srcIndexName, "UTF-8") + "/operation", content.toString(), true, false, requestOptions);
     } catch (UnsupportedEncodingException e) {
       throw new RuntimeException(e); // $COVERAGE-IGNORE$
