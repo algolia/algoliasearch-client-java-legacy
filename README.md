@@ -27,6 +27,7 @@ java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
 
 
+
 # Getting Started
 
 
@@ -49,6 +50,7 @@ You can find both on [your Algolia account](https://www.algolia.com/api-keys).
 
 ```java
 APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
+Index index = client.initIndex("your_index_name");
 ```
 
 
@@ -57,37 +59,20 @@ APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
 
 
 
-## Search an index - `Search` 
+## Methods
 
-To perform a search, you need to initialize the index and perform a call to the search function.
+## Building search UIs
 
-The search query only allows for the retrieval of up to 1000 hits.
-If you need to retrieve more than 1000 hits (e.g. for SEO), you can either leverage the [Backup / Export an index](https://www.algolia.com/doc/api-client/java1/advanced/#backup--export-an-index)
-method or increase the [`paginationLimitedTo`](https://www.algolia.com/doc/api-reference/api-parameters/paginationLimitedTo/) parameter.
-
-```java
-Index index = client.initIndex("contacts");
-System.out.println(index.search(new Query("query string")));
-System.out.println(index.search(new Query("query string").
-             setAttributesToRetrieve(Arrays.asList("firstname", "lastname")).
-             setNbHitsPerPage(50)));
-```
-
-If you are building a web application, you may be more interested in one
-of our [frontend search UI librairies](https://www.algolia.com/doc/guides/search-ui/search-libraries/)
+If you are building a web application, we recommend using one
+of our [frontend search UI libraries](https://www.algolia.com/doc/guides/search-ui/search-libraries/) instead of the API client directly.
 
 It brings several benefits:
   * Your users will see a better response time as the request will not need to go through your servers
   * You will be able to offload unnecessary tasks from your servers
 
-### Building search UIs
+To get started with building search UIs, take a look at these tutorials:
 
-To build a search user interface on top of the Algolia API, we recommend using one of our
-[frontend search UI librairies](https://www.algolia.com/doc/guides/search-ui/search-libraries/) instead of using the API client directly.
-
-You might be interested in the following tutorials on getting started with building search UIs:
-
-<a href="/doc/tutorials/search-ui/instant-search/build-an-instant-search-results-page/instantsearchjs/">
+<a href="/doc/tutorials/search-ui/instant-search/build-an-instant-search-results-page/instantsearchjs/" class="flex-container">
 
 <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
   <title>Search UI</title>
@@ -106,7 +91,7 @@ Tutorials
 
 Building an instant search result page
 
-</a><a href="/doc/tutorials/search-ui/autocomplete/auto-complete/">
+</a><a href="/doc/tutorials/search-ui/autocomplete/auto-complete/" class="flex-container">
 
 <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
   <title>Search UI</title>
@@ -127,318 +112,41 @@ Autocomplete
 
 </a>
 
-## Search Response Format
-
-### Sample
-
-The server response will look like:
-
-```json
-{
-  "hits": [
-    {
-      "firstname": "Jimmie",
-      "lastname": "Barninger",
-      "objectID": "433",
-      "_highlightResult": {
-        "firstname": {
-          "value": "<em>Jimmie</em>",
-          "matchLevel": "partial"
-        },
-        "lastname": {
-          "value": "Barninger",
-          "matchLevel": "none"
-        },
-        "company": {
-          "value": "California <em>Paint</em> & Wlpaper Str",
-          "matchLevel": "partial"
-        }
-      }
-    }
-  ],
-  "page": 0,
-  "nbHits": 1,
-  "nbPages": 1,
-  "hitsPerPage": 20,
-  "processingTimeMS": 1,
-  "query": "jimmie paint",
-  "params": "query=jimmie+paint&attributesToRetrieve=firstname,lastname&hitsPerPage=50"
-}
-```
-
-### Fields
-
-- `hits` (array): The hits returned by the search, sorted according to the ranking formula.
-
-    Hits are made of the JSON objects that you stored in the index; therefore, they are mostly schema-less. However, Algolia does enrich them with a few additional fields:
-
-    - `_highlightResult` (object, optional): Highlighted attributes. *Note: Only returned when [`attributesToHighlight`](https://www.algolia.com/doc/api-reference/api-parameters/attributesToHighlight/) is non-empty.*
-
-        - `${attribute_name}` (object): Highlighting for one attribute.
-
-            - `value` (string): Markup text with occurrences highlighted. The tags used for highlighting are specified via [`highlightPreTag`](https://www.algolia.com/doc/api-reference/api-parameters/highlightPreTag/) and [`highlightPostTag`](https://www.algolia.com/doc/api-reference/api-parameters/highlightPostTag/).
-
-            - `matchLevel` (string, enum) = {`none` \| `partial` \| `full`}: Indicates how well the attribute matched the search query.
-
-            - `matchedWords` (array): List of words *from the query* that matched the object.
-
-            - `fullyHighlighted` (boolean): Whether the entire attribute value is highlighted.
-
-    - `_snippetResult` (object, optional): Snippeted attributes. *Note: Only returned when [`attributesToSnippet`](https://www.algolia.com/doc/api-reference/api-parameters/attributesToSnippet/) is non-empty.*
-
-        - `${attribute_name}` (object): Snippeting for the corresponding attribute.
-
-            - `value` (string): Markup text with occurrences highlighted and optional ellipsis indicators. The tags used for highlighting are specified via [`highlightPreTag`](https://www.algolia.com/doc/api-reference/api-parameters/highlightPreTag/) and [`highlightPostTag`](https://www.algolia.com/doc/api-reference/api-parameters/highlightPostTag/). The text used to indicate ellipsis is specified via [`snippetEllipsisText`](https://www.algolia.com/doc/api-reference/api-parameters/snippetEllipsisText/).
-
-            - `matchLevel` (string, enum) = {`none` \| `partial` \| `full`}: Indicates how well the attribute matched the search query.
-
-    - `_rankingInfo` (object, optional): Ranking information. *Note: Only returned when [`getRankingInfo`](https://www.algolia.com/doc/api-reference/api-parameters/getRankingInfo/) is `true`.*
-
-        - `nbTypos` (integer): Number of typos encountered when matching the record. Corresponds to the `typos` ranking criterion in the ranking formula.
-
-        - `firstMatchedWord` (integer): Position of the most important matched attribute in the attributes to index list. Corresponds to the `attribute` ranking criterion in the ranking formula.
-
-        - `proximityDistance` (integer): When the query contains more than one word, the sum of the distances between matched words (in meters). Corresponds to the `proximity` criterion in the ranking formula.
-
-        - `userScore` (integer): Custom ranking for the object, expressed as a single numerical value. Conceptually, it's what the position of the object would be in the list of all objects sorted by custom ranking. Corresponds to the `custom` criterion in the ranking formula.
-
-        - `geoDistance` (integer): Distance between the geo location in the search query and the best matching geo location in the record, divided by the geo precision (in meters).
-
-        - `geoPrecision` (integer): Precision used when computed the geo distance, in meters. All distances will be floored to a multiple of this precision.
-
-        - `nbExactWords` (integer): Number of exactly matched words. If `alternativeAsExact` is set, it may include plurals and/or synonyms.
-
-        - `words` (integer): Number of matched words, including prefixes and typos.
-
-        - `filters` (integer): *This field is reserved for advanced usage.* It will be zero in most cases.
-
-        - `matchedGeoLocation` (object): Geo location that matched the query. *Note: Only returned for a geo search.*
-
-            - `lat` (float): Latitude of the matched location.
-
-            - `lng` (float): Longitude of the matched location.
-
-            - `distance` (integer): Distance between the matched location and the search location (in meters). **Caution:** Contrary to `geoDistance`, this value is *not* divided by the geo precision.
-
-    - `_distinctSeqID` (integer): *Note: Only returned when [`distinct`](https://www.algolia.com/doc/api-reference/api-parameters/distinct/) is non-zero.* When two consecutive results have the same value for the attribute used for "distinct", this field is used to distinguish between them.
-
-- `nbHits` (integer): Number of hits that the search query matched.
-
-- `page` (integer): Index of the current page (zero-based). See the [`page`](https://www.algolia.com/doc/api-reference/api-parameters/page/) search parameter. *Note: Not returned if you use `offset`/`length` for pagination.*
-
-- `hitsPerPage` (integer): Maximum number of hits returned per page. See the [`hitsPerPage`](https://www.algolia.com/doc/api-reference/api-parameters/hitsPerPage/) search parameter. *Note: Not returned if you use `offset`/`length` for pagination.*
-
-- `nbPages` (integer): Number of pages corresponding to the number of hits. Basically, `ceil(nbHits / hitsPerPage)`. *Note: Not returned if you use `offset`/`length` for pagination.*
-
-- `processingTimeMS` (integer): Time that the server took to process the request, in milliseconds. *Note: This does not include network time.*
-
-- `exhaustiveNbHits` (boolean): Whether the `nbHits` is exhaustive (`true`) or approximate (`false`). *Note: An approximation is done when the query takes more than 50ms to be processed (this can happen when doing complex filters on millions on records).*
-
-- `query` (string): An echo of the query text. See the [`query`](https://www.algolia.com/doc/api-reference/api-parameters/query/) search parameter.
-
-- `queryAfterRemoval` (string, optional): *Note: Only returned when [`removeWordsIfNoResults`](https://www.algolia.com/doc/api-reference/api-parameters/removeWordsIfNoResults/) is set to `lastWords` or `firstWords`.* A markup text indicating which parts of the original query have been removed in order to retrieve a non-empty result set. The removed parts are surrounded by `<em>` tags.
-
-- `params` (string, URL-encoded): An echo of all search parameters.
-
-- `message` (string, optional): Used to return warnings about the query.
-
-- `aroundLatLng` (string, optional): *Note: Only returned when [`aroundLatLngViaIP`](https://www.algolia.com/doc/api-reference/api-parameters/aroundLatLngViaIP/) is set.* The computed geo location. **Warning: for legacy reasons, this parameter is a string and not an object.** Format: `${lat},${lng}`, where the latitude and longitude are expressed as decimal floating point numbers.
-
-- `automaticRadius` (integer, optional): *Note: Only returned for geo queries without an explicitly specified radius (see `aroundRadius`).* The automatically computed radius. **Warning: for legacy reasons, this parameter is a string and not an integer.**
-
-When [`getRankingInfo`](https://www.algolia.com/doc/api-reference/api-parameters/getRankingInfo/) is set to `true`, the following additional fields are returned:
-
-- `serverUsed` (string): Actual host name of the server that processed the request. (Our DNS supports automatic failover and load balancing, so this may differ from the host name used in the request.)
-
-- `parsedQuery` (string): The query string that will be searched, after normalization. Normalization includes removing stop words (if [`removeStopWords`](https://www.algolia.com/doc/api-reference/api-parameters/removeStopWords/) is enabled), and transforming portions of the query string into phrase queries (see [`advancedSyntax`](https://www.algolia.com/doc/api-reference/api-parameters/advancedSyntax/)).
-
-- `timeoutCounts` (boolean) - DEPRECATED: Please use `exhaustiveFacetsCount` in remplacement.
-
-- `timeoutHits` (boolean) - DEPRECATED: Please use `exhaustiveFacetsCount` in remplacement.
-
-... and ranking information is also added to each of the hits (see above).
-
-When [`facets`](https://www.algolia.com/doc/api-reference/api-parameters/facets/) is non-empty, the following additional fields are returned:
-
-- `facets` (object): Maps each facet name to the corresponding facet counts:
-
-    - `${facet_name}` (object): Facet counts for the corresponding facet name:
-
-        - `${facet_value}` (integer): Count for this facet value.
-
-- `facets_stats` (object, optional): *Note: Only returned when at least one of the returned facets contains numerical values.* Statistics for numerical facets:
-
-    - `${facet_name}` (object): The statistics for a given facet:
-
-        - `min` (integer \| float): The minimum value in the result set.
-
-        - `max` (integer \| float): The maximum value in the result set.
-
-        - `avg` (integer \| float): The average facet value in the result set.
-
-        - `sum` (integer \| float): The sum of all values in the result set.
-
-- `exhaustiveFacetsCount` (boolean): Whether the counts of the facet values are exhaustive (`true`) or approximate (`false`). *Note: In some conditions, when a large number of results are matching, the facet counts may not always be exhaustive.*
-
-## Search Parameters
-
-Here is the list of parameters you can use with the search method (`search` [scope](https://www.algolia.com/doc/api-reference/api-parameters#scope)):
-Parameters that can also be used in a setSettings also have the `indexing` [scope](https://www.algolia.com/doc/api-reference/api-parameters#scope)
-
-#### Search
-
-#### Attributes
-
-#### Filtering / Faceting
-
-#### Highlighting / Snippeting
-
-#### Pagination
-
-#### Typos
-
-#### Geo-Search
-
-#### Query Strategy
-
-#### Advanced
-
-## Search multiple indices - `multipleQueries` 
-
-You can send multiple queries with a single API call using a batch of queries:
-
-```java
-// perform 3 queries in a single API call:
-//  - 1st query targets index `categories`
-//  - 2nd and 3rd queries target index `products`
-
-List<APIClient.IndexQuery> queries = new ArrayList<APIClient.IndexQuery>();
-
-queries.add(new APIClient.IndexQuery("categories", new Query(myQueryString).setHitsPerPage(3)));
-queries.add(new APIClient.IndexQuery("products", new Query(myQueryString).setHitsPerPage(3).setFilters("_tags:promotion"));
-queries.add(new APIClient.IndexQuery("products", new Query(myQueryString).setHitsPerPage(10)));
-
-JSONObject res = client.multipleQueries(queries);
-
-System.out.println(res.getJSONArray("results").toString())
-```
-
-You can specify a `strategy` parameter to optimize your multiple queries:
-
-- `none`: Execute the sequence of queries until the end.
-- `stopIfEnoughMatches`: Execute queries one by one, but stop as soon as the cumulated number of hits is at least `hitsPerPage`.
-
-### Response
-
-The resulting JSON contains the following fields:
-
-- `results` (array): The results for each request, in the order they were submitted. The contents are the same as in [Search an index](https://www.algolia.com/doc/api-client/java1/search/#search-an-index).
-    Each result also includes the following additional fields:
-
-    - `index` (string): The name of the targeted index.
-    - `processed` (boolean, optional): *Note: Only returned when `strategy` is `stopIfEnoughmatches`.* Whether the query was processed.
-
-## Get Objects - `getObjects` 
-
-You can easily retrieve an object using its `objectID` and optionally specify a comma separated list of attributes you want:
-
-```java
-// Retrieves all attributes
-index.getObject("myID");
-// Retrieves only the firstname attribute
-index.getObject("myID", Arrays.asList("firstname"));
-```
-
-You can also retrieve a set of objects:
-
-```java
-index.getObjects(Arrays.asList("myObj1", "myObj2"));
-```
-
-## Search for facet values - `searchForFacetValues` 
-
-When there are many facet values for a given facet, it may be useful to search within them. For example, you may have dozens of 'brands' for a given index of 'clothes'. Rather than displaying all of the brands, it is often best to only display the most popular and add a search input to allow the user to search for the brand that they are looking for.
-
-Searching on facet values is different than a regular search because you are searching only on *facet values*, not *objects*.
-
-The results are sorted by decreasing count. By default, maximum 10 results are returned. This can be adjusted via [`maxFacetHits`](https://www.algolia.com/doc/api-reference/api-parameters/maxFacetHits/). No pagination is possible.
-
-The facet search can optionally take regular search query parameters.
-In that case, it will return only facet values that both:
-
-1. match the facet query
-2. are contained in objects matching the regular search query.
-
-**Warning:** For a facet to be searchable, it must have been declared with the `searchable()` modifier in the [`attributesForFaceting`](https://www.algolia.com/doc/api-reference/api-parameters/attributesForFaceting/) index setting.
-
-#### Example
-
-Let's imagine we have objects similar to this one:
-
-```json
-{
-    "name": "iPhone 7 Plus",
-    "brand": "Apple",
-    "category": [
-        "Mobile phones",
-        "Electronics"
-    ]
-}
-```
-
-Then:
-
-```java
-// Search the values of the "category" facet matching "phone".
-System.out.println(index.searchForFacetValues("category", "phone", null));
-```
-
-... could return:
-
-```json
-{
-    "facetHits": [
-        {
-            "value": "Mobile phones",
-            "highlighted": "Mobile <em>phone</em>s",
-            "count": 507
-        },
-        {
-            "value": "Phone cases",
-            "highlighted": "<em>Phone</em> cases",
-            "count": 63
-        }
-    ]
-}
-```
-
-Let's filter with an additional, regular search query:
-
-```java
-Query query = new Query().setFilters("brand:Apple");
-
-// Search the "category" facet for values matching "phone" in records
-// having "Apple" in their "brand" facet.
-System.out.println(index.searchFacet("category", "phone", query));
-```
-
-... could return:
-
-```json
-{
-    "facetHits": [
-        {
-            "value": "Mobile phones",
-            "highlighted": "Mobile <em>phone</em>s",
-            "count": 41
-        }
-    ]
-}
-```
-
-**Warning:** **Building your search implementation in Javascript?** Look at the
-[Filtering & Faceting guide](https://www.algolia.com/doc/guides/searching/faceting)
-to see how to use Search for facet values from the front-end.
+## Related Resources
+
+<a href="/doc/api-reference/search-api-parameters/" class="flex-container">
+
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <title>View API Reference</title>
+  <defs>
+    <linearGradient x1="31.234%" y1="-9.229%" x2="81.126%" y2="104.898%" id="aaf41">
+      <stop stop-color="#B84592" offset="0%" />
+      <stop stop-color="#FF4F81" offset="100%" />
+    </linearGradient>
+    <linearGradient x1="12.497%" y1="50%" y2="40.413%" id="baf41">
+      <stop stop-color="#B84592" offset="0%" />
+      <stop stop-color="#FF4F81" offset="100%" />
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <rect fill="#FFF" width="80" height="80" rx="6" />
+    <g class="animatable">
+      <path d="M11.535 14.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.664 1.664 0 0 1-1.64 0L2.28 30.23a1.674 1.674 0 0 1-.845-1.452v-8.556c0-.6.324-1.155.846-1.45l7.614-4.308a1.664 1.664 0 0 1 1.64 0z" fill="url(#aaf41)" transform="translate(25 23.333)" />
+    </g>
+    <g class="animatable">
+      <path d="M23.44 7.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.668 1.668 0 0 1-1.642 0l-7.612-4.307a1.668 1.668 0 0 1-.846-1.452v-8.556c0-.6.323-1.155.846-1.45l7.612-4.308a1.668 1.668 0 0 1 1.642 0z" fill="url(#baf41)" transform="translate(25 23.333)" />
+    </g>
+    <g class="animatable">
+      <path d="M11.535.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.664 1.664 0 0 1-1.64 0L2.28 16.23a1.674 1.674 0 0 1-.845-1.452V6.222c0-.6.324-1.155.846-1.45L9.895.463a1.664 1.664 0 0 1 1.64 0z" fill="url(#aaf41)" transform="translate(25 23.333)" />
+    </g>
+  </g>
+</svg>
+
+API reference
+
+Search API parameters
+
+</a>
 
 
 
@@ -446,195 +154,66 @@ to see how to use Search for facet values from the front-end.
 
 
 
-## Add Objects - `addObjects` 
+## Methods
 
-Each entry in an index has a unique identifier called `objectID`.
+## Creating indexes
 
-There are two ways to add an entry to the index:
+You don't need to explicitly create an index, as it will be automatically created the first time you add an object.
 
-1. Supplying an `objectID`.
-    1. If the `objectID` does not exist in the index, the record will be created
-    1. If the `objectID` already exists the record will be replaced
-1. Not supplying an `objectID`. Algolia will automatically assign an `objectID` and you will be able to access it in the response.
+Objects are schema-less so you don't need any pre-configuration to start indexing.
 
-Using your own unique IDs when creating records is a good way to make future updates easier without having to keep track of Algolia's generated IDs.
-The value you provide for objectIDs can be an integer or a string.
+If you wish to configure your index, the [settings section](https://www.algolia.com/doc/api-client/settings) provides details about advanced settings.
 
-You don't need to explicitly create an index, it will be automatically created the first time you add an object.
-Objects are schema less so you don't need any configuration to start indexing.
-If you wish to configure things, the settings section provides details about advanced settings.
+## Add, Update and Partial Update differences
 
-Example with automatic `objectID` assignments:
+### Add Objects
 
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
-array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
-index.addObjects(array);
-```
+The [`Add Objects`](https://www.algolia.com/doc/api-reference/api-methods/add-objects/) method does not require an `objectID`.
 
-Example with manual `objectID` assignments:
+- Supplying an `objectID`:
+  - If the `objectID` does not exist in the index, the record will be created
+  - If the `objectID` already exists, the record will be replaced
+- Not supplying an `objectID`:
+  - Algolia will automatically assign an `objectID`, which will be returned in the response
 
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("objectID", "myID1").put("firstname", "Jimmie").put("lastname", "Barninger"));
-array.add(new JSONObject().put("objectID", "myID2").put("firstname", "Warren").put("lastname", "Speach"));
-index.addObjects(array);
-```
+### Update Objects
 
-To add a single object, use the following method:
+The [`Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/update-objects/) method requires an `objectID`.
 
-```java
-JSONObject obj = index.addObject(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger"), "myID");
-System.out.println(obj.getString("objectID"));
-```
+- If the `objectID` exists, the record will be replaced
+- If the `objectID` does not exist, or no `objectID` is specified, the method returns an error
 
-## Update objects - `saveObjects` 
+**Note:** Update Object is also known as `Save Object`. In this context, the terms are used interchangeably.
 
-You have three options when updating an existing object:
+### Partial Update Ojects
 
- 1. Replace all its attributes.
- 2. Replace only some attributes.
- 3. Apply an operation to some attributes.
+The [`Partial Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/partial-update-objects/) method requires an `objectID`.
 
-**Warning:** Each record needs to contain the `objectID` key.
+- If the `objectID` exists, the attributes will be replaced
+- If the `objectID` does not exist, or no `objectID` is specified, the method returns an error
 
-**Examples**:
+**Note:** `Partial Update` does not replace the whole object, it only adds, removes, or updates the attributes mentioned; the remaining attributes are left untouched. This is different from `Add Object` and `Update Object`, both of which replace the whole object.
 
-To replace all attributes existing objects:
+### For all three
 
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "myID"));
-array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "myID2"));
-index.saveObjects(array);
-```
+- The method for all three can be singular or plural.
+  - If singular (e.g. AddObject), the method accepts only one object as a parameter
+  - If plural (e.g. AddObjects), the method can accept one or many objects
 
-To update a single object, you can use the following method:
+**Note:** See the indvidual methods for more information on syntax and usage.
 
-```java
-index.saveObject(new JSONObject()
-      .put("firstname", "Jimmie")
-      .put("lastname", "Barninger")
-      .put("city", "New York"), "myID");
-```
+## Terminology
 
-## Partial update objects - `partialUpdateObjects` 
+### Object / Record
+We use these 2 words interchangeably. Sometimes witin the same sentence. So don't place any significance on their usage:
 
-You have many ways to update an object's attributes:
+- Indexes contain objects or records
+- JSON contains objects or records
 
- 1. Set the attribute value
- 2. Add a string or number element to an array
- 3. Remove an element from an array
- 4. Add a string or number element to an array if it doesn't exist
- 5. Increment an attribute
- 6. Decrement an attribute
+### Attribute
+All objects and records contain attributes. Sometimes we refer to them as fields, or elements. Within the search and indexing contexts, we often speak of settings and parameters. Again, these terms are mostly interchangeable.
 
-**Warning:** Nested attributes cannot be individually updated. If you specify a nested attribute, it will be treated as a
-replacement of its first-level ancestor.
-
-Example to update only the city attribute of an existing object:
-
-```java
-index.partialUpdateObject(new JSONObject().put("city", "San Francisco"), "myID");
-```
-
-Example to add a tag:
-
-```java
-index.partialUpdateObject(new JSONObject().put("_tags", new JSONObject().put("value", "MyTags").put("_operation", "Add")), "myID");
-```
-
-Example to remove a tag:
-
-```java
-index.partialUpdateObject(new JSONObject().put("_tags", new JSONObject().put("value", "MyTags").put("_operation", "Remove")), "myID");
-```
-
-Example to add a tag if it doesn't exist:
-
-```java
-index.partialUpdateObject(new JSONObject().put("_tags", new JSONObject().put("value", "MyTags").put("_operation", "AddUnique")), "myID");
-```
-
-Example to increment a numeric value:
-
-```java
-index.partialUpdateObject(new JSONObject().put("price", new JSONObject().put("value", 42).put("_operation", "Increment")), "myID");
-```
-
-Note: Here we are incrementing the value by `42`. To increment just by one, put
-`value:1`.
-
-Example to decrement a numeric value:
-
-```java
-index.partialUpdateObject(new JSONObject().put("price", new JSONObject().put("value", 42).put("_operation", "Decrement")), "myID");
-```
-
-Note: Here we are decrementing the value by `42`. To decrement just by one, put
-`value:1`.
-
-To partial update multiple objects using one API call, you can use the following method:
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("firstname", "Jimmie").put("objectID", "myID"));
-array.add(new JSONObject().put("firstname", "Warren").put("objectID", "myID2"));
-index.partialUpdateObjects(array);
-```
-
-## Delete objects - `deleteObjects` 
-
-You can delete objects using their `objectID`:
-
-```java
-List<String> ids = new ArrayList<String>();
-ids.add("myID1");
-ids.add("myID2");
-index.deleteObjects(ids);
-```
-
-To delete a single object, you can use the following method:
-
-```java
-index.deleteObject("myID");
-```
-
-## Delete by query - `deleteByQuery` 
-
-The "delete by query" helper deletes all objects matching a query. Internally, the API client will browse the index (as in [Backup / Export an index](https://www.algolia.com/doc/api-client/java1/advanced/#backup--export-an-index)), delete all matching hits, and wait until all deletion tasks have been applied.
-
-**Warning:** Be careful when using this method. Calling it with an empty query will result in cleaning the index of all its records.
-
-```java
-Query query = /* [ ... ] */;
-index.deleteByQuery(query);
-```
-
-## Wait for operations - `waitTask` 
-
-All write operations in Algolia are asynchronous by design.
-
-It means that when you add or update an object to your index, our servers will
-reply to your request with a `taskID` as soon as they understood the write
-operation.
-
-The actual insert and indexing will be done after replying to your code.
-
-You can wait for a task to complete using the `waitTask` method on the `taskID` returned by a write operation.
-
-For example, to wait for indexing of a new object:
-
-```java
-JSONObject res = index.addObject(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
-index.waitTask(String.valueOf(res.getLong("taskID")));
-```
-
-If you want to ensure multiple objects have been indexed, you only need to check
-the biggest `taskID`.
+Some attributes are simple key/value pairs. But others can be more complex, making it look more like a collection or an object.
 
 
 
@@ -642,38 +221,105 @@ the biggest `taskID`.
 
 
 
-## Get settings - `getSettings` 
+## Methods
 
-You can retrieve settings:
+## The *scope* of settings (and parameters)
 
-```java
-System.out.println(index.getSettings());
+Settings are set on the index and/or during a particular query. In both cases, they are sent to Algolia using *parameters*.
+- For the index, we use the [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings/) method.
+- For the search, we use the [search](https://www.algolia.com/doc/api-reference/api-methods/search/) method.
+
+Importantly, each parameter has a scope (See [API Parameters](https://www.algolia.com/doc/api-reference/api-parameters)). There are 3 scopes:
+
+#### `settings`
+
+The setting can only be used in the [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings/) method. Meaning that it is not available as a search parameter.
+
+Index settings are built directly into your index at indexing time, and they impact every search.
+
+#### `search`
+
+Individual queries can be parameterized. To do this, you pass search parameters to the [search](https://www.algolia.com/doc/api-reference/api-methods/search) method. These parameters affect only those queries that use it. And there is not index default for them.
+
+#### `settings` `search`
+
+When applying both, you create a default/override logic: you set an index default using the [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings/) method that can be overriden by your [search](https://www.algolia.com/doc/api-reference/api-methods/search/) method.
+
+**Note:** Note that, if a setting or a parameter is not used, the system will apply an engine level default.
+
+### Example
+
+Just to make it more concrete, here is an example of an index setting, where all queries performed on this index will use a `queryType` of `prefixLast`:
+
+```js
+index.setSettings({
+  queryType: 'prefixLast'
+});
 ```
 
-## Set settings - `` 
+And here is a query that overrides that index setting with `prefixAll`:
 
-```java
-index.setSettings(new JSONObject().append("customRanking", "desc(followers)"));
+```js
+index.search({
+  query: 'query',
+  queryType: 'prefixAll'
+});
 ```
 
-You can find the list of parameters you can set in the [Settings Parameters](#index-settings-parameters) section
+### Categories
 
-**Warning**
+As you start fine-tuning Algolia, you will want to use more of its settings.
+Mastering these settings will enable you to get the best out of Algolia.
 
-Performance wise, it's better to do a `` before pushing the data
+To help you navigate our list of settings, we've created the following setting categories:
 
-### Replica settings
+- [Search](https://www.algolia.com/doc/api-reference/api-parameters/#search)
+- [Attributes](https://www.algolia.com/doc/api-reference/api-parameters/#attributes)
+- [Ranking](https://www.algolia.com/doc/api-reference/api-parameters/#ranking)
+- [Filtering / Faceting](https://www.algolia.com/doc/api-reference/api-parameters/#filtering--faceting)
+- [Highlighting / Snippeting](https://www.algolia.com/doc/api-reference/api-parameters/#highlighting--snippeting)
+- [Pagination](https://www.algolia.com/doc/api-reference/api-parameters/#pagination)
+- [Typos](https://www.algolia.com/doc/api-reference/api-parameters/#typos)
+- [Geo-Search](https://www.algolia.com/doc/api-reference/api-parameters/#geo-search)
+- [Query Strategy](https://www.algolia.com/doc/api-reference/api-parameters/#query-strategy)
+- [Performance](https://www.algolia.com/doc/api-reference/api-parameters/#performance)
+- [Advanced](https://www.algolia.com/doc/api-reference/api-parameters/#advanced)
 
-You can forward all settings updates to the replicas of an index by using the `forwardToReplicas` option:
+### For a full list of settings:
 
-```java
-index.setSettings(new JSONObject().append("customRanking", "desc(followers)"), true);
-```
+<a href="/doc/api-reference/settings-api-parameters/" class="flex-container">
 
-## Index settings parameters
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <title>View API Reference</title>
+  <defs>
+    <linearGradient x1="31.234%" y1="-9.229%" x2="81.126%" y2="104.898%" id="aaf41">
+      <stop stop-color="#B84592" offset="0%" />
+      <stop stop-color="#FF4F81" offset="100%" />
+    </linearGradient>
+    <linearGradient x1="12.497%" y1="50%" y2="40.413%" id="baf41">
+      <stop stop-color="#B84592" offset="0%" />
+      <stop stop-color="#FF4F81" offset="100%" />
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <rect fill="#FFF" width="80" height="80" rx="6" />
+    <g class="animatable">
+      <path d="M11.535 14.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.664 1.664 0 0 1-1.64 0L2.28 30.23a1.674 1.674 0 0 1-.845-1.452v-8.556c0-.6.324-1.155.846-1.45l7.614-4.308a1.664 1.664 0 0 1 1.64 0z" fill="url(#aaf41)" transform="translate(25 23.333)" />
+    </g>
+    <g class="animatable">
+      <path d="M23.44 7.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.668 1.668 0 0 1-1.642 0l-7.612-4.307a1.668 1.668 0 0 1-.846-1.452v-8.556c0-.6.323-1.155.846-1.45l7.612-4.308a1.668 1.668 0 0 1 1.642 0z" fill="url(#baf41)" transform="translate(25 23.333)" />
+    </g>
+    <g class="animatable">
+      <path d="M11.535.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.664 1.664 0 0 1-1.64 0L2.28 16.23a1.674 1.674 0 0 1-.845-1.452V6.222c0-.6.324-1.155.846-1.45L9.895.463a1.664 1.664 0 0 1 1.64 0z" fill="url(#aaf41)" transform="translate(25 23.333)" />
+    </g>
+  </g>
+</svg>
 
-You can see the full list of settings parameters here:
-[https://www.algolia.com/doc/api-reference/api-parameters/](https://www.algolia.com/doc/api-reference/api-parameters/)
+API reference
+
+Settings API parameters
+
+</a>
 
 
 
@@ -681,74 +327,14 @@ You can see the full list of settings parameters here:
 
 
 
+## Methods
+
 ## Create an index
   
-You don’t need to explicitly create an index, it will be automatically created the first time you [add an object](https://www.algolia.com/doc/api-client/java1/indexing/#add-objects) or [set settings](https://www.algolia.com/doc/api-client/java1/settings/#set-settings).
-
-## List indices - `listIndexes` 
-
-You can list all your indices along with their associated information (number of entries, disk size, etc.) with the `listIndexes` method:
-
-```java
-client.listIndexes();
-```
-
-## Delete an index - `deleteIndex` 
-
-You can delete an index using its name:
-
-```java
-client.deleteIndex("contacts");
-```
-
-## Clear an index - `clearIndex` 
-
-You can delete the index contents without removing settings and index specific API keys by using the `clearIndex` command:
-
-```java
-index.clearIndex();
-```
-
-## Copy index - `copyTo` 
-
-You can copy an existing index using the `copy` command.
-
-**Warning**: The copy command will overwrite the destination index.
-
-```java
-// Copy MyIndex in MyIndexCopy
-client.copyIndex("MyIndex", "MyIndexCopy");
-```
-
-## Move index - `moveIndex` 
-
-In some cases, you may want to totally reindex all your data. In order to keep your existing service
-running while re-importing your data we recommend the usage of a temporary index plus an atomical
-move using the `moveIndex` method.
-
-```java
-// Rename MyTmpIndex to MyIndex (and overwrite it)
-client.moveIndex("MyTmpIndex", "MyIndex");
-```
-
-**Note:** The moveIndex method overrides the destination index, and deletes the temporary one.
-  In other words, there is no need to call the `clearIndex` or `deleteIndex` methods to clean the temporary index.
-It also overrides all the settings of the destination index (except the [`replicas`](https://www.algolia.com/doc/api-reference/api-parameters/replicas/) parameter that need to not be part of the temporary index settings).
-
-**Recommended steps**
-If you want to fully update your index `MyIndex` every night, we recommend the following process:
-
- 1. Get settings and synonyms from the old index using [Get settings](https://www.algolia.com/doc/api-client/java1/settings/#get-settings)
-  and [Get synonym](https://www.algolia.com/doc/api-client/java1/synonyms/#get-synonym).
- 1. Apply settings and synonyms to the temporary index `MyTmpIndex`, (this will create the `MyTmpIndex` index)
-  using [Set settings](https://www.algolia.com/doc/api-client/java1/settings/#set-settings) and [Batch synonyms](https://www.algolia.com/doc/api-client/java1/synonyms/#batch-synonyms) ([!] Make sure to remove the [`replicas`](https://www.algolia.com/doc/api-reference/api-parameters/replicas/) parameter from the settings if it exists.
- 1. Import your records into a new index using [Add Objects](https://www.algolia.com/doc/api-client/java1/indexing/#add-objects)).
- 1. Atomically replace the index `MyIndex` with the content and settings of the index `MyTmpIndex`
- using the [Move index](https://www.algolia.com/doc/api-client/java1/manage-indices/#move-index) method.
- This will automatically override the old index without any downtime on the search.
- 
- You'll end up with only one index called `MyIndex`, that contains the records and settings pushed to `MyTmpIndex`
- and the replica-indices that were initially attached to `MyIndex` will be in sync with the new data.
+You don’t need to explicitly create an index, it will be automatically created the first time you
+[add an object](https://www.algolia.com/doc/api-reference/api-methods/add-objects)
+or
+[set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings).
 
 
 
@@ -756,268 +342,39 @@ If you want to fully update your index `MyIndex` every night, we recommend the f
 
 
 
-## Generate key - `generateSecuredApiKey` 
+## Methods
 
-When you need to restrict the scope of the *Search Key*, we recommend to use *Secured API Key*.
-You can generate a *Secured API Key* from the *Search Only API Key* or any search *User API Key*
+## *Adding* and *Generating* API keys
 
-There is a few things to know about *Secured API Keys*
-- They always need to be generated **on your backend** using one of our API Client
-- You can generate them on the fly (without any call to the API)
-- They will not appear on the dashboard as they are generated without any call to the API
-- The key you use to generate it **needs to become private** and you should not use it in your frontend.
-- The generated secured API key **will inherit any restriction from the search key it has been generated from**
+It is important to understand the difference between the [`Add API Key`](https://www.algolia.com/doc/api-reference/api-methods/add-api-key) and [`Generate secured API Key`](https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/)  methods.
 
-You can then use the key in your frontend code
+For example:
+- `Add API key` is executed on the Algolia server; `Generate Secured API key` is executed on your own server, not Algolia's.
+- Keys *added* appear on the dashboard; keys *generated* don't.
+- You *add* keys that are fixed and have very precise permissions. They are often used to target specific indexes, users, or application use-cases. They are also used to *generate* Secured API Keys.
 
-```js
-var client = algoliasearch('YourApplicationID', 'YourPublicAPIKey');
+For a full discussion:
 
-var index = client.initIndex('indexName')
+<a href="/doc/guides/security/api-keys/" class="flex-container">
 
-index.search('something', function(err, content) {
-  if (err) {
-    console.error(err);
-    return;
-  }
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <title>Security</title>
+  <defs>
+    <linearGradient x1="50%" y1="-227.852%" x2="77.242%" y2="191.341%" id="a">
+      <stop stop-color="#8995C7" offset="0%" />
+      <stop stop-color="#F1F4FD" offset="100%" />
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <path d="M11.247 5.122a2.524 2.524 0 0 1 1.506-.014l4.76 1.443c.29.088.487.35.487.642v1.735c0 3.937-2.008 7.626-5.369 9.886-.38.248-.882.248-1.262 0C8.008 16.554 6 12.864 6 8.928v-1.72c0-.292.198-.555.487-.642l4.76-1.444zM12 13a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="url(#a)" fill-rule="nonzero" />
+  </g>
+</svg>
 
-  console.log(content);
-});
-```
+Algolia Concepts
 
-#### Filters
+API Keys
 
-Every filter set in the API key will always be applied. On top of that [`filters`](https://www.algolia.com/doc/api-reference/api-parameters/filters/) can be applied
-in the query parameters.
-
-```java
-// generate a public API key for user 42. Here, records are tagged with:
-//  - 'user_XXXX' if they are visible by user XXXX
-String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", new Query().setFilters("_tags:user_42"));
-```
-
-**Warning**:
-
-If you set filters in the key `groups:admin`, and `groups:press OR groups:visitors` in the query parameters,
-this will be equivalent to `groups:admin AND (groups:press OR groups:visitors)`
-
-##### Having one API Key per User
-
-One of the usage of secured API keys, is to have allow users to see only part of an index, when this index
-contains the data of all users.
-In that case, you can tag all records with their associated `user_id` in order to add a `user_id=42` filter when
-generating the *Secured API Key* to retrieve only what a user is tagged in.
-
-**Warning**
-
-If you're generating *Secured API Keys* using the [JavaScript client](http://github.com/algolia/algoliasearch-client-javascript) in your frontend,
-it will result in a security breach since the user is able to modify the filters you've set
-by modifying the code from the browser.
-
-#### Valid Until
-
-You can set a Unix timestamp used to define the expiration date of the API key
-
-```java
-# generate a public API key that is valid for 1 hour:
-long validUntil = System.currentTimeMillis()/1000 + 3600
-String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", new Query().setValidUntil(validUntil));
-```
-
-#### Index Restriction
-
-You can restrict the key to a list of index names allowed for the secured API key
-
-```java
-# generate a public API key that is restricted to 'index1' and 'index2':
-List<String> restrictIndices = new ArrayList<>();
-restrictIndices.add('index1');
-restrictIndices.add('index2');
-String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", new Query().setRestrictIndices(restrictIndices));
-```
-
-#### Rate Limiting
-
-If you want to rate limit a secured API Key, the API key you generate the secured api key from need to be rate-limited.
-You can do that either via the dashboard or via the API using the
-[Add API key](https://www.algolia.com/doc/api-client/java1/api-keys/#add-api-key) or [Update api key](https://www.algolia.com/doc/api-client/java1/api-keys/#update-api-key) method
-
-##### User Rate Limiting
-
-By default the rate limits will only use the `IP`.
-
-This can be an issue when several of your end users are using the same IP.
-To avoid that, you can set a `userToken` query parameter when generating the key.
-
-When set, a unique user will be identified by his `IP + user_token` instead of only by his `IP`.
-
-This allows you to restrict a single user to performing a maximum of `N` API calls per hour,
-even if he shares his `IP` with another user.
-
-```java
-// generate a public API key for user 42. Here, records are tagged with:
-//  - 'user_XXXX' if they are visible by user XXXX
-String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", new Query().setFilters("_tags:user_42").setUserToken("42"));
-```
-
-#### Network restriction
-
-For more protection against API key leaking and reuse you can restrict the key to be valid only from specific IPv4 networks
-
-```java
-String publicKey = client.generateSecuredApiKey("YourSearchOnlyApiKey", new Query().setRestrictSources("192.168.1.0/24"));
-```
-
-## Add API key - `addApiKey` 
-
-To create API keys:
-
-```java
-// Creates a new API key that can only perform search actions
-JSONObject res = client.addApiKey(Arrays.asList("search"));
-System.out.println("Key: " + res.getString("key"));
-// Creates a new API key that can only perform search action on this index
-JSONObject res = index.addApiKey(Arrays.asList("search"));
-System.out.println("Key: " + res.getString("key"));
-```
-
-##### ACLs
-
-You need to specify the set of ACLs the key will have.
-
-The following rights can be used:
-
-- `search`: allows to search the index
-- `browse`: allows to retrieve all index content via the browse API
-- `addObject`: allows to add/update an object in the index (copy/move index are also allowed with this right)
-- `deleteObject`: allows to delete objects from the index
-- `deleteIndex`: allows to delete or clear index content
-- `settings`: allows to get index settings
-- `editSettings`: allows to change index settings
-- `analytics`: allows to retrieve the analytics through the Analytics API
-- `listIndexes`: allows to list all accessible indices
-
-#### Avanced Settings
-
-You can also create an API Key with advanced settings:
-
-##### validity
-
-Add a validity period. The key will be valid for a specific period of time (in seconds).
-
-##### maxQueriesPerIPPerHour
-
-Specify the maximum number of API calls allowed from an IP address per hour. Each time an API call is performed with this key, a check is performed. If the IP at the source of the call did more than this number of calls in the last hour, a 403 code is returned. Defaults to 0 (no rate limit). This parameter can be used to protect you from attempts at retrieving your entire index contents by massively querying the index.
-
-  
-
-Note: If you are sending the query through your servers, you must use the `enableRateLimitForward("TheAdminAPIKey", "EndUserIP", "APIKeyWithRateLimit")` function to enable rate-limit.
-
-##### maxHitsPerQuery
-
-Specify the maximum number of hits this API key can retrieve in one call. Defaults to 0 (unlimited). This parameter can be used to protect you from attempts at retrieving your entire index contents by massively querying the index.
-
-##### indexes
-
-Specify the list of targeted indices. You can target all indices starting with a prefix or ending with a suffix using the '\*' character. For example, "dev\_\*" matches all indices starting with "dev\_" and "\*\_dev" matches all indices ending with "\_dev". Defaults to all indices if empty or blank.
-
-##### referers
-
-Specify the list of referers. You can target all referers starting with a prefix, ending with a suffix using the '\*' character. For example, "https://algolia.com/\*" matches all referers starting with "https://algolia.com/" and "\*.algolia.com" matches all referers ending with ".algolia.com". If you want to allow the domain algolia.com you can use "\*algolia.com/\*". Defaults to all referers if empty or blank.
-
-##### queryParameters
-
-Specify the list of query parameters. You can force the query parameters for a query using the url string format (param1=X&param2=Y...).
-
-##### description
-
-Specify a description to describe where the key is used.
-
-```java
-// Creates a new API key that is valid for 300 seconds
-JSONObject param = new JSONObject();
-param.put("acl", Arrays.asList("search"));
-param.put("maxHitsPerQuery", 20);
-param.put("maxQueriesPerIPPerHour", 100);
-param.put("validity", 300);
-param.put("indexes", Arrays.asList("myIndex"));
-param.put("referers", Arrays.asList("algolia.com/*"));
-param.put("queryParameters", "typoTolerance=strict&ignorePlurals=false");
-param.put("description", "Limited search only API key for algolia.com");
-
-JSONObject res = client.addApiKey(param);
-System.out.println("Key: " + res.getString("key"));
-// Creates a new index specific API key valid for 300 seconds, with a rate limit of 100 calls per hour per IP and a maximum of 20 hits
-JSONObject res = index.addApiKey(param);
-System.out.println("Key: " + res.getString("key"));
-```
-
-## Update api key - `updateApiKey` 
-
-To update the permissions of an existing key:
-
-```java
-// Creates a new API key that is valid for 300 seconds
-JSONObject res = client.updateApiKey("myAPIKey", Arrays.asList("search"), 300, 0, 0);
-Log.d("debug", "Key: " + res.getString("key"));
-// Update a index specific API key valid for 300 seconds, with a rate limit of 100 calls per hour per IP and a maximum of 20 hits
-JSONObject res = index.updateApiKey("myAPIKey", Arrays.asList("search"), 300, 100, 20);
-Log.d("debug", "Key: " + res.getString("key"));
-```
-
-To get the permissions of a given key:
-
-```java
-// Gets the rights of a key
-client.getApiKey("f420238212c54dcfad07ea0aa6d5c45f");
-// Gets the rights of an index specific key
-index.getApiKey("71671c38001bf3ac857bc82052485107");
-```
-
-## Delete api key - `deleteApiKey` 
-
-To delete an existing key:
-
-```java
-// Deletes a key
-client.deleteApiKey("f420238212c54dcfad07ea0aa6d5c45f");
-// Deletes an index specific key
-index.deleteApiKey("71671c38001bf3ac857bc82052485107");
-```
-
-## Get key permissions - `getApiKey` 
-
-To get the permissions of a given key:
-
-```java
-// Gets the rights of a key
-client.getApiKey("f420238212c54dcfad07ea0aa6d5c45f");
-// Gets the rights of an index specific key
-index.getApiKey("71671c38001bf3ac857bc82052485107");
-```
-
-## List user keys - `listApiKeys` 
-
-To list existing keys, you can use:
-
-```java
-// Lists API Keys
-client.listApiKeys();
-// Lists API Keys that can access only to this index
-index.listApiKeys();
-```
-
-Each key is defined by a set of permissions that specify the authorized actions. The different permissions are:
-
-* **search**: Allowed to search.
-* **browse**: Allowed to retrieve all index contents via the browse API.
-* **addObject**: Allowed to add/update an object in the index.
-* **deleteObject**: Allowed to delete an existing object.
-* **deleteIndex**: Allowed to delete index content.
-* **settings**: allows to get index settings.
-* **editSettings**: Allowed to change index settings.
-* **analytics**: Allowed to retrieve analytics through the analytics API.
-* **listIndexes**: Allowed to list all accessible indexes.
+</a>
 
 
 
@@ -1025,137 +382,174 @@ Each key is defined by a set of permissions that specify the authorized actions.
 
 
 
+## Methods
+
+## Algolia synonyms
+
+A *synonym record* includes an objectID, the type of synonym, and a list of words
+as synonyms.
+
+```
+{
+  objectID: 'a-unique-identifier',
+  type: 'synonym',
+  synonyms: ['car', 'vehicle', 'auto']
+}
+```
+
+There are 4 types of synonym:
+  - `bi-directional`, where the words are interchangeable
+  - `one-way`, where a master word is used to find the other words, but not vice-versa
+  - `altcorrection1` or `altcorrection2`, where synonyms are used to resolve [typos of 1 or 2 degrees](https://www.algolia.com/doc/guides/textual-relevance/typo-tolerance/#how-typos-are-calculated-based-on-damerau-levenshtein-distance)
+  - `placeholder`, where you define tokens (variables) that take any value from a list of defined words. See [placeholders](https://www.algolia.com/doc/guides/textual-relevance/synonyms/#placeholders).
+
+For more detail:
+
+<a href="/doc/guides/textual-relevance/synonyms/" class="flex-container">
+
+<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+  <title>Relevance</title>
+  <defs>
+    <linearGradient x1="50%" y1="-227.852%" x2="77.242%" y2="191.341%" id="a">
+      <stop stop-color="#8995C7" offset="0%" />
+      <stop stop-color="#F1F4FD" offset="100%" />
+    </linearGradient>
+  </defs>
+  <g fill="none" fill-rule="evenodd">
+    <path d="M12 20a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm0-2a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm0-2a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="url(#a)" />
+  </g>
+</svg>
+
+Algolia Concepts
+
+Synonyms
+
+</a>
+
+
+
+# Rules
+
+
+
+## Methods
+
 ## Overview
 
-Synonyms tell the engine about sets of words and expressions that should be considered equal with regard to textual relevance.
+**Query Rules** allows performing some ad hoc pre- and post-processing on queries matching specific patterns.
+For more details, please refer to our [Rules guide](https://www.algolia.com/doc/guides/query-rules/query-rules-overview/).
 
-All synonym records have a type attribute. The two most used types are:
+### Miscellaneous
 
-- (Regular) Synonyms - `synonym`: Regular synonyms are the most common, all words or expressions are considered equals
+As their name implies, Query Rules apply at query time.
+Therefore, some [search parameters](https://www.algolia.com/doc/api-reference/api-parameters/#query-rules) control how rules are applied.
 
-  ```json
-  {
-     "objectID": "NAME",
-     "type": "synonym",
-     "synonyms":[
-        "tv",
-        "television",
-        "tv set"
-     ]
-  }
-  ```
+Most of the methods manipulate rule objects, described in detail in the [Rule Schema](#rule-schema) below.
 
-- One-way Synonym - `oneWaySynonym`: When the `input` is searched all words or expressions in synonyms are considered equals to the input
+Just like for objects or synonyms, write methods for rules are asynchronous: they return a `taskID` that can be used by [Wait for operations](https://www.algolia.com/doc/api-reference/api-methods/wait-task/).
 
-  ```json
-  {
-     "objectID": "NAME",
-     "type": "oneWaySynonym",
-     "input": "tablet",
-     "synonyms":[
-        "ipad",
-        "galaxy note"
-     ]
-  }
-  ```
+## Rule Schema
 
-If you're looking for other types of synonyms or want more details you can have a look at our [synonyms guide](https://www.algolia.com/doc/guides/textual-relevance/synonyms)
+A rule is described by a JSON object, containing the following fields:
 
-## Save synonym - `saveSynonym` 
+- `objectID` (string): Unique identifier for the rule (format: `[A-Za-z0-9_-]+`)
+- `condition` (object): **Condition** of the rule
+    - `pattern` (string): Query pattern (see [syntax](#query-pattern-syntax) below)
+    - `anchoring` (string, enum) = { `is` \| `startsWith` \| `endsWith` \| `contains` }: Whether the pattern must match the beginning or the end of the query string, or both, or none.
+    - `context` (string) [optional]: Rule context (format: `[A-Za-z0-9_-]+`). When specified, the rule is *contextual* and applies only when the same context is specified at query time (using the `ruleContexts` parameter). When absent, the rule is *generic* and always applies (provided that its other conditions are met, of course).
+- `consequence` (object): **Consequence** of the rule. *At least one* of the following must be used:
+    - `params` (object) [optional]: Additional search parameters. Any valid search parameter is allowed. Specific treatment is applied to these fields:
+        - `query` (string or object) [optional]: When a string, it replaces the entire query string. When an object, describes incremental edits to be made to the query string. (Of course, replacing and editing is incompatible.) The following edits are supported:
+            - `remove` (array of strings) [optional]: Tokens (literals or placeholders) from the query pattern that should be removed from the query string.
+        - `automaticFacetFilters` (array of strings) [optional]: Names of facets to which automatic filtering must be applied; they must match the facet name of a facet value placeholder in the query pattern. Ex. `facetName1, facetName2`. You can specify a score: `facetName1<score=5>, facetName2<score=1>`.
+        - `automaticOptionalFacetFilters` (array of strings) [optional]: Same syntax as `automaticFacetFilters`, but behaves like `optionalFacetFilters`.
+    - `promote` (array of objects) [optional]: Objects to promote as hits. Each object must contain the following fields:
+        - `objectID` (string): Unique identifier of the object to promote
+        - `position` (integer): Promoted rank for the object (zero-based)
+    - `userData` (object) [optional]: Custom JSON object that will be appended to the `userData` array in the response. This object is not interpreted by the API. It is limited to 1kB of minified JSON.
+- `description` (string) [optional]: This field is intended for rule management purposes, in particular to ease searching for rules and presenting them to human readers. It is not interpreted by the API.
 
-This method saves a single synonym record into the index.
+### Query pattern syntax
 
-In this example, we specify true to forward the creation to replica indices.
-By default the behavior is to save only on the specified index.
+Query patterns are expressed as a string with a specific syntax. A pattern is a sequence of one or more tokens, which can be either:
 
-```java
-index.saveSynonym("a-unique-identifier", new Synonym()
-           .setSynonyms(Arrays.asList("car", "vehicle", "auto")), true);
-```
+- **Facet value placeholder**: `{facet:$facet_name}`. Example: `{facet:brand}`.
+- **Literal**: the world itself. Example: `Algolia`.
 
-## Batch synonyms - `batchSynonyms` 
+Special characters (`{`, `}`, `:` and `\`) must be escaped by preceding them with a backslash (`\`) if they are to be treated as literals.
 
-Use the batch method to create a large number of synonyms at once,
-forward them to replica indices if desired,
-and optionally replace all existing synonyms
-on the index with the content of the batch using the replaceExistingSynonyms parameter.
 
-You should always use replaceExistingSynonyms to atomically replace all synonyms
-on a production index. This is the only way to ensure the index always
-has a full list of synonyms to use during the indexing of the new list.
 
-```java
-// Batch synonyms, with replica forwarding and atomic replacement of existing synonyms
-index.batchSynonyms(Arrays.asList(
-      new Synonym()
-           .setObjectID("a-unique-identifier")
-           .setSynonyms(Arrays.asList("car", "vehicle", "auto")),
-      new Synonym()
-           .setObjectID("another-unique-identifier")
-           .setSynonyms(Arrays.asList("street", "st"))
-), true);
-```
+# MultiClusters API Client
 
-## Editing Synonyms
 
-Updating the value of a specific synonym record is the same as creating one.
-Make sure you specify the same objectID used to create the record and the synonyms
-will be updated.
-When updating multiple synonyms in a batch call (but not all synonyms),
-make sure you set replaceExistingSynonyms to false (or leave it out,
-false is the default value).
-Otherwise, the entire synonym list will be replaced only partially with the records
-in the batch update.
 
-## Delete synonym - `deleteSynonym` 
+## Methods
 
-Use the normal index delete method to delete synonyms,
-specifying the objectID of the synonym record you want to delete.
-Forward the deletion to replica indices by setting the forwardToReplicas parameter to true.
+## A Brief Technical Overview
 
-```java
-// Delete and forward to replicas
-index.deleteSynonym("a-unique-identifier", true);
-```
+### How to split the data (Logical Split)
 
-## Clear all synonyms - `clearSynonyms` 
+The data is split *logically*. We decided not to go with a *hash-based* split, which requires the aggregation of answers from multiple servers and adds network latency to the response time. Normally, the data will be user-partitioned - split according to a user-id.
 
-This is a convenience method to delete all synonyms at once.
-It should not be used on a production index to then push a new list of synonyms:
-there would be a short period of time during which the index would have no synonyms
-at all.
+### Uses a single appID
 
-To atomically replace all synonyms of an index,
-use the batch method with the replaceExistingSynonyms parameter set to true.
+If we were to follow the logic of using one appID per cluster, multi-clusters would require many appIDs. However, this would be difficult to manage, especially when moving data from one cluster to another in order to balance the load. Our API therefore relies on a single appID: the engine routes requests to a specific destination cluster, using a new HTTP header, `X-ALGOLIA-USER-ID`, and a mapping that associates a `userID` to a cluster.
 
-```java
-// Clear synonyms and forward to replicas
-index.clearSynonyms(true);
-```
+### What MCM doesn't do
 
-## Get synonym - `getSynonym` 
+As mentioned, the data is broken up logically. The split is done in such a way that requires only one server to perform a complete search. This API doesn't aggregate the response from multiple clusters. We designed the multi-clusters feature in order to stay fast even with a lot of clusters in multiple regions.
 
-Search for synonym records by their objectID or by the text they contain.
-Both methods are covered here.
+### Shared configuration
 
-```java
-Optional<AbstractSynonym> synonym = index.getSynonym("a-unique-identifier");
-```
+With MCM, all the settings, rules, synonyms and api keys operations are replicated on all the machine in order to have the same configuration inside the clusters. Only the records stored in the index are different between two clusters.
 
-## Search synonyms - `searchSynonyms` 
+### Shared data
 
-Search for synonym records similar to how you’d search normally.
+For some use cases, there are two types of data:
 
-Accepted search parameters:
-- `query`: the actual search query to find synonyms. Use an empty query to browse all the synonyms of an index.
-- `type`: restrict the search to a specific type of synonym. Use an empty string to search all types (default behavior). Multiple types can be specified using a comma-separated list or an array.
-- `page`: the page to fetch when browsing through several pages of results. This value is zero-based.
-- `hitsPerPage`: the number of synonyms to return for each call. The default value is 100.
+ - Public data
+ - Private user data
 
-```java
-// Searching for "street" in synonyms and one-way synonyms; fetch the second page with 10 hits per page
-SearchSynonymResult results = index.searchSynonyms(new SynonymQuery("street").setTypes(Arrays.asList("synonym", "one_way")).setPage(1).setHitsPerPage(10));
-```
+The public data can be searched at the same time as private user data. With MCM, it's possible to create public records with the multi-clusters using the special userID value \* in order to replicate the record on all the clusters and make it available for search. We show this in our [Public / Private data tutorial](https://www.algolia.com/doc/tutorials/infra/multi-clusters/multi-clusters).
+
+### Check out our Tutorial
+
+Perhaps the best way to understand the MultiClusters API is to check out our [MCM tutorial], where explain, with code samples, the most important endpoints.
+
+### Limitation v0.1
+
+For v0.1, the assignment of users to clusters won't be automatic: if a user is not properly assigned, or not found, the call will be rejected.
+
+**Warning:** As you will notice, the documentation is actually using the REST API endpoints directly. We will soon be rolling out our API clients methods.
+
+### How to get the feature
+
+MCM needs to be enabled on your cluster. You can contact support@algolia.com for more information.
+
+## MultiCluster usage
+
+With a multi-cluster setup, the userID needs to be specified for each of the following methods:
+
+  - [Search an index](https://www.algolia.com/doc/api-reference/api-methods/search/)
+  - [Search multiple indexes](https://www.algolia.com/doc/api-reference/api-methods/multiple-queries/)
+  - [Search for facet values](https://www.algolia.com/doc/api-reference/api-methods/search-for-facet-values/)
+  - [Add objects](https://www.algolia.com/doc/api-reference/api-methods/add-objects/)
+  - [Delete objects](https://www.algolia.com/doc/api-reference/api-methods/delete-objects/)
+  - [Delete by query](https://www.algolia.com/doc/api-reference/api-methods/delete-by-query/)
+  - [Partial update objects](https://www.algolia.com/doc/api-reference/api-methods/partial-update-objects/)
+  - [Get objects](https://www.algolia.com/doc/api-reference/api-methods/get-objects/)
+  - [Wait for operations](https://www.algolia.com/doc/api-reference/api-methods/wait-task/)
+  - [Custom batch](https://www.algolia.com/doc/api-reference/api-methods/batch/)
+  - [Browse an index](https://www.algolia.com/doc/api-reference/api-methods/browse/)
+
+Each of these methods allows you to pass any `extra header` to the request. We'll make use of the `X-Algolia-User-ID` header.
+
+Here is an example of the `search` method, but the principle is the same for all the methods listed above:
+
+search_multi_cluster
+
+You can find an example of how to pass `extra headers` for the other methods in their respective documentation.
 
 
 
@@ -1163,128 +557,7 @@ SearchSynonymResult results = index.searchSynonyms(new SynonymQuery("street").se
 
 
 
-## Custom batch - `batch` 
-
-You may want to perform multiple operations with one API call to reduce latency.
-
-If you have one index per user, you may want to perform a batch operations across several indices.
-We expose a method to perform this type of batch:
-
-```java
-List<JSONObject> array = new ArrayList<JSONObject>();
-array.add(new JSONObject().put("action". "addObject").put("indexName", "index1")
-  .put("body", new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger")));
-array.add(new JSONObject().put("action". "addObject").put("indexName", "index2")
-  .put("body", new JSONObject().put("firstname", "Warren").put("lastname", "Speach")));
-client.batch(array);
-```
-
-The attribute **action** can have these values:
-
-- addObject
-- updateObject
-- partialUpdateObject
-- partialUpdateObjectNoCreate
-- deleteObject
-
-## Backup / Export an index - `browse` 
-
-The `search` method cannot return more than 1,000 results. If you need to
-retrieve all the content of your index (for backup, SEO purposes or for running
-a script on it), you should use the `browse` method instead. This method lets
-you retrieve objects beyond the 1,000 limit.
-
-This method is optimized for speed. To make it fast, distinct, typo-tolerance,
-word proximity, geo distance and number of matched words are disabled. Results
-are still returned ranked by attributes and custom ranking.
-
-#### Response Format
-
-##### Sample
-
-```json
-{
-  "hits": [
-    {
-      "firstname": "Jimmie",
-      "lastname": "Barninger",
-      "objectID": "433"
-    }
-  ],
-  "processingTimeMS": 7,
-  "query": "",
-  "params": "filters=level%3D20",
-  "cursor": "ARJmaWx0ZXJzPWxldmVsJTNEMjABARoGODA4OTIzvwgAgICAgICAgICAAQ=="
-}
-```
-
-##### Fields
-
-- `cursor` (string, optional): A cursor to retrieve the next chunk of data. If absent, it means that the end of the index has been reached.
-- `query` (string): Query text used to filter the results.
-- `params` (string, URL-encoded): Search parameters used to filter the results.
-- `processingTimeMS` (integer): Time that the server took to process the request, in milliseconds. *Note: This does not include network time.*
-
-The following fields are provided for convenience purposes, and **only when the browse is not filtered**:
-
-- `nbHits` (integer): Number of objects in the index.
-- `page` (integer): Index of the current page (zero-based).
-- `hitsPerPage` (integer): Maximum number of hits returned per page.
-- `nbPages` (integer): Number of pages corresponding to the number of hits. Basically, `ceil(nbHits / hitsPerPage)`.
-
-#### Example
-
-```java
-// Iterate with a filter over the index
-Iterator<JSONObject> it = index.browse(new Query("text").setFilters("i<42"));
-
-// Retrieve the next cursor from the browse method
-Iterator<JSONObject> it  = index.browseFrom(new Query("text").setFilters("i<42"), "");
-System.out.println(it.getCursor());
-```
-
-## Get latest logs - `getLogs` 
-
-You can retrieve the latest logs via this API. Each log entry contains:
-
-* Timestamp in ISO-8601 format
-* Client IP
-* Request Headers (API Key is obfuscated)
-* Request URL
-* Request method
-* Request body
-* Answer HTTP code
-* Answer body
-* SHA1 ID of entry
-
-You can retrieve the logs of your last 1,000 API calls and browse them using the offset/length parameters:
-
-#### offset
-
-Specify the first entry to retrieve (0-based, 0 is the most recent log entry). Defaults to 0.
-
-#### length
-
-Specify the maximum number of entries to retrieve starting at the offset. Defaults to 10. Maximum allowed value: 1,000.
-
-#### onlyErrors
-
-Retrieve only logs with an HTTP code different than 200 or 201. (deprecated)
-
-#### type
-
-Specify the type of logs to retrieve:
-
-* `query`: Retrieve only the queries.
-* `build`: Retrieve only the build operations.
-* `error`: Retrieve only the errors (same as `onlyErrors` parameters).
-
-```java
-// Get last 10 log entries
-client.getLogs();
-// Get last 100 log entries
-client.getLogs(0, 100);
-```
+## Methods
 
 ## Retry logic
 
@@ -1304,22 +577,18 @@ Requests can fail for two main reasons:
 
 In the latter case, the error reported by the API client contains:
 
-- an HTTP **status code** indicating the type of error;
-- an error **message** indicating the cause of the error.
+- **message**: an error message indicating the cause of the error
+- **status**: an HTTP status code indicating the type of error
+
+Here's an example:
+
+```json
+{
+  "message":"Invalid Application ID",
+  "status":404
+}
+```
 
 **Caution:** The error message is purely informational and intended for the developer. You should never rely on its content programmatically, as it may change without notice.
-
-## Configuring timeouts
-
-Network & DNS resolution can be slow. That is why we have pre-configured timeouts. We do not advise to change them, but it could make sense to change them in some special cases:
-
-```java
-  APIClient client = new APIClient(...);
-  client.setTimeout(
-    4000, /* connectTimeout */
-    4000, /* readTimeout */
-  );
-  client.setHostDownTimeoutMS(4000);
-```
 
 
