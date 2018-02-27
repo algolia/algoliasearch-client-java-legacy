@@ -16,7 +16,7 @@ public class SearchTest extends AlgoliaTest {
   @Test
   public void search() throws AlgoliaException, JSONException {
     JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
-    index.waitTask(obj.getString("taskID"));
+    index.waitTask(obj.getLong("taskID"));
     JSONObject res = index.search(new Query("foo").setTypoTolerance(Query.TypoTolerance.TYPO_FALSE));
     assertEquals(1, res.getJSONArray("hits").length());
     assertEquals("foo", res.getJSONArray("hits").getJSONObject(0).getString("s"));
@@ -65,8 +65,8 @@ public class SearchTest extends AlgoliaTest {
         .put("series", "Calvin & Hobbes"))
     );
 
-    index.waitTask(setSettingsTask.getString("taskID"));
-    index.waitTask(addObjectsResult.getString("taskID"));
+    index.waitTask(setSettingsTask.getLong("taskID"));
+    index.waitTask(addObjectsResult.getLong("taskID"));
 
     JSONObject searchFacet = index.searchInFacetValues("series", "Peanutz", null);
     final JSONArray facetHits = searchFacet.optJSONArray("facetHits");
@@ -77,11 +77,11 @@ public class SearchTest extends AlgoliaTest {
   @Test
   public void searchUpdated() throws AlgoliaException, JSONException {
     JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
-    index.waitTask(obj.getString("taskID"));
+    index.waitTask(obj.getLong("taskID"));
     JSONObject res = index.search(new Query("foo"));
     assertEquals(1, res.getJSONArray("hits").length());
     res = index.saveObject(new JSONObject().put("s", "bar"), res.getJSONArray("hits").getJSONObject(0).getString("objectID"));
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
     res = index.search(new Query("foo"));
     assertEquals(0, res.getJSONArray("hits").length());
 
@@ -93,11 +93,11 @@ public class SearchTest extends AlgoliaTest {
   @Test
   public void searchAll() throws AlgoliaException, JSONException {
     JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
-    index.waitTask(obj.getString("taskID"));
+    index.waitTask(obj.getLong("taskID"));
     JSONObject res = index.search(new Query("foo"));
     assertEquals(1, res.getJSONArray("hits").length());
     res = index.saveObject(new JSONObject().put("s", "bar"), res.getJSONArray("hits").getJSONObject(0).getString("objectID"));
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
     res = index.search(new Query(""));
     assertEquals(1, res.getJSONArray("hits").length());
     res = index.search(new Query("*"));

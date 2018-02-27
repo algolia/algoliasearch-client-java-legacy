@@ -31,7 +31,7 @@ public class RulesTest extends AlgoliaTest {
   @Before
   public void before() throws AlgoliaException, JSONException {
     JSONObject clearRules = index.clearRules();
-    index.waitTask(clearRules.getString("taskID"));
+    index.waitTask(clearRules.getLong("taskID"));
   }
 
   @Test
@@ -39,7 +39,7 @@ public class RulesTest extends AlgoliaTest {
     String ruleId = "rule1";
 
     JSONObject res = index.saveRule(ruleId, generateRule(ruleId));
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.getRule(ruleId);
     assertEquals(ruleId, res.getString("objectID"));
@@ -50,10 +50,10 @@ public class RulesTest extends AlgoliaTest {
     String ruleId = "rule2";
 
     JSONObject res = index.saveRule(ruleId, generateRule(ruleId));
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.deleteRule(ruleId);
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.searchRules(new RuleQuery(""));
     assertEquals(0, res.getInt("nbHits"));
@@ -64,11 +64,11 @@ public class RulesTest extends AlgoliaTest {
     String ruleId = "rule3";
 
     JSONObject res = index.saveRule(ruleId, generateRule(ruleId));
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
 
     res = index.clearRules();
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.searchRules(new RuleQuery(""));
     assertEquals(0, res.getInt("nbHits"));
@@ -81,7 +81,7 @@ public class RulesTest extends AlgoliaTest {
     c.add(generateRule("rule5"));
 
     JSONObject res = index.batchRules(c);
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.searchRules(new RuleQuery());
     assertEquals(2, res.getInt("nbHits"));

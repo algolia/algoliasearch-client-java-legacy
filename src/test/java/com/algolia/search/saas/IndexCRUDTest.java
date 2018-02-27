@@ -21,11 +21,11 @@ public class IndexCRUDTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"), "a/go/?à");
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = client.listIndexes();
     assertTrue(isPresent(res.getJSONArray("items"), indexName, "name"));
     task = client.deleteIndex(indexName);
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject resAfter = client.listIndexes();
     assertFalse(isPresent(resAfter.getJSONArray("items"), indexName, "name"));
   }
@@ -38,10 +38,10 @@ public class IndexCRUDTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     task = client.moveIndex(indexName, indexName + "2");
     Index newIndex = client.initIndex(indexName + "2");
-    newIndex.waitTask(task.getString("taskID"));
+    newIndex.waitTask(task.getLong("taskID"));
     Query query = new Query();
     query.setQueryType(Query.QueryType.PREFIX_ALL);
     query.setQueryString("jimye");
@@ -73,10 +73,10 @@ public class IndexCRUDTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     task = client.copyIndex(indexName, indexName + "2");
     Index newIndex = client.initIndex(indexName + "2");
-    newIndex.waitTask(task.getString("taskID"));
+    newIndex.waitTask(task.getLong("taskID"));
     JSONObject res = newIndex.search(new Query("jimie"));
     assertEquals(1, res.getInt("nbHits"));
     res = index.search(new Query("jimie"));

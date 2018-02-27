@@ -44,7 +44,7 @@ public class SimpleTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.browse(0);
     assertEquals(1, res.getInt("nbHits"));
     res = index.browse(0, 1);
@@ -101,7 +101,7 @@ public class SimpleTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query());
     assertEquals(1, res.getInt("nbHits"));
   }
@@ -135,7 +135,7 @@ public class SimpleTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query("jimie"));
     assertEquals(1, res.getInt("nbHits"));
     JSONArray actions = new JSONArray();
@@ -144,7 +144,7 @@ public class SimpleTest extends AlgoliaTest {
     action.put("objectID", "a/go/?à");
     actions.put(action);
     task = index.batch(actions);
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
   }
 
   @SuppressWarnings("deprecation")
@@ -158,7 +158,7 @@ public class SimpleTest extends AlgoliaTest {
   @Test
   public void multipleQueries() throws AlgoliaException, JSONException {
     JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
-    index.waitTask(obj.getString("taskID"));
+    index.waitTask(obj.getLong("taskID"));
     List<APIClient.IndexQuery> queries = new ArrayList<APIClient.IndexQuery>();
     queries.add(new APIClient.IndexQuery(safe_name("àlgol?à-java"), new Query("")));
     JSONObject res = client.multipleQueries(queries);
@@ -176,7 +176,7 @@ public class SimpleTest extends AlgoliaTest {
       .put("name", "Washington"))
       .put(new JSONObject().put("name", "San Francisco"))
       .put(new JSONObject().put("name", "San Jose")));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     index.deleteByQuery(new Query("San"));
     JSONObject res = index.search(new Query(""));
     assertEquals(1, res.getInt("nbHits"));
@@ -190,9 +190,9 @@ public class SimpleTest extends AlgoliaTest {
         .put(new JSONObject().put("name", "San Francisco"))
         .put(new JSONObject().put("name", "San Jose"))
     );
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     task = index.deleteBy(new Query().setTagFilters("a"));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query(""));
     assertEquals(3, res.getInt("nbHits"));
   }
@@ -206,7 +206,7 @@ public class SimpleTest extends AlgoliaTest {
       .put(new JSONObject("{\"name\":\"Hotel C\", \"stars\":\"**\", \"facilities\":[\"bath\"], \"city\":\"San Fancisco\"}"))
       .put(new JSONObject("{\"name\":\"Hotel D\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"Paris\"}"))
       .put(new JSONObject("{\"name\":\"Hotel E\", \"stars\":\"****\", \"facilities\":[\"spa\"], \"city\":\"New York\"}")));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     HashMap<String, List<String>> refinements = new HashMap<String, List<String>>();
     List<String> disjunctiveFacets = new ArrayList<String>();
     List<String> facets = new ArrayList<String>();
@@ -256,7 +256,7 @@ public class SimpleTest extends AlgoliaTest {
     JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
       .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
       .put("name", "San Francisco").put("objectID", "2")));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
 
     // Redefine a client to break the current keep alive
     String applicationID = System.getenv("ALGOLIA_APPLICATION_ID");
@@ -286,7 +286,7 @@ public class SimpleTest extends AlgoliaTest {
     array.add(new JSONObject().put("action", "addObject").put("indexName", index.getIndexName()).put("body", new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger")));
     array.add(new JSONObject().put("action", "addObject").put("indexName", index.getIndexName()).put("body", new JSONObject().put("firstname", "Warren").put("lastname", "Speach")));
     JSONObject task = client.batch(array);
-    index.waitTask(task.getJSONObject("taskID").getString(index.getIndexName()));
+    index.waitTask(task.getJSONObject("taskID").getLong(index.getIndexName()));
     JSONObject res = index.search(new Query(""));
     assertEquals(2, res.getInt("nbHits"));
   }
@@ -315,7 +315,7 @@ public class SimpleTest extends AlgoliaTest {
       objects.add(new JSONObject().put("objectID", i).put("i", i));
     }
     JSONObject task = index.addObjects(objects);
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     // browse whole index
     {
       int i = 0;

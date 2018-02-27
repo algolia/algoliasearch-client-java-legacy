@@ -24,7 +24,7 @@ public class SynonymTest extends AlgoliaTest {
     a.add("SF");
 
     JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.getSynonym("synonym1");
     assertEquals("synonym", res.getString("type"));
@@ -37,10 +37,10 @@ public class SynonymTest extends AlgoliaTest {
     a.add("SF");
 
     JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.deleteSynonym("synonym1");
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.searchSynonyms(new SynonymQuery(""));
     assertEquals(0, res.getInt("nbHits"));
@@ -53,10 +53,10 @@ public class SynonymTest extends AlgoliaTest {
     a.add("SF");
 
     JSONObject res = index.saveSynonym("synonym1", new JSONObject().put("type", "synonym").put("synonyms", a));
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.clearSynonyms();
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.searchSynonyms(new SynonymQuery(""));
     assertEquals(0, res.getInt("nbHits"));
@@ -79,7 +79,7 @@ public class SynonymTest extends AlgoliaTest {
     c.add(syn1);
     c.add(syn2);
     JSONObject res = index.batchSynonyms(c);
-    index.waitTask(res.getString("taskID"));
+    index.waitTask(res.getLong("taskID"));
 
     res = index.searchSynonyms(new SynonymQuery(""));
     assertEquals(2, res.getInt("nbHits"));

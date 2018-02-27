@@ -16,7 +16,7 @@ public class ObjectTest extends AlgoliaTest {
   @Test
   public void pushObject() throws AlgoliaException, JSONException {
     JSONObject obj = index.addObject(new JSONObject().put("i", 42).put("s", "foo").put("b", true));
-    index.waitTask(obj.getString("taskID"));
+    index.waitTask(obj.getLong("taskID"));
   }
 
   @Test
@@ -27,7 +27,7 @@ public class ObjectTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query("jimie"));
     assertEquals(1, res.getInt("nbHits"));
   }
@@ -39,7 +39,7 @@ public class ObjectTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"), "a/go/?à");
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query("jimie"));
     assertEquals(1, res.getInt("nbHits"));
   }
@@ -51,7 +51,7 @@ public class ObjectTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"), "a/go/?à");
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject object = index.getObject("a/go/?à");
     assertEquals("Jimmie", object.getString("firstname"));
   }
@@ -63,7 +63,7 @@ public class ObjectTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"), "a/go/?à");
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject object = index.getObject("a/go/?à", Arrays.asList("lastname", "firstname"));
     assertEquals("Barninger", object.getString("lastname"));
   }
@@ -75,7 +75,7 @@ public class ObjectTest extends AlgoliaTest {
       .put("lastname", "Barninger")
       .put("followers", 93)
       .put("company", "California Paint"));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query("jimie"));
     index.deleteObject("a/go/?à");
     assertEquals(1, res.getInt("nbHits"));
