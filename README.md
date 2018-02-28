@@ -1,7 +1,10 @@
 # Algolia Search API Client for Java
 
 [Algolia Search](https://www.algolia.com) is a hosted full-text, numerical, and faceted search engine capable of delivering realtime results from the first keystroke.
-The **Algolia Search API Client for Java** lets you easily use the [Algolia Search REST API](https://www.algolia.com/doc/rest-api/search) from your Java code.
+
+The **Algolia Search API Client for Java**
+lets you easily use the [Algolia Search REST API](https://www.algolia.com/doc/rest-api/search) from
+your Java code.
 
 [![Build Status](https://travis-ci.org/algolia/algoliasearch-client-java.png?branch=master)](https://travis-ci.org/algolia/algoliasearch-client-java) [![GitHub version](https://badge.fury.io/gh/algolia%2Falgoliasearch-client-java.png)](http://badge.fury.io/gh/algolia%2Falgoliasearch-client-java) [![Coverage Status](https://coveralls.io/repos/algolia/algoliasearch-client-java/badge.svg)](https://coveralls.io/r/algolia/algoliasearch-client-java)[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.algolia/algoliasearch/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.algolia/algoliasearch/)
 
@@ -25,10 +28,7 @@ java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
 
 
-
-
-
-# Getting Started
+# Install the API client
 
 
 
@@ -42,6 +42,8 @@ If you're using `Maven`, add the following dependency to your `pom.xml` file:
     <version>[1,]</version>
 </dependency>
 ```
+
+## Language-specific notes
 
 ## Init Index
 
@@ -170,10 +172,10 @@ If you wish to configure your index, the [settings section](https://www.algolia.
 
 The [`Add Objects`](https://www.algolia.com/doc/api-reference/api-methods/add-objects/) method does not require an `objectID`.
 
-- Supplying an `objectID`:
+- If you do supply an `objectID`:
   - If the `objectID` does not exist in the index, the record will be created
   - If the `objectID` already exists, the record will be replaced
-- Not supplying an `objectID`:
+- If you do not supply an `objectID`:
   - Algolia will automatically assign an `objectID`, which will be returned in the response
 
 ### Update Objects
@@ -181,7 +183,8 @@ The [`Add Objects`](https://www.algolia.com/doc/api-reference/api-methods/add-ob
 The [`Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/update-objects/) method requires an `objectID`.
 
 - If the `objectID` exists, the record will be replaced
-- If the `objectID` does not exist, or no `objectID` is specified, the method returns an error
+- If the `objectID` does not exist, the record is created 
+- If no `objectID` is supplied, the method returns an error
 
 **Note:** Update Object is also known as `Save Object`. In this context, the terms are used interchangeably.
 
@@ -190,7 +193,8 @@ The [`Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/upd
 The [`Partial Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/partial-update-objects/) method requires an `objectID`.
 
 - If the `objectID` exists, the attributes will be replaced
-- If the `objectID` does not exist, or no `objectID` is specified, the method returns an error
+- If the `objectID` does not exist, the record is created
+- If no `objectID` is specified, the method returns an error
 
 **Note:** `Partial Update` does not replace the whole object, it only adds, removes, or updates the attributes mentioned; the remaining attributes are left untouched. This is different from `Add Object` and `Update Object`, both of which replace the whole object.
 
@@ -205,11 +209,21 @@ The [`Partial Update Objects`](https://www.algolia.com/doc/api-reference/api-met
 ## Terminology
 
 ### Object / Record
-We use these 2 words interchangeably. Sometimes witin the same sentence. So don't place any significance on their usage:
+We use the words "object" and "record" interchangeably. Sometimes within the same sentence. 
+While they are certainly different, depending on the context, for us, they are the same. 
+So don't place any significance on their usage:
 
-- Indexes contain objects or records
-- JSON contains objects or records
+- Indexes contain "objects" or "records"
+- JSON contains "objects" or "records"
 
+### Indexes / Indices
+
+We use these words interchangeably. 
+Sometimes the API itself will use one or the other. 
+In the documentation, we always use "indexes" - unless the underlying API is using "indices", in which case we adopt that usage.
+
+In either case, don't place any significance on their usage.
+  
 ### Attribute
 All objects and records contain attributes. Sometimes we refer to them as fields, or elements. Within the search and indexing contexts, we often speak of settings and parameters. Again, these terms are mostly interchangeable.
 
@@ -276,7 +290,8 @@ To help you navigate our list of settings, we've created the following setting c
 - [Search](https://www.algolia.com/doc/api-reference/api-parameters/#search)
 - [Attributes](https://www.algolia.com/doc/api-reference/api-parameters/#attributes)
 - [Ranking](https://www.algolia.com/doc/api-reference/api-parameters/#ranking)
-- [Filtering / Faceting](https://www.algolia.com/doc/api-reference/api-parameters/#filtering--faceting)
+- [Faceting](https://www.algolia.com/doc/api-reference/api-parameters/#faceting)
+- [Filtering](https://www.algolia.com/doc/api-reference/api-parameters/#filtering)
 - [Highlighting / Snippeting](https://www.algolia.com/doc/api-reference/api-parameters/#highlighting--snippeting)
 - [Pagination](https://www.algolia.com/doc/api-reference/api-parameters/#pagination)
 - [Typos](https://www.algolia.com/doc/api-reference/api-parameters/#typos)
@@ -330,7 +345,7 @@ Settings API parameters
 ## Methods
 
 ## Create an index
-  
+
 You don’t need to explicitly create an index, it will be automatically created the first time you
 [add an object](https://www.algolia.com/doc/api-reference/api-methods/add-objects)
 or
@@ -428,7 +443,7 @@ Synonyms
 
 
 
-# Rules
+# Query Rules
 
 
 
@@ -453,10 +468,7 @@ Just like for objects or synonyms, write methods for rules are asynchronous: the
 A rule is described by a JSON object, containing the following fields:
 
 - `objectID` (string): Unique identifier for the rule (format: `[A-Za-z0-9_-]+`)
-- `condition` (object): **Condition** of the rule
-    - `pattern` (string): Query pattern (see [syntax](#query-pattern-syntax) below)
-    - `anchoring` (string, enum) = { `is` \| `startsWith` \| `endsWith` \| `contains` }: Whether the pattern must match the beginning or the end of the query string, or both, or none.
-    - `context` (string) [optional]: Rule context (format: `[A-Za-z0-9_-]+`). When specified, the rule is *contextual* and applies only when the same context is specified at query time (using the `ruleContexts` parameter). When absent, the rule is *generic* and always applies (provided that its other conditions are met, of course).
+
 - `consequence` (object): **Consequence** of the rule. *At least one* of the following must be used:
     - `params` (object) [optional]: Additional search parameters. Any valid search parameter is allowed. Specific treatment is applied to these fields:
         - `query` (string or object) [optional]: When a string, it replaces the entire query string. When an object, describes incremental edits to be made to the query string. (Of course, replacing and editing is incompatible.) The following edits are supported:
@@ -513,6 +525,16 @@ For some use cases, there are two types of data:
 
 The public data can be searched at the same time as private user data. With MCM, it's possible to create public records with the multi-clusters using the special userID value \* in order to replicate the record on all the clusters and make it available for search. We show this in our [Public / Private data tutorial](https://www.algolia.com/doc/tutorials/infra/multi-clusters/multi-clusters).
 
+### ObjectIDs
+
+The objectIDs needs to be unique between userID to avoid a record of one userID to override the record of another userID. The objectID needs to be uniq also because of the shared data which can be retrieved at the same time than the data of one specific customer. We recommend to append to the objectID, the userID of the specific user to be sure the objectID is unique.
+
+### Number of indices
+
+MCM is design to work on a small number of indices (< 100). This limitation is mainly here to preserve the performance of the user migration. To migrate a user from one cluster to another, the engine needs to enumerate all the records of this specific user in order to send it to the destination cluster and so loop on all the indices, the cost of the operation is directly linked to the number of indices.
+
+A small number of indices also allow the engine to optimize more the indexing operations by batching the operation of one index together.
+
 ### Check out our Tutorial
 
 Perhaps the best way to understand the MultiClusters API is to check out our [MCM tutorial], where explain, with code samples, the most important endpoints.
@@ -534,14 +556,14 @@ With a multi-cluster setup, the userID needs to be specified for each of the fol
   - [Search an index](https://www.algolia.com/doc/api-reference/api-methods/search/)
   - [Search multiple indexes](https://www.algolia.com/doc/api-reference/api-methods/multiple-queries/)
   - [Search for facet values](https://www.algolia.com/doc/api-reference/api-methods/search-for-facet-values/)
+  - [Browse an index](https://www.algolia.com/doc/api-reference/api-methods/browse/)
   - [Add objects](https://www.algolia.com/doc/api-reference/api-methods/add-objects/)
   - [Delete objects](https://www.algolia.com/doc/api-reference/api-methods/delete-objects/)
   - [Delete by query](https://www.algolia.com/doc/api-reference/api-methods/delete-by-query/)
   - [Partial update objects](https://www.algolia.com/doc/api-reference/api-methods/partial-update-objects/)
   - [Get objects](https://www.algolia.com/doc/api-reference/api-methods/get-objects/)
-  - [Wait for operations](https://www.algolia.com/doc/api-reference/api-methods/wait-task/)
   - [Custom batch](https://www.algolia.com/doc/api-reference/api-methods/batch/)
-  - [Browse an index](https://www.algolia.com/doc/api-reference/api-methods/browse/)
+  - [Wait for operations](https://www.algolia.com/doc/api-reference/api-methods/wait-task/)
 
 Each of these methods allows you to pass any `extra header` to the request. We'll make use of the `X-Algolia-User-ID` header.
 
@@ -564,7 +586,7 @@ You can find an example of how to pass `extra headers` for the other methods in 
 Algolia's architecture is heavily redundant, to provide optimal reliability. Every application is hosted on at least three different servers. As a developer, however, you don't need to worry about those details. The API Client handles them for you:
 
 - It leverages our dynamic DNS to perform automatic **load balancing** between servers.
-- Its **retry logic** switches the targeted server whenever it detects that one of them is down or unreachable. Therefore, a given request will not fail unless all servers are down or unreachable at the same time.
+- Its [**retry logic**](https://www.algolia.com/doc/guides/infrastructure/dsn/#retries-and-fallback-failover-logic) switches the targeted server whenever it detects that one of them is down or unreachable. Therefore, a given request will not fail unless all servers are down or unreachable at the same time.
 
 **Note:** Application-level errors (e.g. invalid query) are still reported without retry.
 
@@ -590,5 +612,6 @@ Here's an example:
 ```
 
 **Caution:** The error message is purely informational and intended for the developer. You should never rely on its content programmatically, as it may change without notice.
+
 
 
