@@ -21,7 +21,7 @@ public class ObjectsTest extends AlgoliaTest {
     array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
     array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
     JSONObject task = index.addObjects(array);
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query(""));
     assertEquals(2, res.getInt("nbHits"));
   }
@@ -32,12 +32,12 @@ public class ObjectsTest extends AlgoliaTest {
     array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "à/go/?à"));
     array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "à/go/?à2"));
     JSONObject task = index.addObjects(array);
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     List<String> deleted = new ArrayList<String>();
     deleted.add("à/go/?à");
     deleted.add("à/go/?à2");
     task = index.deleteObjects(deleted);
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query(""));
     assertEquals(0, res.getInt("nbHits"));
   }
@@ -48,7 +48,7 @@ public class ObjectsTest extends AlgoliaTest {
     array.put(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger"));
     array.put(new JSONObject().put("firstname", "Warren").put("lastname", "Speach"));
     JSONObject task = index.addObjects(array);
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query(""));
     assertEquals(2, res.getInt("nbHits"));
   }
@@ -59,7 +59,7 @@ public class ObjectsTest extends AlgoliaTest {
     array.add(new JSONObject().put("firstname", "Jimmie").put("lastname", "Barninger").put("objectID", "a/go/?à"));
     array.add(new JSONObject().put("firstname", "Warren").put("lastname", "Speach").put("objectID", "a/go/ià"));
     JSONObject task = index.saveObjects(array);
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     JSONObject res = index.search(new Query(""));
     assertEquals(2, res.getInt("nbHits"));
   }
@@ -69,7 +69,7 @@ public class ObjectsTest extends AlgoliaTest {
     JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
       .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
       .put("name", "San Francisco").put("objectID", "2")));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     List<String> objectIDs = new ArrayList<String>();
     objectIDs.add("1");
     objectIDs.add("2");
@@ -83,7 +83,7 @@ public class ObjectsTest extends AlgoliaTest {
     JSONObject task = index.addObjects(new JSONArray().put(new JSONObject()
       .put("name", "Los Angeles").put("objectID", "1")).put(new JSONObject()
       .put("name", "San Francisco").put("objectID", "2")));
-    index.waitTask(task.getString("taskID"));
+    index.waitTask(task.getLong("taskID"));
     List<String> objectIDs = new ArrayList<String>();
     objectIDs.add("1");
     objectIDs.add("2");
