@@ -28,7 +28,7 @@ java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
 
 
-# Install the API client
+# Install the %language% API client
 
 
 
@@ -61,16 +61,15 @@ Index index = client.initIndex("your_index_name");
 
 
 
-## Methods
-
 ## Building search UIs
 
 If you are building a web application, we recommend using one
 of our [frontend search UI libraries](https://www.algolia.com/doc/guides/search-ui/search-libraries/) instead of the API client directly.
 
-It brings several benefits:
-  * Your users will see a better response time as the request will not need to go through your servers
-  * You will be able to offload unnecessary tasks from your servers
+For example, here is what Algolia's [Instant Search UI](https://community.algolia.com/instantsearch.js/) offers:
+  - An out of the box, good-looking Search UI, easily customizable, with *instant* results and unlimited facets and filters, and many other configurable features
+  - Better response time because the request does not need to go through your own servers, but instead is communicated directly to the Algolia servers from your end-users
+  - As a consequence, your servers will be far less burdened by real-time searching activity
 
 To get started with building search UIs, take a look at these tutorials:
 
@@ -114,49 +113,11 @@ Autocomplete
 
 </a>
 
-## Related Resources
-
-<a href="/doc/api-reference/search-api-parameters/" class="flex-container">
-
-<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-  <title>View API Reference</title>
-  <defs>
-    <linearGradient x1="31.234%" y1="-9.229%" x2="81.126%" y2="104.898%" id="aaf41">
-      <stop stop-color="#B84592" offset="0%" />
-      <stop stop-color="#FF4F81" offset="100%" />
-    </linearGradient>
-    <linearGradient x1="12.497%" y1="50%" y2="40.413%" id="baf41">
-      <stop stop-color="#B84592" offset="0%" />
-      <stop stop-color="#FF4F81" offset="100%" />
-    </linearGradient>
-  </defs>
-  <g fill="none" fill-rule="evenodd">
-    <rect fill="#FFF" width="80" height="80" rx="6" />
-    <g class="animatable">
-      <path d="M11.535 14.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.664 1.664 0 0 1-1.64 0L2.28 30.23a1.674 1.674 0 0 1-.845-1.452v-8.556c0-.6.324-1.155.846-1.45l7.614-4.308a1.664 1.664 0 0 1 1.64 0z" fill="url(#aaf41)" transform="translate(25 23.333)" />
-    </g>
-    <g class="animatable">
-      <path d="M23.44 7.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.668 1.668 0 0 1-1.642 0l-7.612-4.307a1.668 1.668 0 0 1-.846-1.452v-8.556c0-.6.323-1.155.846-1.45l7.612-4.308a1.668 1.668 0 0 1 1.642 0z" fill="url(#baf41)" transform="translate(25 23.333)" />
-    </g>
-    <g class="animatable">
-      <path d="M11.535.464l7.612 4.307c.523.297.846.85.846 1.452v8.556c0 .6-.323 1.155-.846 1.45l-7.612 4.308a1.664 1.664 0 0 1-1.64 0L2.28 16.23a1.674 1.674 0 0 1-.845-1.452V6.222c0-.6.324-1.155.846-1.45L9.895.463a1.664 1.664 0 0 1 1.64 0z" fill="url(#aaf41)" transform="translate(25 23.333)" />
-    </g>
-  </g>
-</svg>
-
-API reference
-
-Search API parameters
-
-</a>
-
 
 
 # Indexing
 
 
-
-## Methods
 
 ## Creating indexes
 
@@ -166,16 +127,41 @@ Objects are schema-less so you don't need any pre-configuration to start indexin
 
 If you wish to configure your index, the [settings section](https://www.algolia.com/doc/api-client/settings) provides details about advanced settings.
 
+## Index Objects
+
+### Schemaless
+The objects sent to our Indexing methods **schemaless**:
+your objects can contain any number of fields,
+of any definition and content.
+
+The engine has no expectations of what your data will contain,
+other than some [formatting concerns](https://www.algolia.com/doc/guides/indexing/structuring-your-data/#formatting-considerations),
+and the objectID.
+
+### The Object ID
+
+That said, every object (record) in an index eventually requires a unique ID,
+called the objectID.
+This is the only field you are sure to see in an index object.
+
+You can create the ID yourself or Algolia can generate it for you.
+Which means that you are not required to send us an `objectID`.
+
+Whether sent or generated, once a record is added, it will have a unique identifier called `objectID`.
+
+This ID will be used later by any method that needs to reference a specific record, such as [Update Objects](https://www.algolia.com/doc/api-reference/api-methods/update-objects/)
+or [Partial Updates](https://www.algolia.com/doc/api-reference/api-methods/partial-update-objects/).
+
 ## Add, Update and Partial Update differences
 
 ### Add Objects
 
 The [`Add Objects`](https://www.algolia.com/doc/api-reference/api-methods/add-objects/) method does not require an `objectID`.
 
-- If you do supply an `objectID`:
+- If you specify an `objectID`:
   - If the `objectID` does not exist in the index, the record will be created
   - If the `objectID` already exists, the record will be replaced
-- If you do not supply an `objectID`:
+- If you do **not** specify an `objectID`:
   - Algolia will automatically assign an `objectID`, which will be returned in the response
 
 ### Update Objects
@@ -183,8 +169,8 @@ The [`Add Objects`](https://www.algolia.com/doc/api-reference/api-methods/add-ob
 The [`Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/update-objects/) method requires an `objectID`.
 
 - If the `objectID` exists, the record will be replaced
-- If the `objectID` does not exist, the record is created 
-- If no `objectID` is supplied, the method returns an error
+- If the `objectID` is specified but does not exist, the record is created
+- If the `objectID` is **not** specified, the method returns an error
 
 **Note:** Update Object is also known as `Save Object`. In this context, the terms are used interchangeably.
 
@@ -193,10 +179,10 @@ The [`Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/upd
 The [`Partial Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/partial-update-objects/) method requires an `objectID`.
 
 - If the `objectID` exists, the attributes will be replaced
-- If the `objectID` does not exist, the record is created
-- If no `objectID` is specified, the method returns an error
+- If the `objectID` is specified but does not exist, the record is created
+- If the `objectID` is **not** specified, the method returns an error
 
-**Note:** `Partial Update` does not replace the whole object, it only adds, removes, or updates the attributes mentioned; the remaining attributes are left untouched. This is different from `Add Object` and `Update Object`, both of which replace the whole object.
+**Note:** As already discussed, `Partial Update` does not replace the whole object, it only adds, removes, or updates the attributes mentioned; the remaining attributes are left untouched. This is different from `Add Object` and `Update Object`, both of which replace the whole object.
 
 ### For all three
 
@@ -208,26 +194,37 @@ The [`Partial Update Objects`](https://www.algolia.com/doc/api-reference/api-met
 
 ## Terminology
 
-### Object / Record
-We use the words "object" and "record" interchangeably. Sometimes within the same sentence. 
-While they are certainly different, depending on the context, for us, they are the same. 
+### Object = Record
+We use the words "object" and "record" interchangeably. Sometimes within the same sentence.
+While they can certainly be different within the field of computer science,
+for us, they are the same.
 So don't place any significance on their usage:
 
 - Indexes contain "objects" or "records"
 - JSON contains "objects" or "records"
 
-### Indexes / Indices
+### Indexes = Indices
 
-We use these words interchangeably. 
-Sometimes the API itself will use one or the other. 
-In the documentation, we always use "indexes" - unless the underlying API is using "indices", in which case we adopt that usage.
+We use these words interchangeably. The first is simply the American spelling.
+The API often uses the British spelling.
 
-In either case, don't place any significance on their usage.
-  
+In our documentation, we always use "indexes" - unless the underlying API method or setting
+is using "indices", in which case we adopt that usage.
+
+Don't place any significance on their usage.
+
 ### Attribute
 All objects and records contain attributes. Sometimes we refer to them as fields, or elements. Within the search and indexing contexts, we often speak of settings and parameters. Again, these terms are mostly interchangeable.
 
-Some attributes are simple key/value pairs. But others can be more complex, making it look more like a collection or an object.
+Some attributes are simple key/value pairs. But others can be more complex, as in Java or C#, where they are often a collection or an object.
+
+## Asynchronous methods
+
+Most of these methods are **asynchronous**. What you are actually doing when calling these methods is adding a new job to a queue: **it is this job, and not the method, that actually performs the desired action**. In most cases, the job is executed within seconds if not milliseconds. But it all depends on what is in the queue: if the queue has many pending tasks, the new job will need to wait its turn.
+
+To help manage this asynchronicity, each method returns a unique `task id` which you can use with the [waitTask method](https://www.algolia.com/doc/api-reference/api-methods/wait-task/). Using the `waitTask` method guarantees that the job has finished before proceeding with your new requests. You will want to use this to manage dependencies, for example, when deleting an index before creating a new index with the same name, or clearing an index before adding new objects.
+
+This is used most often in debugging scenarios where you are testing a search immediately after updating an index.
 
 
 
@@ -235,35 +232,34 @@ Some attributes are simple key/value pairs. But others can be more complex, maki
 
 
 
-## Methods
-
 ## The *scope* of settings (and parameters)
 
-Settings are set on the index and/or during a particular query. In both cases, they are sent to Algolia using *parameters*.
+**Settings** are set on the *index* and/or during a particular *query*. In both cases, they are sent to Algolia using **parameters**.
+
 - For the index, we use the [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings/) method.
 - For the search, we use the [search](https://www.algolia.com/doc/api-reference/api-methods/search/) method.
 
-Importantly, each parameter has a scope (See [API Parameters](https://www.algolia.com/doc/api-reference/api-parameters)). There are 3 scopes:
+Importantly, each parameter has kinds of **scope** (See [API Parameters](https://www.algolia.com/doc/api-reference/api-parameters)). There are 3 scopes:
 
 #### `settings`
 
-The setting can only be used in the [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings/) method. Meaning that it is not available as a search parameter.
+Parameters with a *setting scope* can only be used in the [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings/) method. Meaning that it is not available as a search parameter.
 
 Index settings are built directly into your index at indexing time, and they impact every search.
 
 #### `search`
 
-Individual queries can be parameterized. To do this, you pass search parameters to the [search](https://www.algolia.com/doc/api-reference/api-methods/search) method. These parameters affect only those queries that use it. And there is not index default for them.
+Individual queries can be parameterized. To do this, you pass *search parameters* to the [search](https://www.algolia.com/doc/api-reference/api-methods/search) method. These parameters affect only those queries that use them; they do not set any index defaults.
 
-#### `settings` `search`
+#### Both `settings` and `search`
 
-When applying both, you create a default/override logic: you set an index default using the [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings/) method that can be overriden by your [search](https://www.algolia.com/doc/api-reference/api-methods/search/) method.
+When applying both, you create a **default + override logic**: with the `settings`, you set an index default using the [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings/) method. These settings can then be overriden by your [search](https://www.algolia.com/doc/api-reference/api-methods/search/) method. Only some settings can be overidden. You will need to consult each settings to see its scope.
 
-**Note:** Note that, if a setting or a parameter is not used, the system will apply an engine level default.
+**Note:** **Note** that, if you do not apply an index setting or search parameter, the system will apply an engine level default.
 
 ### Example
 
-Just to make it more concrete, here is an example of an index setting, where all queries performed on this index will use a `queryType` of `prefixLast`:
+Just to make all of this more concrete, here is an example of an index setting. In this example, all queries performed on this index will use a `queryType` of `prefixLast`:
 
 ```js
 index.setSettings({
@@ -271,7 +267,8 @@ index.setSettings({
 });
 ```
 
-And here is a query that overrides that index setting with `prefixAll`:
+So every query will apply a prefixLast logic. However, this can be overridden.
+Here is a query that overrides that index setting with `prefixAll`:
 
 ```js
 index.search({
@@ -342,8 +339,6 @@ Settings API parameters
 
 
 
-## Methods
-
 ## Create an index
 
 You don’t need to explicitly create an index, it will be automatically created the first time you
@@ -351,17 +346,41 @@ You don’t need to explicitly create an index, it will be automatically created
 or
 [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings).
 
+## Asynchronous methods
+
+All the *manage indices* methods are **asynchronous**. What you are actually doing when calling these methods is adding a new job to a queue: **it is this job, and not the method, that actually performs the desired action**. In most cases, the job is executed within seconds if not milliseconds. But it all depends on what is in the queue: if the queue has many pending tasks, the new job will need to wait its turn.
+
+To help manage this asynchronicity, each method returns a unique `task id` which you can use with the [waitTask method](https://www.algolia.com/doc/api-reference/api-methods/wait-task/). Using the `waitTask` method guarantees that the job has finished before proceeding with your new requests. You will want to use this to manage dependencies, for example, when deleting an index before creating a new index with the same name, or clearing an index before adding new objects.
+
+This is used most often in debugging scenarios where you are testing a search immediately after updating an index.
+
+## Analytics data
+
+Analytics data is based on the index; to access analytics data, it is therefore necessary to use the index name. See the [common parameters of our analytics methods](https://www.algolia.com/doc/rest-api/analytics/#common-parameters).
+
+We collect analytics data on a separate server, using separate processes. In parallel, your main indexes are updated and searched asynchronously. It is important to keep in mind that **there is no hard link between your indexes and the collection and storage of their analytics data**. they are 2 sets of data on separate servers. Therefore, actions like deleting or moving an index will have no impact on your Analytics data.
+
+As a consequence, Analytics is not impacted by indexing methods. We do not remove analytics data: whether you have removed or changed the name of an index, its analytics can always be accessed using the original index name - *even if the underlying index no longer exists*.
+
+Additionally, **copying or moving an index will not transfer Analytics data** from source to destination.
+The Analytics data stays on the source index, which is to be expected;
+and the destination index will not gain any new Analytics data.
+
+Keep in mind, then, that if you are **overwriting an exiting index** -
+an index that already has analytics data -
+the overwritten index will not only *not* lose its Analytics data,
+any new Analytics data will be mixed-in
+with the old.
+
 
 
 # Api keys
 
 
 
-## Methods
-
 ## *Adding* and *Generating* API keys
 
-It is important to understand the difference between the [`Add API Key`](https://www.algolia.com/doc/api-reference/api-methods/add-api-key) and [`Generate secured API Key`](https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/)  methods.
+It is important to understand the difference between the [`Add API Key`](https://www.algolia.com/doc/api-reference/api-methods/add-api-key) and [`Generate secured API Key`](https://www.algolia.com/doc/api-reference/api-methods/generate-secured-api-key/) methods.
 
 For example:
 - `Add API key` is executed on the Algolia server; `Generate Secured API key` is executed on your own server, not Algolia's.
@@ -397,106 +416,31 @@ API Keys
 
 
 
-## Methods
-
-## Algolia synonyms
-
-A *synonym record* includes an objectID, the type of synonym, and a list of words
-as synonyms.
-
-```
-{
-  objectID: 'a-unique-identifier',
-  type: 'synonym',
-  synonyms: ['car', 'vehicle', 'auto']
-}
-```
-
-There are 4 types of synonym:
-  - `bi-directional`, where the words are interchangeable
-  - `one-way`, where a master word is used to find the other words, but not vice-versa
-  - `altcorrection1` or `altcorrection2`, where synonyms are used to resolve [typos of 1 or 2 degrees](https://www.algolia.com/doc/guides/textual-relevance/typo-tolerance/#how-typos-are-calculated-based-on-damerau-levenshtein-distance)
-  - `placeholder`, where you define tokens (variables) that take any value from a list of defined words. See [placeholders](https://www.algolia.com/doc/guides/textual-relevance/synonyms/#placeholders).
-
-For more detail:
-
-<a href="/doc/guides/textual-relevance/synonyms/" class="flex-container">
-
-<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-  <title>Relevance</title>
-  <defs>
-    <linearGradient x1="50%" y1="-227.852%" x2="77.242%" y2="191.341%" id="a">
-      <stop stop-color="#8995C7" offset="0%" />
-      <stop stop-color="#F1F4FD" offset="100%" />
-    </linearGradient>
-  </defs>
-  <g fill="none" fill-rule="evenodd">
-    <path d="M12 20a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm0-2a6 6 0 1 0 0-12 6 6 0 0 0 0 12zm0-2a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0-2a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" fill="url(#a)" />
-  </g>
-</svg>
-
-Algolia Concepts
-
-Synonyms
-
-</a>
-
 
 
 # Query Rules
 
 
 
-## Methods
-
 ## Overview
 
-**Query Rules** allows performing some ad hoc pre- and post-processing on queries matching specific patterns.
+**Query Rules** allows performing pre- and post-processing on queries matching specific patterns.
 For more details, please refer to our [Rules guide](https://www.algolia.com/doc/guides/query-rules/query-rules-overview/).
 
 ### Miscellaneous
 
-As their name implies, Query Rules apply at query time.
-Therefore, some [search parameters](https://www.algolia.com/doc/api-reference/api-parameters/#query-rules) control how rules are applied.
+As its name implies, *Query* Rules is applied at query time.
+Therefore, some [search parameters](https://www.algolia.com/doc/api-reference/api-parameters/#query-rules) can be used to control how the rules are applied.
 
-Most of the methods manipulate rule objects, described in detail in the [Rule Schema](#rule-schema) below.
+Most of the methods manipulate [queryRule objects](https://www.algolia.com/doc/api-reference/api-methods/rules-save/#method-param-queryrule), as described in detail in the different Query Rules methods.
 
 Just like for objects or synonyms, write methods for rules are asynchronous: they return a `taskID` that can be used by [Wait for operations](https://www.algolia.com/doc/api-reference/api-methods/wait-task/).
-
-## Rule Schema
-
-A rule is described by a JSON object, containing the following fields:
-
-- `objectID` (string): Unique identifier for the rule (format: `[A-Za-z0-9_-]+`)
-
-- `consequence` (object): **Consequence** of the rule. *At least one* of the following must be used:
-    - `params` (object) [optional]: Additional search parameters. Any valid search parameter is allowed. Specific treatment is applied to these fields:
-        - `query` (string or object) [optional]: When a string, it replaces the entire query string. When an object, describes incremental edits to be made to the query string. (Of course, replacing and editing is incompatible.) The following edits are supported:
-            - `remove` (array of strings) [optional]: Tokens (literals or placeholders) from the query pattern that should be removed from the query string.
-        - `automaticFacetFilters` (array of strings) [optional]: Names of facets to which automatic filtering must be applied; they must match the facet name of a facet value placeholder in the query pattern. Ex. `facetName1, facetName2`. You can specify a score: `facetName1<score=5>, facetName2<score=1>`.
-        - `automaticOptionalFacetFilters` (array of strings) [optional]: Same syntax as `automaticFacetFilters`, but behaves like `optionalFacetFilters`.
-    - `promote` (array of objects) [optional]: Objects to promote as hits. Each object must contain the following fields:
-        - `objectID` (string): Unique identifier of the object to promote
-        - `position` (integer): Promoted rank for the object (zero-based)
-    - `userData` (object) [optional]: Custom JSON object that will be appended to the `userData` array in the response. This object is not interpreted by the API. It is limited to 1kB of minified JSON.
-- `description` (string) [optional]: This field is intended for rule management purposes, in particular to ease searching for rules and presenting them to human readers. It is not interpreted by the API.
-
-### Query pattern syntax
-
-Query patterns are expressed as a string with a specific syntax. A pattern is a sequence of one or more tokens, which can be either:
-
-- **Facet value placeholder**: `{facet:$facet_name}`. Example: `{facet:brand}`.
-- **Literal**: the world itself. Example: `Algolia`.
-
-Special characters (`{`, `}`, `:` and `\`) must be escaped by preceding them with a backslash (`\`) if they are to be treated as literals.
 
 
 
 # MultiClusters API Client
 
 
-
-## Methods
 
 ## A Brief Technical Overview
 
@@ -527,7 +471,7 @@ The public data can be searched at the same time as private user data. With MCM,
 
 ### ObjectIDs
 
-The objectIDs needs to be unique between userID to avoid a record of one userID to override the record of another userID. The objectID needs to be uniq also because of the shared data which can be retrieved at the same time than the data of one specific customer. We recommend to append to the objectID, the userID of the specific user to be sure the objectID is unique.
+The objectIDs need to be unique from the userIDs to avoid a record of one userID to override the record of another userID. The objectID needs to be unique also because of the shared data which can be retrieved at the same time as the data of one specific customer. We recommend appending to the objectID, the userID of the specific user to be sure the objectID is unique.
 
 ### Number of indices
 
@@ -559,7 +503,7 @@ With a multi-cluster setup, the userID needs to be specified for each of the fol
   - [Browse an index](https://www.algolia.com/doc/api-reference/api-methods/browse/)
   - [Add objects](https://www.algolia.com/doc/api-reference/api-methods/add-objects/)
   - [Delete objects](https://www.algolia.com/doc/api-reference/api-methods/delete-objects/)
-  - [Delete by query](https://www.algolia.com/doc/api-reference/api-methods/delete-by-query/)
+  - [Delete by](https://www.algolia.com/doc/api-reference/api-methods/delete-by/)
   - [Partial update objects](https://www.algolia.com/doc/api-reference/api-methods/partial-update-objects/)
   - [Get objects](https://www.algolia.com/doc/api-reference/api-methods/get-objects/)
   - [Custom batch](https://www.algolia.com/doc/api-reference/api-methods/batch/)
@@ -579,13 +523,11 @@ You can find an example of how to pass `extra headers` for the other methods in 
 
 
 
-## Methods
-
 ## Retry logic
 
-Algolia's architecture is heavily redundant, to provide optimal reliability. Every application is hosted on at least three different servers. As a developer, however, you don't need to worry about those details. The API Client handles them for you:
+Algolia's architecture is heavily redundant, to provide optimal reliability. Every application is hosted on at least three different servers (called [clusters](https://www.algolia.com/doc/guides/infrastructure/clusters/)). As a developer, however, you don't need to worry about those details. The API Client handles them for you:
 
-- It leverages our dynamic DNS to perform automatic **load balancing** between servers.
+- It leverages our dynamic [DNS](https://www.algolia.com/doc/guides/infrastructure/dsn/) to perform automatic **load balancing** between servers.
 - Its [**retry logic**](https://www.algolia.com/doc/guides/infrastructure/dsn/#retries-and-fallback-failover-logic) switches the targeted server whenever it detects that one of them is down or unreachable. Therefore, a given request will not fail unless all servers are down or unreachable at the same time.
 
 **Note:** Application-level errors (e.g. invalid query) are still reported without retry.
