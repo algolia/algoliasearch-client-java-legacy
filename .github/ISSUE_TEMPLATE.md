@@ -11,7 +11,6 @@ If you need support, please use:
 
 -->
 
-
 - Algolia Client Version: #.#.#
 - Language Version:
 
