@@ -34,7 +34,7 @@ java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
 ## Install
 
-If you're using `Maven`, add the following dependency to your `pom.xml` file:
+With [Maven](https://maven.apache.org/), add the following dependency to your `pom.xml` file:
 ```xml
 <dependency>
     <groupId>com.algolia</groupId>
@@ -123,9 +123,12 @@ Autocomplete
 
 You don't need to explicitly create an index, as it will be automatically created the first time you add an object.
 
-Objects are schema-less so you don't need any pre-configuration to start indexing.
+Objects are schemaless so you don't need any pre-configuration to start indexing.
 
 If you wish to configure your index, the [settings section](https://www.algolia.com/doc/api-client/settings) provides details about advanced settings.
+
+**Make sure you don’t use any sensitive or personally identifiable information (PII) as your index name**, including customer names, user IDs, or email addresses.
+Index names appear in network requests and should be considered publicly available.
 
 ## Index Objects
 
@@ -346,6 +349,9 @@ You don’t need to explicitly create an index, it will be automatically created
 or
 [set settings](https://www.algolia.com/doc/api-reference/api-methods/set-settings).
 
+**Make sure you don’t use any sensitive or personally identifiable information (PII) as your index name**, including customer names, user IDs, or email addresses.
+Index names appear in network requests and should be considered publicly available.
+
 ## Asynchronous methods
 
 All the *manage indices* methods are **asynchronous**. What you are actually doing when calling these methods is adding a new job to a queue: **it is this job, and not the method, that actually performs the desired action**. In most cases, the job is executed within seconds if not milliseconds. But it all depends on what is in the queue: if the queue has many pending tasks, the new job will need to wait its turn.
@@ -438,6 +444,12 @@ Just like for objects or synonyms, write methods for rules are asynchronous: the
 
 
 
+# A/B Test
+
+
+
+
+
 # MultiClusters API Client
 
 
@@ -497,10 +509,10 @@ MCM needs to be enabled on your cluster. You can contact support@algolia.com for
 
 With a multi-cluster setup, the userID needs to be specified for each of the following methods:
 
-  - [Search an index](https://www.algolia.com/doc/api-reference/api-methods/search/)
+  - [Search index](https://www.algolia.com/doc/api-reference/api-methods/search/)
   - [Search multiple indexes](https://www.algolia.com/doc/api-reference/api-methods/multiple-queries/)
   - [Search for facet values](https://www.algolia.com/doc/api-reference/api-methods/search-for-facet-values/)
-  - [Browse an index](https://www.algolia.com/doc/api-reference/api-methods/browse/)
+  - [Browse index](https://www.algolia.com/doc/api-reference/api-methods/browse/)
   - [Add objects](https://www.algolia.com/doc/api-reference/api-methods/add-objects/)
   - [Delete objects](https://www.algolia.com/doc/api-reference/api-methods/delete-objects/)
   - [Delete by](https://www.algolia.com/doc/api-reference/api-methods/delete-by/)
