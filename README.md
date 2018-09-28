@@ -208,8 +208,7 @@ So don't place any significance on their usage:
 
 ### Indexes = Indices
 
-We use these words interchangeably. The first is simply the American spelling.
-The API often uses the British spelling.
+We use these words interchangeably. The former is the American spelling, while the API often uses the British spelling.
 
 In our documentation, we always use "indexes" - unless the underlying API method or setting
 is using "indices", in which case we adopt that usage.
