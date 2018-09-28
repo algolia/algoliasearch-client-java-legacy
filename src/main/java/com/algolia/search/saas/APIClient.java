@@ -182,14 +182,12 @@ public class APIClient {
    * @return algolianet.com if the current setup supports SNI, else algolia.net.
    */
   static String getFallbackDomain() {
-    String version = System.getProperty("java.version");
-    int pos = version.indexOf('.');
-    pos = version.indexOf('.', pos + 1);
-    boolean javaHasSNI = Double.parseDouble(version.substring(0, pos)) >= 1.7;
+    int javaVersion = getJavaVersion();
+    boolean javaHasSNI = javaVersion >= 7;
 
     final VersionInfo vi = VersionInfo.loadVersionInfo
       ("org.apache.http.client", APIClient.class.getClassLoader());
-    version = vi.getRelease();
+    String version = vi.getRelease();
     String[] split = version.split("\\.");
     int major = Integer.parseInt(split[0]);
     int minor = Integer.parseInt(split[1]);
@@ -203,6 +201,22 @@ public class APIClient {
     } else {
       return "algolia.net";
     }
+  }
+
+  static int getJavaVersion() {
+    String version = System.getProperty("java.version");
+    if (version.startsWith("1.")) {
+      version = version.substring(2);
+    }
+    // Allow these formats:
+    // 1.8.0_72-ea
+    // 9-ea
+    // 9
+    // 9.0.1
+    int dotPos = version.indexOf('.');
+    int dashPos = version.indexOf('-');
+    return Integer.parseInt(version.substring(0,
+            dotPos > -1 ? dotPos : dashPos > -1 ? dashPos : 1));
   }
 
   /**
