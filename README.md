@@ -119,7 +119,7 @@ Autocomplete
 
 
 
-## Creating indexes
+## Creating indices
 
 You don't need to explicitly create an index, as it will be automatically created the first time you add an object.
 
@@ -152,7 +152,7 @@ Which means that you are not required to send us an `objectID`.
 
 Whether sent or generated, once a record is added, it will have a unique identifier called `objectID`.
 
-This ID will be used later by any method that needs to reference a specific record, such as [Update Objects](https://www.algolia.com/doc/api-reference/api-methods/update-objects/)
+This ID will be used later by any method that needs to reference a specific record, such as [Update Objects](https://www.algolia.com/doc/api-reference/api-methods/save-objects/)
 or [Partial Updates](https://www.algolia.com/doc/api-reference/api-methods/partial-update-objects/).
 
 ## Add, Update and Partial Update differences
@@ -169,7 +169,7 @@ The [`Add Objects`](https://www.algolia.com/doc/api-reference/api-methods/add-ob
 
 ### Update Objects
 
-The [`Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/update-objects/) method requires an `objectID`.
+The [`Update Objects`](https://www.algolia.com/doc/api-reference/api-methods/save-objects/) method requires an `objectID`.
 
 - If the `objectID` exists, the record will be replaced
 - If the `objectID` is specified but does not exist, the record is created
@@ -203,15 +203,14 @@ While they can certainly be different within the field of computer science,
 for us, they are the same.
 So don't place any significance on their usage:
 
-- Indexes contain "objects" or "records"
+- indices contain "objects" or "records"
 - JSON contains "objects" or "records"
 
 ### Indexes = Indices
 
 We use these words interchangeably. The former is the American spelling, while the API often uses the British spelling.
 
-In our documentation, we always use "indexes" - unless the underlying API method or setting
-is using "indices", in which case we adopt that usage.
+In our documentation, we try to always use "indices".
 
 Don't place any significance on their usage.
 
@@ -363,7 +362,7 @@ This is used most often in debugging scenarios where you are testing a search im
 
 Analytics data is based on the index; to access analytics data, it is therefore necessary to use the index name. See the [common parameters of our analytics methods](https://www.algolia.com/doc/rest-api/analytics/#common-parameters).
 
-We collect analytics data on a separate server, using separate processes. In parallel, your main indexes are updated and searched asynchronously. It is important to keep in mind that **there is no hard link between your indexes and the collection and storage of their analytics data**. they are 2 sets of data on separate servers. Therefore, actions like deleting or moving an index will have no impact on your Analytics data.
+We collect analytics data on a separate server, using separate processes. In parallel, your main indices are updated and searched asynchronously. It is important to keep in mind that **there is no hard link between your indices and the collection and storage of their analytics data**. they are 2 sets of data on separate servers. Therefore, actions like deleting or moving an index will have no impact on your Analytics data.
 
 As a consequence, Analytics is not impacted by indexing methods. We do not remove analytics data: whether you have removed or changed the name of an index, its analytics can always be accessed using the original index name - *even if the underlying index no longer exists*.
 
@@ -390,7 +389,7 @@ It is important to understand the difference between the [`Add API Key`](https:/
 For example:
 - `Add API key` is executed on the Algolia server; `Generate Secured API key` is executed on your own server, not Algolia's.
 - Keys *added* appear on the dashboard; keys *generated* don't.
-- You *add* keys that are fixed and have very precise permissions. They are often used to target specific indexes, users, or application use-cases. They are also used to *generate* Secured API Keys.
+- You *add* keys that are fixed and have very precise permissions. They are often used to target specific indices, users, or application use-cases. They are also used to *generate* Secured API Keys.
 
 For a full discussion:
 
@@ -437,7 +436,7 @@ For more details, please refer to our [Rules guide](https://www.algolia.com/doc/
 As its name implies, *Query* Rules is applied at query time.
 Therefore, some [search parameters](https://www.algolia.com/doc/api-reference/api-parameters/#query-rules) can be used to control how the rules are applied.
 
-Most of the methods manipulate [queryRule objects](https://www.algolia.com/doc/api-reference/api-methods/rules-save/#method-param-queryrule), as described in detail in the different Query Rules methods.
+Most of the methods manipulate [queryRule objects](https://www.algolia.com/doc/api-reference/api-methods/save-rule/#method-param-queryrule), as described in detail in the different Query Rules methods.
 
 Just like for objects or synonyms, write methods for rules are asynchronous: they return a `taskID` that can be used by [Wait for operations](https://www.algolia.com/doc/api-reference/api-methods/wait-task/).
 
@@ -509,7 +508,7 @@ MCM needs to be enabled on your cluster. You can contact support@algolia.com for
 With a multi-cluster setup, the userID needs to be specified for each of the following methods:
 
   - [Search index](https://www.algolia.com/doc/api-reference/api-methods/search/)
-  - [Search multiple indexes](https://www.algolia.com/doc/api-reference/api-methods/multiple-queries/)
+  - [Search multiple indices](https://www.algolia.com/doc/api-reference/api-methods/multiple-queries/)
   - [Search for facet values](https://www.algolia.com/doc/api-reference/api-methods/search-for-facet-values/)
   - [Browse index](https://www.algolia.com/doc/api-reference/api-methods/browse/)
   - [Add objects](https://www.algolia.com/doc/api-reference/api-methods/add-objects/)
