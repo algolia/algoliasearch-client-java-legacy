@@ -28,7 +28,7 @@ java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
 
 
-# Install the %language% API client
+# Install the Java API client
 
 
 
@@ -45,6 +45,12 @@ With [Maven](https://maven.apache.org/), add the following dependency to your `p
 
 ## Language-specific notes
 
+
+
+# Instantiate Client/Index
+
+
+
 ## Init Index
 
 To begin, you will need to initialize the client. In order to do this you will need your **Application ID** and **API Key**.
@@ -54,6 +60,10 @@ You can find both on [your Algolia account](https://www.algolia.com/api-keys).
 APIClient client = new APIClient("YourApplicationID", "YourAPIKey");
 Index index = client.initIndex("your_index_name");
 ```
+
+**Warning:** If you are building a native app on mobile, be sure to **not include** the search API key directly in the source code.
+ You should instead consider [fetching the key from your servers](https://www.algolia.com/doc/guides/security/best-security-practices/#api-keys-in-mobile-applications)
+ during the app's startup.
 
 
 
@@ -125,7 +135,7 @@ You don't need to explicitly create an index, as it will be automatically create
 
 Objects are schemaless so you don't need any pre-configuration to start indexing.
 
-If you wish to configure your index, the [settings section](https://www.algolia.com/doc/api-client/settings) provides details about advanced settings.
+If you wish to configure your index, the [settings section](https://www.algolia.com/doc/api-client/methods/settings/) provides details about advanced settings.
 
 **Make sure you don’t use any sensitive or personally identifiable information (PII) as your index name**, including customer names, user IDs, or email addresses.
 Index names appear in network requests and should be considered publicly available.
