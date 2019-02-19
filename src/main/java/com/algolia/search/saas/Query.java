@@ -83,6 +83,7 @@ public class Query {
   protected String exactOnSingleWordQuery;
   protected String alternativesAsExact;
   protected List<String> responseFields;
+  protected List<String> ruleContexts;
 
   public Query(String query) {
     minWordSizeForApprox1 = null;
@@ -1298,6 +1299,16 @@ public class Query {
 
   public Query setResponseFields(List<String> responseFields) {
     this.responseFields = responseFields;
+    return this;
+  }
+
+  /**
+   * @return The list of rule contexts to be applied.
+   */
+  public List<String> getRuleContexts() { return ruleContexts; }
+
+  public Query setRuleContexts(List<String> ruleContexts) {
+    this.ruleContexts = ruleContexts;
     return this;
   }
 
